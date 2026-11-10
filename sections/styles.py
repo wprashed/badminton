@@ -1299,26 +1299,9 @@ body.theme-light .schedule-filter-bar {
 /* ═══════════════════════════════════════════════════
    BANGLA / BILINGUAL & CHALLENGE BOARD (Foosball Style)
 ═══════════════════════════════════════════════════ */
-body.lang-bn {
-  font-family: 'Hind Siliguri', 'Inter', -apple-system, sans-serif;
-}
-.lang-toggle-btn {
-  font-size: 0.75rem;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: var(--radius-xs);
-  border: 1px solid var(--clr-border);
-  background: rgba(255, 255, 255, 0.05);
-  cursor: pointer;
-  color: var(--clr-text);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-.lang-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: var(--clr-green);
-}
+
+
+
 
 /* Quick Score / Quick Win Action Buttons */
 .quick-win-btn {

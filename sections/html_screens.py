@@ -20,11 +20,6 @@ SCREENS_CONTENT = """
       <span class="notify-badge-dot"></span>
     </button>
 
-    <!-- Language Toggle (EN / বাংলা) -->
-    <button class="lang-toggle-btn" id="langToggleBtn" onclick="toggleLanguage()" title="Toggle Language (English / বাংলা)">
-      <span style="font-weight:bold;color:var(--clr-green);">বাং</span> / EN
-    </button>
-
     <!-- PWA Install Button -->
     <button class="install-app-pill" id="installAppBtn" onclick="promptInstallPWA()" style="display:none;" title="Install Badminton Cup App">
       <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>

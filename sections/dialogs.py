@@ -489,8 +489,8 @@ DIALOGS_CONTENT = """
     <div class="modal-form-item">
       <label data-i18n="challengeCategoryLabel">Format</label>
       <select id="challengeCategorySelect" class="modal-input">
-        <option value="singles">Singles (1 vs 1) - একাকী</option>
-        <option value="doubles">Doubles (2 vs 2) - দ্বৈত</option>
+        <option value="singles">Singles (1 vs 1)</option>
+        <option value="doubles">Doubles (2 vs 2)</option>
       </select>
     </div>
 
