@@ -1295,5 +1295,107 @@ body.theme-light .schedule-filter-bar {
     padding: 2px 6px;
   }
 }
+
+/* ═══════════════════════════════════════════════════
+   BANGLA / BILINGUAL & CHALLENGE BOARD (Foosball Style)
+═══════════════════════════════════════════════════ */
+body.lang-bn {
+  font-family: 'Hind Siliguri', 'Inter', -apple-system, sans-serif;
+}
+.lang-toggle-btn {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--clr-border);
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  color: var(--clr-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.lang-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--clr-green);
+}
+
+/* Quick Score / Quick Win Action Buttons */
+.quick-win-btn {
+  padding: 3px 7px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 4px;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+.quick-win-btn:hover {
+  background: #10b981;
+  color: #ffffff;
+}
+
+/* Open Challenge Board */
+.challenge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+.challenge-card {
+  background: var(--clr-surface-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+  position: relative;
+  transition: all 140ms ease;
+}
+.challenge-card:hover {
+  border-color: var(--clr-green);
+}
+.challenge-card.open-status {
+  border-left: 3px solid #10b981;
+}
+.challenge-card.accepted-status {
+  border-left: 3px solid #3b82f6;
+}
+.challenge-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 3px;
+  letter-spacing: 0.03em;
+}
+.challenge-badge.open {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.challenge-badge.accepted {
+  background: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+/* Reset Danger Button */
+.btn-danger-reset {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #f87171;
+  font-weight: 600;
+  transition: all 140ms ease;
+}
+.btn-danger-reset:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
+
 </style>
 """

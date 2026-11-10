@@ -425,4 +425,127 @@ DIALOGS_CONTENT = """
 
 <!-- App Toast Notification -->
 <div id="appToast" role="alert" aria-live="polite"></div>
+
+
+<!-- ═══════════════════════════════════════════════════
+   QUICK SCORE & INSTANT WIN MODAL (NO ONE-BY-ONE SCORING)
+═══════════════════════════════════════════════════ -->
+<dialog id="quickScoreModal" closedby="any" style="max-width:460px;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h2 style="font-size:1.2rem;font-weight:700;"><svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> <span data-i18n="quickScoreTitle">Quick Score & Win</span></h2>
+      <button class="btn btn-ghost btn-xs" onclick="document.getElementById('quickScoreModal').close()"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:16px;" data-i18n="quickScoreDesc">Directly record the final match score or click a player to award an instant win without scoring rally-by-rally.</p>
+
+    <input type="hidden" id="quickMatchId">
+    
+    <div style="background:rgba(0,0,0,0.25);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:14px;margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <button class="btn btn-primary btn-sm" id="quickWinABtn" style="flex:1;margin-right:6px;" onclick="awardInstantWinner('a')">
+          <span id="quickTeamAName">Side A</span> <span data-i18n="winsLabel">Wins (2-0)</span>
+        </button>
+        <button class="btn btn-primary btn-sm" id="quickWinBBtn" style="flex:1;margin-left:6px;" onclick="awardInstantWinner('b')">
+          <span id="quickTeamBName">Side B</span> <span data-i18n="winsLabel">Wins (2-0)</span>
+        </button>
+      </div>
+
+      <div style="text-align:center;font-size:0.75rem;color:var(--clr-text-muted);margin-bottom:8px;" data-i18n="orCustomScore">or enter manual final score:</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div>
+          <label style="font-size:0.75rem;color:var(--clr-text-muted);display:block;margin-bottom:4px;" id="quickScoreLabelA">Side A Points</label>
+          <input type="number" id="quickScoreInputA" class="modal-input" placeholder="21" value="21" min="0" max="30">
+        </div>
+        <div>
+          <label style="font-size:0.75rem;color:var(--clr-text-muted);display:block;margin-bottom:4px;" id="quickScoreLabelB">Side B Points</label>
+          <input type="number" id="quickScoreInputB" class="modal-input" placeholder="15" value="15" min="0" max="30">
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('quickScoreModal').close()" data-i18n="cancelBtn">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="saveQuickCustomScore()" data-i18n="saveScoreBtn">Save Final Score &rarr;</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ═══════════════════════════════════════════════════
+   OPEN CHALLENGE MODAL (Anyone Can Challenge & Join)
+═══════════════════════════════════════════════════ -->
+<dialog id="newChallengeModal" closedby="any" style="max-width:480px;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h2 style="font-size:1.25rem;font-weight:700;"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg> <span data-i18n="openChallengeTitle">Open a Badminton Challenge</span></h2>
+      <button class="btn btn-ghost btn-xs" onclick="document.getElementById('newChallengeModal').close()"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:16px;" data-i18n="openChallengeDesc">Post a challenge on the public board. Any school student or player can accept your challenge and play!</p>
+
+    <div class="modal-form-item">
+      <label data-i18n="challengerNameLabel">Your Name / Team</label>
+      <input type="text" id="challengeCreatorName" class="modal-input" placeholder="e.g. Tanvir (Class 9) or Sifat">
+    </div>
+
+    <div class="modal-form-item">
+      <label data-i18n="challengeCategoryLabel">Format</label>
+      <select id="challengeCategorySelect" class="modal-input">
+        <option value="singles">Singles (1 vs 1) - একাকী</option>
+        <option value="doubles">Doubles (2 vs 2) - দ্বৈত</option>
+      </select>
+    </div>
+
+    <div class="modal-form-item">
+      <label data-i18n="challengePointsLabel">Points Target</label>
+      <select id="challengePointsSelect" class="modal-input">
+        <option value="21">21 Points (Standard BWF)</option>
+        <option value="15">15 Points (Quick School Game)</option>
+        <option value="11">11 Points (Express Knockout)</option>
+      </select>
+    </div>
+
+    <div class="modal-form-item">
+      <label data-i18n="challengeNoteLabel">Note / Venue</label>
+      <input type="text" id="challengeNoteInput" class="modal-input" placeholder="e.g. Court 1 / School ground after tiffin">
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('newChallengeModal').close()" data-i18n="cancelBtn">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="postNewChallenge()" data-i18n="postChallengeBtn">Post Challenge &rarr;</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ═══════════════════════════════════════════════════
+   FULL DATA RESET & START OVER MODAL (School Simple)
+═══════════════════════════════════════════════════ -->
+<dialog id="dataResetModal" closedby="any" style="max-width:440px;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h2 style="font-size:1.2rem;font-weight:700;color:#f87171;"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> <span data-i18n="resetDataTitle">Reset Tournament Data</span></h2>
+      <button class="btn btn-ghost btn-xs" onclick="document.getElementById('dataResetModal').close()"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:16px;" data-i18n="resetDataDesc">Choose what to clear. This is very useful when starting a brand new school match or cup from scratch.</p>
+
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+      <button class="btn btn-ghost" style="justify-content:flex-start;text-align:left;padding:12px;" onclick="resetCurrentTournamentOnly()">
+        <div>
+          <div style="font-weight:700;color:var(--clr-text);" data-i18n="resetTourneyTitle">1. Clear Current Tournament Matches Only</div>
+          <div style="font-size:0.75rem;color:var(--clr-text-muted);" data-i18n="resetTourneySub">Wipes current match scores and bracket back to setup. Keeps players registered.</div>
+        </div>
+      </button>
+
+      <button class="btn btn-danger-reset" style="justify-content:flex-start;text-align:left;padding:12px;border-radius:var(--radius-sm);" onclick="resetEverythingFullFactory()">
+        <div>
+          <div style="font-weight:700;" data-i18n="resetAllTitle">2. Complete Factory Reset (Start Completely Over)</div>
+          <div style="font-size:0.75rem;opacity:0.85;" data-i18n="resetAllSub">Wipes all tournament fixtures, challenges, and cumulative leaderboard stats.</div>
+        </div>
+      </button>
+    </div>
+
+    <div style="text-align:right;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('dataResetModal').close()" data-i18n="cancelBtn">Cancel</button>
+    </div>
+  </div>
+</dialog>
+
 """

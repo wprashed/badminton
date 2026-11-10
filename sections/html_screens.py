@@ -23,8 +23,14 @@ SCREENS_CONTENT = """
     <button class="btn btn-ghost btn-xs" id="navPlayerHubBtn" onclick="showScreen('playerHubScreen')" style="display:none;" title="Personalized Player Hub"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> My Matches</button>
     <button class="btn btn-ghost btn-xs" id="navAdminBtn" onclick="openAdminDashboardWithGuard()" title="Tournament Director Dashboard"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Admin</button>
     <button class="btn btn-ghost btn-xs" id="themeToggleBtn" onclick="cycleTheme()" title="Toggle Theme (Dark / Light / High Contrast)"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> Theme</button>
+    <button class="lang-toggle-btn" id="langToggleBtn" onclick="toggleLanguage()" title="Toggle Language (English / বাংলা)">
+      <span style="font-weight:bold;color:var(--clr-green);">বাং</span> / EN
+    </button>
+    <button class="btn btn-ghost btn-xs" onclick="openDataResetModal()" title="Start Over / Reset Data" style="color:#f87171;">
+      <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> <span data-i18n="resetNav">Reset</span>
+    </button>
     <button class="btn btn-ghost btn-xs" id="fsToggleBtn" onclick="toggleFullScreen()" title="Full Screen"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
-    <button class="btn btn-ghost btn-xs" onclick="openCoinTossModal()"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg> Toss</button>
+    <button class="btn btn-ghost btn-xs" onclick="openCoinTossModal()"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg> <span data-i18n="tossNav">Toss</span></button>
   
     <div class="user-panel" id="userStatusPanel">
       <div class="user-avatar" id="headerAvatar">?</div>
@@ -70,9 +76,13 @@ SCREENS_CONTENT = """
       <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
       <span>BWF Rules & Guide</span>
     </button>
+    <button class="stage-tab" id="tabNavChallenges" onclick="showScreen('challengesScreen')">
+      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg></span>
+      <span data-i18n="tabChallenges">Open Challenges</span>
+    </button>
     <button class="stage-tab" id="tabNavScorecards" onclick="showScreen('scorecardsScreen')">
       <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></span>
-      <span>Scorecards</span>
+      <span data-i18n="tabScorecards">Scorecards</span>
     </button>
     <button class="stage-tab" id="tabNavStadium" onclick="showScreen('stadiumScreen')">
       <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg></span>
@@ -996,6 +1006,33 @@ SCREENS_CONTENT = """
         <div id="obsCourtLabel" style="font-size:0.7rem;color:var(--clr-text-muted);font-weight:700;">COURT 1</div>
         <div id="obsSetLabel" style="font-size:0.85rem;color:var(--clr-green);font-weight:900;">SET 1</div>
       </div>
+    </div>
+  </section>
+
+
+  <!-- ═══════════════════════════════════════════════════
+       SCREEN 12: OPEN CHALLENGES BOARD (FOOSBALL STYLE)
+  ═══════════════════════════════════════════════════ -->
+  <section id="challengesScreen" class="screen">
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header">
+        <div>
+          <h2 class="card-title"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg> <span data-i18n="chalScreenTitle">School & Club Open Challenge Board</span></h2>
+          <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-top:4px;" data-i18n="chalScreenSub">Anyone can open a challenge here! Other students or players can accept and jump straight into the match.</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-primary btn-sm" onclick="openNewChallengeModal()"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> <span data-i18n="createChalBtn">+ Open a Challenge</span></button>
+        </div>
+      </div>
+
+      <!-- Filter tabs -->
+      <div style="display:flex;gap:6px;margin-bottom:14px;border-bottom:1px solid var(--clr-border);padding-bottom:10px;">
+        <button class="btn btn-ghost btn-xs active" id="chalFilterAll" onclick="filterChallenges('all')">All Challenges (<span id="chalCountAll">0</span>)</button>
+        <button class="btn btn-ghost btn-xs" id="chalFilterOpen" onclick="filterChallenges('open')">Open / Waiting (<span id="chalCountOpen">0</span>)</button>
+        <button class="btn btn-ghost btn-xs" id="chalFilterAccepted" onclick="filterChallenges('accepted')">Accepted / In Progress (<span id="chalCountAccepted">0</span>)</button>
+      </div>
+
+      <div class="challenge-grid" id="challengeBoardList"></div>
     </div>
   </section>
 

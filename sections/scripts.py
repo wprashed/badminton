@@ -46,6 +46,363 @@ function triggerLetCall() {
   }
 }
 
+
+/* ═══════════════════════════════════════════════════
+   BANGLA / BILINGUAL LOCALIZATION (School & Bangladeshi Friendly)
+═══════════════════════════════════════════════════ */
+const STORAGE_KEY_LANG = 'badminton_cup_lang_pref';
+let currentLang = localStorage.getItem(STORAGE_KEY_LANG) || 'en';
+
+const TRANSLATIONS = {
+  en: {
+    resetNav: 'Reset',
+    tossNav: 'Toss',
+    tabChallenges: 'Open Challenges',
+    tabScorecards: 'Scorecards',
+    quickScoreTitle: 'Quick Score & Win',
+    quickScoreDesc: 'Directly record the final match score or click a player to award an instant win without scoring rally-by-rally.',
+    winsLabel: 'Wins (2-0)',
+    orCustomScore: 'or enter manual final score:',
+    cancelBtn: 'Cancel',
+    saveScoreBtn: 'Save Final Score',
+    openChallengeTitle: 'Open a Badminton Challenge',
+    openChallengeDesc: 'Post a challenge on the public board. Any school student or player can accept your challenge and play!',
+    challengerNameLabel: 'Your Name / Team',
+    challengeCategoryLabel: 'Format',
+    challengePointsLabel: 'Points Target',
+    challengeNoteLabel: 'Note / Venue',
+    postChallengeBtn: 'Post Challenge',
+    resetDataTitle: 'Reset Tournament Data',
+    resetDataDesc: 'Choose what to clear. This is very useful when starting a brand new school match or cup from scratch.',
+    resetTourneyTitle: '1. Clear Current Tournament Matches Only',
+    resetTourneySub: 'Wipes current match scores and bracket back to setup. Keeps players registered.',
+    resetAllTitle: '2. Complete Factory Reset (Start Completely Over)',
+    resetAllSub: 'Wipes all tournament fixtures, challenges, and cumulative leaderboard stats.',
+    chalScreenTitle: 'School & Club Open Challenge Board',
+    chalScreenSub: 'Anyone can open a challenge here! Other students or players can accept and jump straight into the match.',
+    createChalBtn: '+ Open a Challenge',
+    quickWinA: 'Quick Win A (2-0)',
+    quickWinB: 'Quick Win B (2-0)',
+    quickScoreBtn: 'Quick Score',
+    acceptChalBtn: 'Accept Challenge & Play'
+  },
+  bn: {
+    resetNav: 'রিসেট',
+    tossNav: 'টস',
+    tabChallenges: 'ওপেন চ্যালেঞ্জ',
+    tabScorecards: 'স্কোরকার্ড',
+    quickScoreTitle: 'সহজ স্কোর ও তাৎক্ষণিক জয়',
+    quickScoreDesc: 'এক এক পয়েন্ট না দিয়ে এক ক্লিকেই বিজয়ী ঘোষণা করুন অথবা সরাসরি ফাইনাল স্কোর বসিয়ে দিন।',
+    winsLabel: 'জয়ী (২-০)',
+    orCustomScore: 'অথবা সরাসরি পয়েন্ট লিখুন:',
+    cancelBtn: 'বাতিল',
+    saveScoreBtn: 'স্কোর সংরক্ষণ করুন',
+    openChallengeTitle: 'নতুন ব্যাডমিন্টন চ্যালেঞ্জ দিন',
+    openChallengeDesc: 'পাবলিক বোর্ডে চ্যালেঞ্জ পোস্ট করুন। যেকোনো শিক্ষার্থী বা খেলোয়াড় চ্যালেঞ্জ গ্রহণ করে ম্যাচ শুরু করতে পারবে!',
+    challengerNameLabel: 'আপনার নাম / দলের নাম',
+    challengeCategoryLabel: 'খেলার ধরন',
+    challengePointsLabel: 'পয়েন্ট লক্ষ্যমাত্রা',
+    challengeNoteLabel: 'কোর্ট / খেলার স্থান',
+    postChallengeBtn: 'চ্যালেঞ্জ পোস্ট করুন',
+    resetDataTitle: 'টুর্নামেন্ট ডেটা রিসেট',
+    resetDataDesc: 'নতুন ম্যাচ বা নতুন টুর্নামেন্ট শুরু করার জন্য আগের ডেটা মুছে ফেলুন।',
+    resetTourneyTitle: '১. শুধু বর্তমান টুর্নামেন্টের স্কোর মুছুন',
+    resetTourneySub: 'বর্তমান স্কোর ও ব্র্যাকেট মুছে যাবে কিন্তু খেলোয়াড়দের তালিকা থাকবে।',
+    resetAllTitle: '২. সম্পূর্ণ নতুন করে শুরু করুন (ফ্যাক্টরি রিসেট)',
+    resetAllSub: 'সব ম্যাচ, চ্যালেঞ্জ ও লিডারবোর্ডের ইতিহাস সম্পূর্ণ মুছে নতুন হবে।',
+    chalScreenTitle: 'স্কুল ও ক্লাব ওপেন চ্যালেঞ্জ বোর্ড',
+    chalScreenSub: 'এখানে যে কেউ চ্যালেঞ্জ দিতে পারে! অন্যরা চ্যালেঞ্জ গ্রহণ করে সরাসরি খেলতে পারবে।',
+    createChalBtn: '+ নতুন চ্যালেঞ্জ দিন',
+    quickWinA: 'সরাসরি জয় এ (২-০)',
+    quickWinB: 'সরাসরি জয় বি (২-০)',
+    quickScoreBtn: 'সহজ স্কোর',
+    acceptChalBtn: 'চ্যালেঞ্জ গ্রহণ করুন'
+  }
+};
+
+function applyLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem(STORAGE_KEY_LANG, lang);
+  document.body.classList.toggle('lang-bn', lang === 'bn');
+  const btn = document.getElementById('langToggleBtn');
+  if (btn) {
+    btn.innerHTML = lang === 'bn' ? '<span style="font-weight:bold;color:var(--clr-green);">EN</span> / বাংলা' : '<span style="font-weight:bold;color:var(--clr-green);">বাং</span> / EN';
+  }
+  const dict = TRANSLATIONS[lang] || TRANSLATIONS.en;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) el.textContent = dict[key];
+  });
+}
+
+function toggleLanguage() {
+  applyLanguage(currentLang === 'en' ? 'bn' : 'en');
+  showToast(currentLang === 'bn' ? 'ভাষা বাংলায় পরিবর্তিত হয়েছে।' : 'Switched language to English.');
+}
+
+/* ═══════════════════════════════════════════════════
+   QUICK SCORE & MANUAL WIN LOGIC (Foosball Simplicity)
+═══════════════════════════════════════════════════ */
+function openQuickScoreModal(matchId) {
+  const match = state.matches.find(m => m.id === matchId);
+  if (!match) return;
+  document.getElementById('quickMatchId').value = match.id;
+  document.getElementById('quickTeamAName').textContent = match.a;
+  document.getElementById('quickTeamBName').textContent = match.b;
+  document.getElementById('quickScoreLabelA').textContent = `${match.a} Points`;
+  document.getElementById('quickScoreLabelB').textContent = `${match.b} Points`;
+  document.getElementById('quickScoreInputA').value = state.ptsToWin || 21;
+  document.getElementById('quickScoreInputB').value = Math.max(0, (state.ptsToWin || 21) - 6);
+  document.getElementById('quickScoreModal').showModal();
+}
+
+function awardInstantWinner(side) {
+  const matchId = document.getElementById('quickMatchId').value;
+  const match = state.matches.find(m => m.id === matchId);
+  if (!match) return;
+
+  const pts = state.ptsToWin || 21;
+  const winName = side === 'a' ? match.a : match.b;
+  const runnerScore = Math.max(0, pts - 6);
+
+  match.winner = side;
+  match.sets = [
+    { score: side === 'a' ? [pts, runnerScore] : [runnerScore, pts], winner: side },
+    { score: side === 'a' ? [pts, runnerScore] : [runnerScore, pts], winner: side }
+  ];
+  match.durationSeconds = 600;
+
+  recordMatchStats(match);
+  logAdminAudit(`Quick Win recorded: ${winName} won match ${match.id} (2-0)`);
+  document.getElementById('quickScoreModal').close();
+
+  if (match.pool === 'KO') {
+    advanceKnockoutRounds();
+  }
+
+  saveState();
+  broadcastStateChange();
+  renderGroups();
+  renderBracket();
+  renderAdminDashboard();
+  renderScheduleScreen();
+  showToast(currentLang === 'bn' ? `${winName} ম্যাচ বিজয়ী হিসেবে রেকর্ড করা হয়েছে!` : `${winName} recorded as match winner (2-0)!`);
+}
+
+function saveQuickCustomScore() {
+  const matchId = document.getElementById('quickMatchId').value;
+  const match = state.matches.find(m => m.id === matchId);
+  if (!match) return;
+
+  const ptsA = parseInt(document.getElementById('quickScoreInputA').value) || 0;
+  const ptsB = parseInt(document.getElementById('quickScoreInputB').value) || 0;
+
+  if (ptsA === ptsB) {
+    showToast(currentLang === 'bn' ? 'স্কোর ড্র হতে পারে না। বিজয়ী থাকতে হবে।' : 'Scores cannot be tied. One side must win.');
+    return;
+  }
+
+  const winSide = ptsA > ptsB ? 'a' : 'b';
+  const winName = winSide === 'a' ? match.a : match.b;
+
+  match.winner = winSide;
+  match.sets = [
+    { score: [ptsA, ptsB], winner: winSide },
+    { score: winSide === 'a' ? [21, Math.max(0, ptsB - 3)] : [Math.max(0, ptsA - 3), 21], winner: winSide }
+  ];
+  match.durationSeconds = 720;
+
+  recordMatchStats(match);
+  logAdminAudit(`Quick custom score: ${match.a} ${ptsA} - ${ptsB} ${match.b} (Winner: ${winName})`);
+  document.getElementById('quickScoreModal').close();
+
+  if (match.pool === 'KO') {
+    advanceKnockoutRounds();
+  }
+
+  saveState();
+  broadcastStateChange();
+  renderGroups();
+  renderBracket();
+  renderAdminDashboard();
+  renderScheduleScreen();
+  showToast(currentLang === 'bn' ? `ফাইনাল স্কোর সংরক্ষিত: ${winName} জয়ী!` : `Final score saved: ${winName} won!`);
+}
+
+/* ═══════════════════════════════════════════════════
+   OPEN CHALLENGES FEATURE (Foosball Superpower)
+═══════════════════════════════════════════════════ */
+const STORAGE_KEY_CHALLENGES = 'badminton_cup_challenges_v4';
+
+function getChallengesDB() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY_CHALLENGES)) || [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveChallengesDB(list) {
+  localStorage.setItem(STORAGE_KEY_CHALLENGES, JSON.stringify(list));
+}
+
+function openNewChallengeModal() {
+  document.getElementById('challengeCreatorName').value = currentUser ? currentUser.name : '';
+  document.getElementById('newChallengeModal').showModal();
+}
+
+function postNewChallenge() {
+  const name = document.getElementById('challengeCreatorName').value.trim();
+  if (!name) {
+    showToast(currentLang === 'bn' ? 'অনুগ্রহ করে আপনার নাম লিখুন।' : 'Please enter your name.');
+    return;
+  }
+  const category = document.getElementById('challengeCategorySelect').value;
+  const points = parseInt(document.getElementById('challengePointsSelect').value) || 21;
+  const note = document.getElementById('challengeNoteInput').value.trim() || 'Court 1';
+
+  const list = getChallengesDB();
+  const newChal = {
+    id: 'ch_' + Date.now().toString(36),
+    creator: name,
+    category,
+    points,
+    note,
+    status: 'open',
+    opponent: null,
+    createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  };
+
+  list.unshift(newChal);
+  saveChallengesDB(list);
+  document.getElementById('newChallengeModal').close();
+  renderChallengesBoard();
+  showToast(currentLang === 'bn' ? 'চ্যালেঞ্জ ওপেন করা হয়েছে!' : 'Challenge opened! Waiting for a challenger.');
+}
+
+let activeChallengeFilter = 'all';
+
+function filterChallenges(type) {
+  activeChallengeFilter = type;
+  ['All', 'Open', 'Accepted'].forEach(t => {
+    const b = document.getElementById('chalFilter' + t);
+    if (b) b.classList.toggle('active', t.toLowerCase() === type);
+  });
+  renderChallengesBoard();
+}
+
+function acceptChallenge(id) {
+  const list = getChallengesDB();
+  const chal = list.find(c => c.id === id);
+  if (!chal) return;
+
+  const joinerName = prompt(currentLang === 'bn' ? 'আপনার নাম লিখুন:' : 'Enter your name to accept this challenge:');
+  if (!joinerName || !joinerName.trim()) return;
+
+  chal.opponent = joinerName.trim();
+  chal.status = 'accepted';
+  saveChallengesDB(list);
+
+  // Automatically create match and start live umpire session!
+  const newMatch = createMatchObj(chal.creator, chal.opponent, 'CHALLENGE');
+  state.matches.push(newMatch);
+  saveState();
+  renderChallengesBoard();
+  showToast(currentLang === 'bn' ? `${joinerName} চ্যালেঞ্জ গ্রহণ করেছে! খেলা শুরু হচ্ছে...` : `${joinerName} accepted the challenge! Launching match...`);
+  
+  setTimeout(() => {
+    startUmpireMatch(newMatch.id);
+  }, 400);
+}
+
+function renderChallengesBoard() {
+  const container = document.getElementById('challengeBoardList');
+  if (!container) return;
+
+  const list = getChallengesDB();
+  document.getElementById('chalCountAll').textContent = list.length;
+  document.getElementById('chalCountOpen').textContent = list.filter(c => c.status === 'open').length;
+  document.getElementById('chalCountAccepted').textContent = list.filter(c => c.status === 'accepted').length;
+
+  let filtered = list;
+  if (activeChallengeFilter === 'open') filtered = list.filter(c => c.status === 'open');
+  if (activeChallengeFilter === 'accepted') filtered = list.filter(c => c.status === 'accepted');
+
+  if (!filtered.length) {
+    container.innerHTML = `
+      <div class="empty-state-card" style="grid-column:1/-1;">
+        <div class="empty-state-icon">${svgIcon("swords", "icon-3xl")}</div>
+        <div class="empty-state-title">${currentLang === 'bn' ? 'কোনো ওপেন চ্যালেঞ্জ নেই' : 'No Challenges Found'}</div>
+        <div class="empty-state-desc">${currentLang === 'bn' ? 'প্রথম চ্যালেঞ্জটি আপনিই দিন!' : 'Be the first to post a public badminton challenge for others to join!'}</div>
+        <button class="btn btn-primary btn-sm" onclick="openNewChallengeModal()">${currentLang === 'bn' ? '+ নতুন চ্যালেঞ্জ' : '+ Open a Challenge'}</button>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = filtered.map(c => `
+    <div class="challenge-card ${c.status === 'open' ? 'open-status' : 'accepted-status'}">
+      <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span class="challenge-badge ${c.status === 'open' ? 'open' : 'accepted'}">${c.status.toUpperCase()}</span>
+          <span style="font-size:0.75rem;color:var(--clr-text-muted);">${c.createdAt}</span>
+        </div>
+        <div style="font-weight:700;font-size:1.05rem;color:var(--clr-text);margin-bottom:4px;">
+          ${c.creator} ${c.opponent ? `<span style="color:var(--clr-green);">vs</span> ${c.opponent}` : ''}
+        </div>
+        <div style="font-size:0.8rem;color:var(--clr-text-muted);display:flex;gap:8px;margin-top:6px;">
+          <span>${c.category === 'doubles' ? 'Doubles (2v2)' : 'Singles (1v1)'}</span>
+          <span>·</span>
+          <span>${c.points} Points</span>
+          <span>·</span>
+          <span>${c.note}</span>
+        </div>
+      </div>
+      <div>
+        ${c.status === 'open' ? `
+          <button class="btn btn-primary btn-sm" style="width:100%;" onclick="acceptChallenge('${c.id}')">
+            ${currentLang === 'bn' ? 'চ্যালেঞ্জ গ্রহণ করুন &rarr;' : 'Accept Challenge &rarr;'}
+          </button>
+        ` : `
+          <div style="font-size:0.78rem;color:var(--clr-green);font-weight:600;text-align:center;">
+            ${currentLang === 'bn' ? 'ম্যাচ চলমান বা সম্পন্ন' : 'Match In Progress / Accepted'}
+          </div>
+        `}
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ═══════════════════════════════════════════════════
+   FULL DATA RESET & START OVER LOGIC
+═══════════════════════════════════════════════════ */
+function openDataResetModal() {
+  document.getElementById('dataResetModal').showModal();
+}
+
+function resetCurrentTournamentOnly() {
+  if (!confirm(currentLang === 'bn' ? 'বর্তমান টুর্নামেন্টের সব ম্যাচ স্কোর মুছে আবার সেটআপে যেতে চান?' : 'Wipe all fixtures for the current tournament and start over at setup?')) return;
+  state.matches = [];
+  state.koRounds = [];
+  state.champion = null;
+  state.runnerUp = null;
+  state.thirdPlace = null;
+  state.currentMatchId = null;
+  saveState();
+  document.getElementById('dataResetModal').close();
+  showScreen('setupScreen');
+  showToast(currentLang === 'bn' ? 'টুর্নামেন্ট ম্যাচ রিসেট করা হয়েছে।' : 'Tournament matches reset to setup.');
+}
+
+function resetEverythingFullFactory() {
+  if (!confirm(currentLang === 'bn' ? 'সতর্কতা: এটি সম্পূর্ণ ডেটা মুছে দেবে (ফ্যাক্টরি রিসেট)। আপনি কি নিশ্চিত?' : 'WARNING: Complete Factory Reset will wipe all tournaments, challenges, and stats. Are you sure?')) return;
+  localStorage.clear();
+  showToast(currentLang === 'bn' ? 'সম্পূর্ণ ডেটা সফলভাবে রিসেট হয়েছে!' : 'All data successfully reset!');
+  setTimeout(() => {
+    window.location.reload();
+  }, 500);
+}
+
 window.svgIcon = function(name, cls) {
   const c = cls ? `icon ${cls}` : 'icon';
   switch (name) {
@@ -2062,6 +2419,7 @@ function showScreen(screenId) {
     analyticsScreen: 'tabNavAnalytics',
     rulesScreen: 'tabNavRules',
     scorecardsScreen: 'tabNavScorecards',
+    challengesScreen: 'tabNavChallenges',
     stadiumScreen: 'tabNavStadium',
     playerHubScreen: 'tabNavPlayerHub'
   };
@@ -2087,6 +2445,7 @@ function showScreen(screenId) {
   if (screenId === 'scheduleScreen') renderScheduleScreen();
   if (screenId === 'analyticsScreen') renderAnalyticsScreen();
   if (screenId === 'scorecardsScreen') renderScorecardsScreen();
+  if (screenId === 'challengesScreen') renderChallengesBoard();
 }
 
 function updateTournamentTitle(val) {
@@ -2418,7 +2777,10 @@ function renderGroupMatches() {
           <span style="font-family:monospace;font-size:0.85rem;color:var(--clr-gold);">${scoreStr}</span>
           ${m.winner ?
             `<span style="font-size:0.75rem;color:var(--clr-text-muted);">Won by ${winnerName}</span>` :
-            `<button class="btn btn-primary btn-xs" onclick="startUmpireMatch('${m.id}')">Start Match &rarr;</button>`
+            `<div style="display:flex;gap:4px;">
+               <button class="quick-win-btn" onclick="openQuickScoreModal('${m.id}')" title="Quick Score without live refereeing">Quick Score</button>
+               <button class="btn btn-primary btn-xs" onclick="startUmpireMatch('${m.id}')">Live Match &rarr;</button>
+             </div>`
           }
         </div>
       </div>
@@ -3882,6 +4244,9 @@ function updateNetworkStatusPill() {
 }
 window.addEventListener('online', updateNetworkStatusPill);
 window.addEventListener('offline', updateNetworkStatusPill);
-document.addEventListener('DOMContentLoaded', updateNetworkStatusPill);
+document.addEventListener('DOMContentLoaded', () => {
+  updateNetworkStatusPill();
+  applyLanguage(currentLang);
+});
 </script>
 """
