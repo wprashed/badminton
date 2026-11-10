@@ -57,6 +57,16 @@ const TRANSLATIONS = {
   en: {
     resetNav: 'Reset',
     tossNav: 'Toss',
+        navMatches: 'Matches & Courts',
+    navChallenges: 'Open Challenges',
+    navBracket: 'Playoff Bracket',
+    navRanking: 'Standings & Ranks',
+    navMore: 'Menu',
+    moreMenuTitle: 'All Features & Tools',
+    notifyModalTitle: 'Push Notifications',
+    enableNotifyBtn: 'Turn On Push Notifications',
+    testNotifyBtn: '⚡ Send Test Notification',
+    installApp: 'Install',
     tabChallenges: 'Open Challenges',
     tabScorecards: 'Scorecards',
     quickScoreTitle: 'Quick Score & Win',
@@ -89,6 +99,16 @@ const TRANSLATIONS = {
   bn: {
     resetNav: 'রিসেট',
     tossNav: 'টস',
+        navMatches: 'ম্যাচ ও কোর্ট',
+    navChallenges: 'ওপেন চ্যালেঞ্জ',
+    navBracket: 'প্লে-অফ ব্র্যাকেট',
+    navRanking: 'র‍্যাংকিং ও পয়েন্ট',
+    navMore: 'মেনু',
+    moreMenuTitle: 'সকল ফিচার ও টুলস',
+    notifyModalTitle: 'পুশ নোটিফিকেশন',
+    enableNotifyBtn: 'পুশ নোটিফিকেশন চালু করুন',
+    testNotifyBtn: '⚡ টেস্ট নোটিফিকেশন পাঠান',
+    installApp: 'ইনস্টল',
     tabChallenges: 'ওপেন চ্যালেঞ্জ',
     tabScorecards: 'স্কোরকার্ড',
     quickScoreTitle: 'সহজ স্কোর ও তাৎক্ষণিক জয়',
@@ -156,8 +176,8 @@ function openQuickScoreModal(matchId) {
   document.getElementById('quickScoreModal').showModal();
 }
 
-function awardInstantWinner(side) {
-  const matchId = document.getElementById('quickMatchId').value;
+function awardInstantWinner(side, specificMatchId = null) {
+  const matchId = specificMatchId || document.getElementById('quickMatchId')?.value;
   const match = state.matches.find(m => m.id === matchId);
   if (!match) return;
 
@@ -174,7 +194,7 @@ function awardInstantWinner(side) {
 
   recordMatchStats(match);
   logAdminAudit(`Quick Win recorded: ${winName} won match ${match.id} (2-0)`);
-  document.getElementById('quickScoreModal').close();
+  const qModal = document.getElementById('quickScoreModal'); if (qModal && qModal.open) qModal.close();
 
   if (match.pool === 'KO') {
     advanceKnockoutRounds();
@@ -187,6 +207,10 @@ function awardInstantWinner(side) {
   renderAdminDashboard();
   renderScheduleScreen();
   showToast(currentLang === 'bn' ? `${winName} ম্যাচ বিজয়ী হিসেবে রেকর্ড করা হয়েছে!` : `${winName} recorded as match winner (2-0)!`);
+  sendAppNotification(
+    currentLang === 'bn' ? '🏆 ম্যাচ বিজয়ী ঘোষণা!' : '🏆 Match Winner!',
+    `${winName} ` + (currentLang === 'bn' ? 'ম্যাচ জিতেছেন (২-০)!' : 'has won the match (2-0)!')
+  );
 }
 
 function saveQuickCustomScore() {
@@ -214,7 +238,7 @@ function saveQuickCustomScore() {
 
   recordMatchStats(match);
   logAdminAudit(`Quick custom score: ${match.a} ${ptsA} - ${ptsB} ${match.b} (Winner: ${winName})`);
-  document.getElementById('quickScoreModal').close();
+  const qModal = document.getElementById('quickScoreModal'); if (qModal && qModal.open) qModal.close();
 
   if (match.pool === 'KO') {
     advanceKnockoutRounds();
@@ -2407,37 +2431,64 @@ function showScreen(screenId) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Auto-sync Stage Navigation Tabs
+  // Auto-sync Stage Navigation Tabs (Desktop & Mobile)
   const tabMap = {
-    setupScreen: 'tabNavSetup',
-    draftScreen: 'tabNavDraft',
-    groupsScreen: 'tabNavGroups',
+    groupsScreen: 'tabNavMatches',
+    challengesScreen: 'tabNavChallenges',
     knockoutScreen: 'tabNavKnockout',
     championScreen: 'tabNavKnockout',
-    scheduleScreen: 'tabNavSchedule',
     leaderboardScreen: 'tabNavLeaderboard',
-    analyticsScreen: 'tabNavAnalytics',
-    rulesScreen: 'tabNavRules',
-    scorecardsScreen: 'tabNavScorecards',
-    challengesScreen: 'tabNavChallenges',
-    stadiumScreen: 'tabNavStadium',
-    playerHubScreen: 'tabNavPlayerHub'
+    setupScreen: 'tabNavMore',
+    draftScreen: 'tabNavMore',
+    scheduleScreen: 'tabNavMore',
+    analyticsScreen: 'tabNavMore',
+    rulesScreen: 'tabNavMore',
+    scorecardsScreen: 'tabNavMore',
+    stadiumScreen: 'tabNavMore',
+    playerHubScreen: 'tabNavMore',
+    adminDashboardScreen: 'tabNavMore'
+  };
+
+  const mobMap = {
+    groupsScreen: 'mobNavMatches',
+    challengesScreen: 'mobNavChallenges',
+    knockoutScreen: 'mobNavKnockout',
+    championScreen: 'mobNavKnockout',
+    leaderboardScreen: 'mobNavLeaderboard',
+    setupScreen: 'mobNavMore',
+    draftScreen: 'mobNavMore',
+    scheduleScreen: 'mobNavMore',
+    analyticsScreen: 'mobNavMore',
+    rulesScreen: 'mobNavMore',
+    scorecardsScreen: 'mobNavMore',
+    stadiumScreen: 'mobNavMore',
+    playerHubScreen: 'mobNavMore',
+    adminDashboardScreen: 'mobNavMore'
   };
 
   document.querySelectorAll('.stage-tab').forEach(t => t.classList.remove('active'));
-  const activeTabId = tabMap[screenId];
-  if (activeTabId) {
-    const activeTab = document.getElementById(activeTabId);
-    if (activeTab) {
-      activeTab.classList.add('active');
-      activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    }
+  const activeTabId = tabMap[screenId] || 'tabNavMore';
+  const activeTab = document.getElementById(activeTabId);
+  if (activeTab) {
+    activeTab.classList.add('active');
+    activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }
 
-  // Hide stage nav during live umpire match for complete distraction-free refereeing
+  document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+  const activeMobId = mobMap[screenId] || 'mobNavMore';
+  const activeMobBtn = document.getElementById(activeMobId);
+  if (activeMobBtn) {
+    activeMobBtn.classList.add('active');
+  }
+
+  // Hide stage nav & mobile nav during live umpire match for distraction-free refereeing
   const stageNav = document.getElementById('appStageNav');
   if (stageNav) {
     stageNav.style.display = (screenId === 'liveUmpireScreen' || screenId === 'stadiumScreen') ? 'none' : 'block';
+  }
+  const mobNav = document.getElementById('mobileBottomNav');
+  if (mobNav) {
+    mobNav.style.display = (screenId === 'liveUmpireScreen' || screenId === 'stadiumScreen') ? 'none' : '';
   }
 
   if (screenId === 'stadiumScreen') renderStadiumScreen();
@@ -2446,6 +2497,7 @@ function showScreen(screenId) {
   if (screenId === 'analyticsScreen') renderAnalyticsScreen();
   if (screenId === 'scorecardsScreen') renderScorecardsScreen();
   if (screenId === 'challengesScreen') renderChallengesBoard();
+  if (screenId === 'groupsScreen') renderGroups();
 }
 
 function updateTournamentTitle(val) {
@@ -2754,34 +2806,70 @@ function renderGroupMatches() {
   }
 
   if (!matches.length) {
-    container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--clr-text-muted);">No fixtures match the selected court filter.</div>`;
+    container.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:32px 20px;background:var(--clr-surface-card);border:1px dashed var(--clr-border);border-radius:var(--radius-md);">
+        <div style="font-size:1.05rem;font-weight:700;margin-bottom:6px;color:var(--clr-text);">No Matches Found</div>
+        <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:14px;">No fixtures match the selected filter, or tournament has not started yet.</p>
+        <button class="btn btn-primary btn-sm" onclick="showScreen('setupScreen')">🚀 Setup Tournament</button>
+      </div>`;
     return;
   }
 
   container.innerHTML = matches.map(m => {
     const isLive = (m.id === state.currentMatchId);
-    const scoreStr = m.sets.map(s => `${s.score[0]}–${s.score[1]}`).join(' | ');
+    const scoreStr = (m.sets && m.sets.length) ? m.sets.map(s => `${s.score[0]}–${s.score[1]}`).join(' | ') : 'VS';
     const winnerName = m.winner ? (m.winner === 'a' ? m.a : m.b) : null;
     return `
-      <div class="card" style="padding:14px;background:rgba(0,0,0,0.25);border:1.5px solid ${isLive ? 'var(--clr-green)' : (m.winner ? 'rgba(34,197,94,0.3)' : 'var(--clr-border)')};">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:0.75rem;">
-          <span style="font-weight:800;color:var(--clr-text-muted);">Pool ${m.pool} · Court ${m.court}</span>
-          ${isLive ? '<span class="status-badge-live badge-game-point">' + svgIcon('dot') + ' LIVE</span>' : (m.winner ? '<span style="color:var(--clr-green);font-weight:bold;">COMPLETED</span>' : '<span>SCHEDULED</span>')}
+      <div class="card" style="padding:16px;border:1.5px solid ${isLive ? 'var(--clr-green)' : (m.winner ? 'rgba(16,185,129,0.3)' : 'var(--clr-border)')};">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:0.75rem;">
+          <span style="font-weight:700;color:var(--clr-text-muted);background:rgba(255,255,255,0.05);padding:3px 8px;border-radius:var(--radius-xs);">
+            Pool ${m.pool} · Court ${m.court}
+          </span>
+          ${isLive ?
+            '<span class="status-badge-live badge-game-point" style="display:inline-flex;align-items:center;gap:4px;color:#34d399;font-weight:700;">● LIVE</span>' :
+            (m.winner ?
+              '<span style="color:var(--clr-green);font-weight:700;font-size:0.72rem;text-transform:uppercase;">COMPLETED</span>' :
+              '<span style="color:var(--clr-text-muted);font-size:0.72rem;">UPCOMING</span>'
+            )}
         </div>
-        <div style="font-size:0.95rem;font-weight:800;margin-bottom:10px;">
-          <span style="color:${m.winner === 'a' ? 'var(--clr-green)' : '#60a5fa'}">${m.a}</span>
-          <span style="color:var(--clr-text-muted);font-size:0.8rem;"> vs </span>
-          <span style="color:${m.winner === 'b' ? 'var(--clr-green)' : '#f87171'}">${m.b}</span>
+
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="text-align:left;">
+            <div style="font-weight:800;font-size:1.05rem;color:${m.winner === 'a' ? 'var(--clr-green)' : 'var(--clr-text)'};">${m.a}</div>
+            <div style="font-size:0.72rem;color:var(--clr-text-muted);">Team A</div>
+          </div>
+          <div style="text-align:center;padding:0 8px;">
+            <div style="font-family:monospace;font-size:1.1rem;font-weight:800;color:var(--clr-gold);">${m.winner ? scoreStr : 'VS'}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-weight:800;font-size:1.05rem;color:${m.winner === 'b' ? 'var(--clr-green)' : 'var(--clr-text)'};">${m.b}</div>
+            <div style="font-size:0.72rem;color:var(--clr-text-muted);">Team B</div>
+          </div>
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;">
-          <span style="font-family:monospace;font-size:0.85rem;color:var(--clr-gold);">${scoreStr}</span>
-          ${m.winner ?
-            `<span style="font-size:0.75rem;color:var(--clr-text-muted);">Won by ${winnerName}</span>` :
-            `<div style="display:flex;gap:4px;">
-               <button class="quick-win-btn" onclick="openQuickScoreModal('${m.id}')" title="Quick Score without live refereeing">Quick Score</button>
-               <button class="btn btn-primary btn-xs" onclick="startUmpireMatch('${m.id}')">Live Match &rarr;</button>
-             </div>`
-          }
+
+        <div class="quick-match-row">
+          ${m.winner ? `
+            <div style="width:100%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <span style="font-size:0.82rem;color:var(--clr-green);font-weight:700;">🏆 Winner: ${winnerName}</span>
+              <div style="display:flex;gap:6px;">
+                <button class="btn btn-ghost btn-xs" onclick="openScorecardModal('${m.id}')">Scorecard</button>
+                <button class="btn btn-ghost btn-xs" onclick="openQuickScoreModal('${m.id}')">Edit Score</button>
+              </div>
+            </div>
+          ` : `
+            <button class="quick-win-btn" onclick="awardInstantWinner('a', '${m.id}')" title="Award instant 2-0 win to ${m.a}">
+              🏆 ${m.a} Won
+            </button>
+            <button class="quick-score-btn" onclick="openQuickScoreModal('${m.id}')" title="Enter manual final score">
+              ⚡ Score
+            </button>
+            <button class="quick-win-btn" onclick="awardInstantWinner('b', '${m.id}')" title="Award instant 2-0 win to ${m.b}">
+              🏆 ${m.b} Won
+            </button>
+            <button class="btn btn-ghost btn-xs" onclick="startUmpireMatch('${m.id}')" title="Open live court umpire referee">
+              🏸 Referee
+            </button>
+          `}
         </div>
       </div>
     `;
@@ -4248,5 +4336,182 @@ document.addEventListener('DOMContentLoaded', () => {
   updateNetworkStatusPill();
   applyLanguage(currentLang);
 });
+
+
+/* ═══════════════════════════════════════════════════
+   PWA & PUSH NOTIFICATION SYSTEM
+═══════════════════════════════════════════════════ */
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const btn = document.getElementById('installAppBtn');
+  if (btn) btn.style.display = 'inline-flex';
+  const moreBtn = document.getElementById('moreInstallBtn');
+  if (moreBtn) moreBtn.style.display = 'flex';
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  const btn = document.getElementById('installAppBtn');
+  if (btn) btn.style.display = 'none';
+  showToast(currentLang === 'bn' ? 'ব্যাডমিন্টন কাপ অ্যাপ সফলভাবে ইনস্টল হয়েছে!' : 'Badminton Cup app installed successfully!', 'success');
+});
+
+function promptInstallPWA() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(choice => {
+      if (choice.outcome === 'accepted') {
+        showToast(currentLang === 'bn' ? 'ইনস্টলেশন শুরু হয়েছে...' : 'Installation starting...', 'success');
+      }
+      deferredInstallPrompt = null;
+    });
+  } else {
+    showToast(currentLang === 'bn' ? 'ব্রাউজার মেনু (⋮ অথবা Share) থেকে "Add to Home Screen" নির্বাচন করুন।' : 'Tap browser menu (⋮ or Share) and select "Add to Home Screen"', 'info');
+  }
+}
+
+function openMoreMenu() {
+  const modal = document.getElementById('moreMenuModal');
+  if (modal) modal.showModal();
+}
+
+function playChimeSound(type = 'ping') {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    if (type === 'win') {
+      const now = ctx.currentTime;
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523.25, now);
+      osc.frequency.setValueAtTime(659.25, now + 0.1);
+      osc.frequency.setValueAtTime(783.99, now + 0.2);
+      osc.frequency.setValueAtTime(1046.50, now + 0.3);
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+      osc.start(now);
+      osc.stop(now + 0.6);
+    } else {
+      const now = ctx.currentTime;
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, now);
+      osc.frequency.exponentialRampToValueAtTime(440, now + 0.25);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+      osc.start(now);
+      osc.stop(now + 0.3);
+    }
+  } catch (err) {}
+}
+
+function updateNotificationUI() {
+  const notifyBtn = document.getElementById('notifyBtn');
+  if (!notifyBtn) return;
+  const isGranted = ('Notification' in window) && Notification.permission === 'granted';
+  notifyBtn.classList.toggle('active', isGranted);
+  notifyBtn.title = isGranted 
+    ? (currentLang === 'bn' ? 'নোটিফিকেশন সক্রিয়' : 'Notifications Active') 
+    : (currentLang === 'bn' ? 'নোটিফিকেশন চালু করুন' : 'Enable Notifications');
+}
+
+function openNotificationModal() {
+  updateNotificationModalUI();
+  const modal = document.getElementById('notificationSettingsModal');
+  if (modal) modal.showModal();
+}
+
+function updateNotificationModalUI() {
+  const heading = document.getElementById('notifyStatusHeading');
+  const desc = document.getElementById('notifyStatusDesc');
+  const btn = document.getElementById('btnRequestNotification');
+  if (!('Notification' in window)) {
+    if (heading) heading.textContent = currentLang === 'bn' ? 'নোটিফিকেশন সমর্থিত নয়' : 'Notifications Not Supported';
+    if (desc) desc.textContent = currentLang === 'bn' ? 'এই ব্রাউজারে ওয়েব পুশ নোটিফিকেশন সমর্থিত নয়।' : 'This browser does not support Web Push Notifications.';
+    if (btn) btn.style.display = 'none';
+    return;
+  }
+
+  const perm = Notification.permission;
+  if (perm === 'granted') {
+    if (heading) heading.textContent = currentLang === 'bn' ? 'নোটিফিকেশন সক্রিয় আছে ✓' : 'Notifications Active ✓';
+    if (desc) desc.textContent = currentLang === 'bn' ? 'চমৎকার! আপনি এখন নতুন চ্যালেঞ্জ, খেলার জয় এবং টুর্নামেন্ট আপডেটের নোটিফিকেশন পাচ্ছেন।' : 'Awesome! You will receive live alerts for challenges, match wins, and champion announcements.';
+    if (btn) {
+      btn.innerHTML = '<svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> ' + (currentLang === 'bn' ? 'নোটিফিকেশন চালু আছে' : 'Notifications Enabled');
+      btn.classList.remove('btn-primary');
+      btn.classList.add('btn-ghost');
+    }
+  } else if (perm === 'denied') {
+    if (heading) heading.textContent = currentLang === 'bn' ? 'নোটিফিকেশন ব্লক করা হয়েছে' : 'Notifications Blocked';
+    if (desc) desc.textContent = currentLang === 'bn' ? 'ব্রাউজারের সাইট সেটিংস থেকে নোটিফিকেশন পারমিশন আনব্লক করুন।' : 'Notifications were blocked in your browser settings. Please allow notifications in site permissions.';
+    if (btn) btn.style.display = 'none';
+  } else {
+    if (heading) heading.textContent = currentLang === 'bn' ? 'নোটিফিকেশন চালু করুন' : 'Enable Notifications';
+    if (desc) desc.textContent = currentLang === 'bn' ? 'নতুন কোনো খেলোয়াড় চ্যালেঞ্জ দিলে কিংবা ম্যাচ বিজয়ী হলে তৎক্ষণাৎ জানতে নোটিফিকেশন চালু করুন।' : 'Stay updated! Get instant notifications when a challenge is posted or match results are recorded.';
+    if (btn) {
+      btn.style.display = 'flex';
+      btn.innerHTML = '<svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> ' + (currentLang === 'bn' ? 'পুশ নোটিফিকেশন চালু করুন' : 'Turn On Push Notifications');
+      btn.classList.add('btn-primary');
+      btn.classList.remove('btn-ghost');
+    }
+  }
+  updateNotificationUI();
+}
+
+function requestNotificationPermission() {
+  if (!('Notification' in window)) {
+    showToast(currentLang === 'bn' ? 'এই ব্রাউজারে নোটিফিকেশন কাজ করে না' : 'Notifications not supported in this browser', 'warning');
+    return;
+  }
+  Notification.requestPermission().then(permission => {
+    updateNotificationModalUI();
+    updateNotificationUI();
+    if (permission === 'granted') {
+      sendAppNotification(
+        currentLang === 'bn' ? 'ব্যাডমিন্টন কাপ নোটিফিকেশন সক্রিয়!' : 'Badminton Cup Notifications Active!',
+        currentLang === 'bn' ? 'আপনাকে স্বাগতম! এখন থেকে লাইভ স্কোর ও নতুন চ্যালেঞ্জের অ্যালার্ট পাবেন।' : 'Welcome! You will now receive alerts for challenges and match updates.'
+      );
+      showToast(currentLang === 'bn' ? 'নোটিফিকেশন সফলভাবে চালু হয়েছে!' : 'Notifications enabled successfully!', 'success');
+    } else {
+      showToast(currentLang === 'bn' ? 'নোটিফিকেশন অনুমতি পাওয়া যায়নি।' : 'Notification permission not granted.', 'warning');
+    }
+  });
+}
+
+function testPushNotification() {
+  sendAppNotification(
+    currentLang === 'bn' ? '🏸 ব্যাডমিন্টন কাপ টেস্ট অ্যালার্ট' : '🏸 Badminton Cup Test Alert',
+    currentLang === 'bn' ? 'আপনার ফোনে বা কম্পিউটারে পুশ নোটিফিকেশন চমৎকারভাবে কাজ করছে!' : 'Push notifications are working smoothly on your device!'
+  );
+  showToast(currentLang === 'bn' ? 'টেস্ট নোটিফিকেশন পাঠানো হয়েছে!' : 'Test notification triggered!', 'info');
+}
+
+function sendAppNotification(title, body, tag = 'badminton-alert') {
+  playChimeSound(tag === 'champion' ? 'win' : 'ping');
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification(title, {
+        body: body,
+        icon: 'icons/icon-192.png',
+        badge: 'icons/icon-192.png',
+        tag: tag,
+        vibrate: [120, 60, 120]
+      });
+    }).catch(() => {
+      try { new Notification(title, { body, icon: 'icons/icon-192.png' }); } catch (e) {}
+    });
+  } else {
+    try { new Notification(title, { body, icon: 'icons/icon-192.png' }); } catch (e) {}
+  }
+}
+
 </script>
 """

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'badminton-cup-v4';
+const CACHE_NAME = 'badminton-cup-v5';
 const ASSETS = [
   './',
   './index.html',
@@ -39,4 +39,57 @@ self.addEventListener('fetch', e => {
       })
     );
   }
+});
+
+/* ═══════════════════════════════════════════════════
+   WEB PUSH & NOTIFICATION HANDLERS
+═══════════════════════════════════════════════════ */
+self.addEventListener('push', e => {
+  let data = {
+    title: 'Badminton Cup',
+    body: 'New badminton match update!',
+    icon: 'icons/icon-192.png',
+    badge: 'icons/icon-192.png',
+    url: './index.html'
+  };
+  if (e.data) {
+    try {
+      const parsed = e.data.json();
+      data = Object.assign(data, parsed);
+    } catch (err) {
+      data.body = e.data.text();
+    }
+  }
+
+  const options = {
+    body: data.body,
+    icon: data.icon,
+    badge: data.badge,
+    vibrate: [120, 60, 120],
+    data: { url: data.url },
+    actions: [
+      { action: 'open', title: 'Open Cup' }
+    ]
+  };
+
+  e.waitUntil(self.registration.showNotification(data.title, options));
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const targetUrl = (e.notification.data && e.notification.data.url) ? e.notification.data.url : './index.html';
+
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+      for (let i = 0; i < windowClients.length; i++) {
+        const client = windowClients[i];
+        if (client.url.includes('badminton') && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
+  );
 });

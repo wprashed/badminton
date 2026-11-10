@@ -21,59 +21,67 @@
 /* ═══════════════════════════════════════════════════
    DESIGN TOKENS & RESET (SupportHub Clean Slate System)
 ═══════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════
+   DESIGN TOKENS & ATHLETIC SLATE PALETTE (SupportHub Redesign)
+═══════════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html {
   touch-action: manipulation;
   -webkit-text-size-adjust: 100%;
 }
 :root {
-  --bg-gradient: linear-gradient(180deg, #090d16 0%, #0d1527 100%);
-  --clr-bg: #090d16;
-  --clr-surface: rgba(15, 23, 42, 0.88);
-  --clr-surface-hi: #1e293b;
-  --clr-surface-card: #0f172a;
-  --clr-border: rgba(255, 255, 255, 0.08);
-  --clr-border-subtle: rgba(255, 255, 255, 0.04);
+  --bg-gradient: none;
+  --clr-bg: #0b0f19;
+  --clr-surface: rgba(17, 24, 39, 0.94);
+  --clr-surface-hi: #1f2937;
+  --clr-surface-card: #111827;
+  --clr-border: #1f2937;
+  --clr-border-subtle: rgba(255, 255, 255, 0.07);
   --clr-border-focus: #10b981;
-  --clr-text: #f8fafc;
-  --clr-text-muted: #94a3b8;
+  --clr-text: #f9fafb;
+  --clr-text-muted: #9ca3af;
+  --clr-text-subtle: #6b7280;
   --clr-green: #10b981;
-  --clr-green-glow: rgba(16, 185, 129, 0.20);
+  --clr-green-glow: rgba(16, 185, 129, 0.15);
+  --clr-cyan: #06b6d4;
   --clr-gold: #f59e0b;
-  --clr-gold-glow: rgba(245, 158, 11, 0.20);
-  --clr-silver: #94a3b8;
+  --clr-gold-glow: rgba(245, 158, 11, 0.15);
+  --clr-silver: #9ca3af;
   --clr-bronze: #d97706;
   --clr-red: #ef4444;
   --clr-blue: #3b82f6;
   --court-mat: #064e3b;
   --court-line: rgba(255, 255, 255, 0.95);
-  --radius-xs: 4px;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
   --radius-full: 9999px;
-  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px -1px rgba(0, 0, 0, 0.2);
-  --shadow-dropdown: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.25), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  --shadow-dropdown: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
   --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --transition-fast: 140ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body.theme-light {
-  --bg-gradient: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  --bg-gradient: none;
   --clr-bg: #f8fafc;
-  --clr-surface: rgba(255, 255, 255, 0.92);
+  --clr-surface: rgba(255, 255, 255, 0.96);
   --clr-surface-hi: #f1f5f9;
   --clr-surface-card: #ffffff;
   --clr-border: #e2e8f0;
-  --clr-border-subtle: #f1f5f9;
+  --clr-border-subtle: #edf2f7;
   --clr-border-focus: #059669;
   --clr-text: #0f172a;
   --clr-text-muted: #64748b;
+  --clr-text-subtle: #94a3b8;
+  --clr-green: #059669;
+  --clr-green-glow: rgba(5, 150, 105, 0.12);
   --court-mat: #047857;
   --court-line: #ffffff;
-  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-  --shadow-dropdown: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  --shadow-dropdown: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
 }
 
 body.theme-contrast {
@@ -87,10 +95,11 @@ body.theme-contrast {
   --clr-border-focus: #ffff00;
   --clr-text: #ffffff;
   --clr-text-muted: #cccccc;
-  --court-mat: #000000;
-  --court-line: #ffffff;
-  --clr-green: #00ff66;
+  --clr-text-subtle: #aaaaaa;
+  --clr-green: #00ff00;
   --clr-gold: #ffff00;
+  --clr-red: #ff3333;
+  --clr-blue: #00ffff;
 }
 
 body {
@@ -378,77 +387,68 @@ body.theme-light .user-panel {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-family: var(--font-body);
-  font-size: 0.83rem;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  padding: 6px 12px;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 0.84rem;
+  padding: 8px 14px;
   border-radius: var(--radius-sm);
   border: 1px solid transparent;
   cursor: pointer;
   transition: all var(--transition-fast);
-  text-decoration: none;
-  background: transparent;
-  color: var(--clr-text);
   white-space: nowrap;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  min-height: 36px;
 }
-.btn:hover {
-  transform: translateY(-1px);
+.btn-xs {
+  font-size: 0.74rem;
+  padding: 5px 9px;
+  min-height: 28px;
 }
-.btn:active {
-  transform: translateY(0);
+.btn-sm {
+  font-size: 0.78rem;
+  padding: 6px 12px;
+  min-height: 32px;
+}
+.btn-lg {
+  font-size: 0.95rem;
+  padding: 12px 20px;
+  min-height: 44px;
 }
 .btn-primary {
-  background: #10b981;
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+  background: var(--clr-green);
+  color: #0b0f19;
+  border-color: var(--clr-green);
+  font-weight: 700;
 }
 .btn-primary:hover {
   background: #059669;
-  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
-}
-.btn-gold {
-  background: #f59e0b;
+  border-color: #059669;
   color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
-.btn-gold:hover {
-  background: #d97706;
-  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
+.btn-secondary {
+  background: var(--clr-surface-hi);
+  color: var(--clr-text);
+  border-color: var(--clr-border);
 }
-.btn-danger {
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #f87171;
-}
-.btn-danger:hover {
-  background: rgba(239, 68, 68, 0.22);
-  border-color: rgba(239, 68, 68, 0.45);
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--clr-border-focus);
 }
 .btn-ghost {
-  background: rgba(255, 255, 255, 0.04);
+  background: transparent;
+  color: var(--clr-text-muted);
   border-color: var(--clr-border);
-  color: var(--clr-text);
 }
 .btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.16);
-}
-body.theme-light .btn-ghost {
-  background: #ffffff;
-  border-color: #cbd5e1;
-  color: #0f172a;
-}
-body.theme-light .btn-ghost:hover {
-  background: #f8fafc;
-  border-color: #94a3b8;
+  background: var(--clr-surface-hi);
+  color: var(--clr-text);
+  border-color: var(--clr-border-subtle);
 }
 .btn-ghost.active {
-  background: rgba(16, 185, 129, 0.12);
-  border-color: rgba(16, 185, 129, 0.3);
-  color: #34d399;
+  background: var(--clr-surface-hi);
+  color: var(--clr-green);
+  border-color: var(--clr-green);
 }
 .btn-xs { padding: 4px 8px; font-size: 0.75rem; border-radius: var(--radius-xs); }
 .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
@@ -1414,14 +1414,308 @@ body.lang-bn {
   color: #ffffff;
 }
 
+
+/* ═══════════════════════════════════════════════════
+   STREAMLINED MOBILE & PWA NAVIGATION (SupportHub Minimalist)
+═══════════════════════════════════════════════════ */
+.notify-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--clr-border);
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  transition: all 150ms ease;
+  font-family: inherit;
+  font-size: 0.8rem;
+}
+.notify-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--clr-text);
+}
+.notify-btn.active {
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.12);
+}
+.notify-badge-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 6px #10b981;
+  display: none;
+}
+.notify-btn.active .notify-badge-dot {
+  display: block;
+}
+
+.install-app-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: var(--radius-sm);
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 150ms ease;
+  font-family: inherit;
+}
+.install-app-pill:hover {
+  background: #10b981;
+  color: #ffffff;
+}
+
+/* More Menu Drawer / Grid */
+.more-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+  margin-bottom: 20px;
+}
+.more-card-item {
+  background: var(--clr-surface-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 140ms ease;
+  text-align: left;
+  width: 100%;
+  color: var(--clr-text);
+  font-family: inherit;
+}
+.more-card-item:hover {
+  border-color: var(--clr-green);
+  background: rgba(16, 185, 129, 0.06);
+  transform: translateY(-1px);
+}
+.more-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-xs);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--clr-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clr-green);
+  flex-shrink: 0;
+}
+.more-card-text {
+  display: flex;
+  flex-direction: column;
+}
+.more-card-title {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--clr-text);
+}
+.more-card-desc {
+  font-size: 0.72rem;
+  color: var(--clr-text-muted);
+  margin-top: 2px;
+}
+
+/* Mobile Bottom Navigation Bar (Fixed 5-Tab Bar) */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(58px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--clr-surface);
+  border-top: 1px solid var(--clr-border);
+  z-index: 990;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+body.theme-light .mobile-bottom-nav {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: #e2e8f0;
+}
+body.theme-contrast .mobile-bottom-nav {
+  background: #000000;
+  border-color: #ffffff;
+}
+
+.mobile-bottom-nav-inner {
+  display: flex;
+  height: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+  align-items: stretch;
+  justify-content: space-around;
+}
+
+.mobile-nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px 0;
+  color: var(--clr-text-muted);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  min-height: 48px;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  transition: color 150ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.mobile-nav-btn .icon {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+  transition: transform 150ms ease, color 150ms ease;
+}
+.mobile-nav-btn:hover {
+  color: var(--clr-text);
+}
+.mobile-nav-btn.active {
+  color: var(--clr-green);
+}
+.mobile-nav-btn.active .icon {
+  transform: translateY(-2px);
+  color: var(--clr-green);
+}
+
+@media (max-width: 768px) {
+  .top-bar {
+    padding: 8px 12px;
+    gap: 6px;
+    flex-wrap: nowrap !important;
+  }
+  .brand-badge {
+    display: none !important;
+  }
+  .brand-heading {
+    font-size: 1.05rem;
+  }
+  .app-stage-nav {
+    display: none !important;
+  }
+  .mobile-bottom-nav {
+    display: block !important;
+  }
+  .main-content {
+    padding: 14px 10px calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+  }
+  .more-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+/* Modern Card Style */
+.card {
+  background: var(--clr-surface-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-fast);
+}
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--clr-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.01em;
+}
+
+/* Quick Action Match Buttons */
+.quick-match-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--clr-border);
+  flex-wrap: wrap;
+}
+.quick-win-btn {
+  flex: 1;
+  min-width: 90px;
+  padding: 6px 10px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  border-radius: var(--radius-xs);
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+  cursor: pointer;
+  transition: all 140ms ease;
+  text-align: center;
+  font-family: inherit;
+}
+.quick-win-btn:hover {
+  background: #10b981;
+  color: #ffffff;
+}
+.quick-score-btn {
+  padding: 6px 12px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  border-radius: var(--radius-xs);
+  background: var(--clr-surface-hi);
+  border: 1px solid var(--clr-border);
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  transition: all 140ms ease;
+  font-family: inherit;
+}
+.quick-score-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--clr-text);
+}
+
 </style>
 </head>
 <body>
 
 <header class="top-bar">
   <div class="brand-title">
-    <span class="brand-badge"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg> BWF PRO SaaS</span>
-    <h1 class="brand-heading">Badminton <span class="accent">Cup</span></h1>
+    <button class="btn btn-ghost btn-xs" onclick="showScreen('groupsScreen')" title="Badminton Cup Home" style="padding:4px;border:none;">
+      <svg class="icon icon-md" viewBox="0 0 24 24" style="color:var(--clr-green);"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>
+    </button>
+    <h1 class="brand-heading" onclick="showScreen('groupsScreen')" style="cursor:pointer;">Badminton <span class="accent">Cup</span></h1>
     <span class="sync-pill" id="networkSyncPill" title="Application Network and Sync Status">
       <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
       <span id="syncStatusLabel">Online</span>
@@ -1429,86 +1723,61 @@ body.lang-bn {
   </div>
   <div id="ariaLiveAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"></div>
 
-  <!-- Tournament Quick Switcher (Item 19) -->
-  <div style="display:flex;align-items:center;gap:6px;">
-    <select id="tournamentSelectHeader" class="modal-input" style="width:auto;padding:4px 10px;font-size:0.8rem;background:rgba(0,0,0,0.4);border-color:var(--clr-gold);" onchange="switchActiveTournament(this.value)">
-      <option value="main">The Badminton Cup 2026</option>
-    </select>
-  </div>
+  <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+    <!-- Push Notification Bell -->
+    <button class="notify-btn" id="notifyBtn" onclick="openNotificationModal()" title="Push Notifications">
+      <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="notify-badge-dot"></span>
+    </button>
 
-  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-    <button class="btn btn-ghost btn-xs" id="navArenaBtn" onclick="showScreen('stadiumScreen')" title="Multi-Court Arena TV Display"><svg class="icon icon-xs" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg> Arena TV</button>
-    <button class="btn btn-ghost btn-xs" id="navPlayerHubBtn" onclick="showScreen('playerHubScreen')" style="display:none;" title="Personalized Player Hub"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> My Matches</button>
-    <button class="btn btn-ghost btn-xs" id="navAdminBtn" onclick="openAdminDashboardWithGuard()" title="Tournament Director Dashboard"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Admin</button>
-    <button class="btn btn-ghost btn-xs" id="themeToggleBtn" onclick="cycleTheme()" title="Toggle Theme (Dark / Light / High Contrast)"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> Theme</button>
+    <!-- Language Toggle (EN / বাংলা) -->
     <button class="lang-toggle-btn" id="langToggleBtn" onclick="toggleLanguage()" title="Toggle Language (English / বাংলা)">
       <span style="font-weight:bold;color:var(--clr-green);">বাং</span> / EN
     </button>
-    <button class="btn btn-ghost btn-xs" onclick="openDataResetModal()" title="Start Over / Reset Data" style="color:#f87171;">
-      <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> <span data-i18n="resetNav">Reset</span>
+
+    <!-- PWA Install Button -->
+    <button class="install-app-pill" id="installAppBtn" onclick="promptInstallPWA()" style="display:none;" title="Install Badminton Cup App">
+      <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span data-i18n="installApp">Install</span>
     </button>
-    <button class="btn btn-ghost btn-xs" id="fsToggleBtn" onclick="toggleFullScreen()" title="Full Screen"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
-    <button class="btn btn-ghost btn-xs" onclick="openCoinTossModal()"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg> <span data-i18n="tossNav">Toss</span></button>
-  
+
+    <!-- More / Menu Button -->
+    <button class="btn btn-ghost btn-xs" id="headerMoreBtn" onclick="openMoreMenu()" title="More Tools & Menu">
+      <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      <span data-i18n="navMore">Menu</span>
+    </button>
+
+    <!-- User Panel / Sign In -->
     <div class="user-panel" id="userStatusPanel">
       <div class="user-avatar" id="headerAvatar">?</div>
-      <span class="user-name-label" id="headerUsername">Guest Player</span>
-      <span class="user-role-badge" id="headerUserRole" style="display:none;">ADMIN</span>
+      <span class="user-name-label" id="headerUsername" style="display:none;">Guest</span>
       <button class="btn btn-primary btn-xs" id="authBtn" onclick="openAuthModal()">Sign In</button>
     </div>
   </div>
 </header>
 
-<!-- Global Tournament Stage Navigation (Tabs) -->
+<!-- Global Tournament Stage Navigation (Desktop 5-Tab Bar) -->
 <nav class="app-stage-nav" id="appStageNav" aria-label="Tournament Stages">
   <div class="stage-nav-inner">
-    <button class="stage-tab active" id="tabNavSetup" onclick="showScreen('setupScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
-      <span>Setup & Roster</span>
-    </button>
-    <button class="stage-tab" id="tabNavDraft" onclick="showScreen('draftScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></span>
-      <span>Pool Draw</span>
-    </button>
-    <button class="stage-tab" id="tabNavGroups" onclick="showScreen('groupsScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
-      <span>Groups & Courts</span>
-    </button>
-    <button class="stage-tab" id="tabNavKnockout" onclick="showScreen('knockoutScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
-      <span>Playoff Bracket</span>
-    </button>
-    <button class="stage-tab" id="tabNavSchedule" onclick="showScreen('scheduleScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
-      <span>Match Schedule</span>
-    </button>
-    <button class="stage-tab" id="tabNavLeaderboard" onclick="showScreen('leaderboardScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg></span>
-      <span>Hall of Fame</span>
-    </button>
-    <button class="stage-tab" id="tabNavAnalytics" onclick="showScreen('analyticsScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM7 21h10M12 3v18M3 7h18"/></svg></span>
-      <span>H2H Analytics</span>
-    </button>
-    <button class="stage-tab" id="tabNavRules" onclick="showScreen('rulesScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
-      <span>BWF Rules & Guide</span>
+    <button class="stage-tab active" id="tabNavMatches" onclick="showScreen('groupsScreen')">
+      <span class="tab-icon"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg></span>
+      <span data-i18n="navMatches">Matches & Courts</span>
     </button>
     <button class="stage-tab" id="tabNavChallenges" onclick="showScreen('challengesScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg></span>
-      <span data-i18n="tabChallenges">Open Challenges</span>
+      <span class="tab-icon"><svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+      <span data-i18n="navChallenges">Open Challenges</span>
     </button>
-    <button class="stage-tab" id="tabNavScorecards" onclick="showScreen('scorecardsScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></span>
-      <span data-i18n="tabScorecards">Scorecards</span>
+    <button class="stage-tab" id="tabNavKnockout" onclick="showScreen('knockoutScreen')">
+      <span class="tab-icon"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg></span>
+      <span data-i18n="navBracket">Playoff Bracket</span>
     </button>
-    <button class="stage-tab" id="tabNavStadium" onclick="showScreen('stadiumScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg></span>
-      <span>Arena TV</span>
+    <button class="stage-tab" id="tabNavLeaderboard" onclick="showScreen('leaderboardScreen')">
+      <span class="tab-icon"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></span>
+      <span data-i18n="navRanking">Standings & Ranks</span>
     </button>
-    <button class="stage-tab" id="tabNavPlayerHub" onclick="showScreen('playerHubScreen')" style="display:none;">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-      <span>My Matches</span>
+    <button class="stage-tab" id="tabNavMore" onclick="openMoreMenu()">
+      <span class="tab-icon"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></span>
+      <span data-i18n="navMore">More Tools</span>
     </button>
   </div>
 </nav>
@@ -1518,7 +1787,7 @@ body.lang-bn {
   <!-- ═══════════════════════════════════════════════════
        1. SETUP SCREEN (ENHANCED WITH REGISTERED USERS)
   ═══════════════════════════════════════════════════ -->
-  <section id="setupScreen" class="screen active">
+  <section id="setupScreen" class="screen">
     <div class="card" style="max-width:880px;margin:0 auto;">
       <div class="card-header">
         <div>
@@ -1667,26 +1936,35 @@ body.lang-bn {
   <!-- ═══════════════════════════════════════════════════
        3. GROUP STAGES SCREEN
   ═══════════════════════════════════════════════════ -->
-  <section id="groupsScreen" class="screen">
-    <!-- Golden Awards Header Bar -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px;margin-bottom:24px;">
-      <div class="card" style="background:linear-gradient(135deg, rgba(245,158,11,0.12), rgba(0,0,0,0.3));border-color:rgba(245,158,11,0.3);display:flex;align-items:center;gap:16px;">
-        <div style="display:flex;justify-content:center;color:var(--clr-green);margin-bottom:8px;"><svg class="icon icon-3xl" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg></div>
-        <div>
-          <div style="font-size:0.75rem;font-weight:900;color:var(--clr-gold);letter-spacing:0.1em;text-transform:uppercase;">Golden Racket (Top Attack)</div>
-          <div id="goldenRacketLeader" style="font-size:1.2rem;font-weight:900;">Leader: None</div>
-          <div id="goldenRacketStats" style="font-size:0.8rem;color:var(--clr-text-muted);">0 smash points scored</div>
+  <section id="groupsScreen" class="screen active">
+    <!-- Friendly Quick Start / Welcome Launcher for School Students & Players -->
+    <div id="groupsWelcomeBanner" style="background:linear-gradient(135deg, rgba(16,185,129,0.14), rgba(245,158,11,0.08));border:1px solid rgba(16,185,129,0.3);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div style="font-weight:900;font-size:1rem;color:var(--clr-green);display:flex;align-items:center;gap:6px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span>Welcome to Badminton Cup!</span>
+        </div>
+        <div style="font-size:0.82rem;color:var(--clr-text-muted);margin-top:2px;">
+          Jump straight into matches, challenge anyone on the open board, or start a new tournament.
         </div>
       </div>
-      <div class="card" style="background:linear-gradient(135deg, rgba(34,197,94,0.12), rgba(0,0,0,0.3));border-color:rgba(34,197,94,0.3);display:flex;align-items:center;gap:16px;">
-        <div style="display:flex;justify-content:center;color:var(--clr-blue);margin-bottom:8px;"><svg class="icon icon-3xl" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-        <div>
-          <div style="font-size:0.75rem;font-weight:900;color:var(--clr-green);letter-spacing:0.1em;text-transform:uppercase;">Iron Net (Best Defense)</div>
-          <div id="goldenGloveLeader" style="font-size:1.2rem;font-weight:900;">Leader: None</div>
-          <div id="goldenGloveStats" style="font-size:0.8rem;color:var(--clr-text-muted);">0.0 points conceded / match</div>
-        </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-xs" onclick="openNewChallengeModal()">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span data-i18n="createChalBtn">+ Open Challenge</span>
+        </button>
+        <button class="btn btn-ghost btn-xs" onclick="showScreen('setupScreen')">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Tournament Setup</span>
+        </button>
+        <button class="btn btn-ghost btn-xs" onclick="loadDemoData()">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span>Load Demo</span>
+        </button>
       </div>
     </div>
+
+
 
     <!-- Navigation & Action bar -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
@@ -2160,6 +2438,30 @@ body.lang-bn {
         <button class="btn btn-ghost btn-sm" onclick="showScreen('groupsScreen')">&larr; Back to Tournament</button>
         <button class="btn btn-primary btn-sm" onclick="exportStandingsCSV()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV</button>
       </div>
+    <!-- Special Awards & Records -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:14px;margin-bottom:20px;">
+      <div class="card" style="display:flex;align-items:center;gap:14px;padding:14px;border-left:3px solid var(--clr-gold);">
+        <div style="color:var(--clr-gold);flex-shrink:0;">
+          <svg class="icon icon-2xl" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>
+        </div>
+        <div>
+          <div style="font-size:0.72rem;font-weight:700;color:var(--clr-gold);text-transform:uppercase;letter-spacing:0.04em;">Golden Racket (Top Attack)</div>
+          <div id="goldenRacketLeader" style="font-size:1.05rem;font-weight:800;color:var(--clr-text);">Leader: None</div>
+          <div id="goldenRacketStats" style="font-size:0.75rem;color:var(--clr-text-muted);">0 smash points scored</div>
+        </div>
+      </div>
+      <div class="card" style="display:flex;align-items:center;gap:14px;padding:14px;border-left:3px solid var(--clr-green);">
+        <div style="color:var(--clr-green);flex-shrink:0;">
+          <svg class="icon icon-2xl" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <div style="font-size:0.72rem;font-weight:700;color:var(--clr-green);text-transform:uppercase;letter-spacing:0.04em;">Iron Net (Best Defense)</div>
+          <div id="goldenGloveLeader" style="font-size:1.05rem;font-weight:800;color:var(--clr-text);">Leader: None</div>
+          <div id="goldenGloveStats" style="font-size:0.75rem;color:var(--clr-text-muted);">0.0 points conceded / match</div>
+        </div>
+      </div>
+    </div>
+
     </div>
 
     <div class="card">
@@ -2455,6 +2757,31 @@ body.lang-bn {
   </section>
 
 </main>
+<!-- Mobile Bottom Navigation Bar (100% Mobile Responsive) -->
+<nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
+  <div class="mobile-bottom-nav-inner">
+    <button class="mobile-nav-btn active" id="mobNavMatches" onclick="showScreen('groupsScreen')">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>
+      <span data-i18n="navMatches">Matches</span>
+    </button>
+    <button class="mobile-nav-btn" id="mobNavChallenges" onclick="showScreen('challengesScreen')">
+      <svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <span data-i18n="navChallenges">Challenges</span>
+    </button>
+    <button class="mobile-nav-btn" id="mobNavKnockout" onclick="showScreen('knockoutScreen')">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg>
+      <span data-i18n="navBracket">Bracket</span>
+    </button>
+    <button class="mobile-nav-btn" id="mobNavLeaderboard" onclick="showScreen('leaderboardScreen')">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+      <span data-i18n="navRanking">Ranking</span>
+    </button>
+    <button class="mobile-nav-btn" id="mobNavMore" onclick="openMoreMenu()">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      <span data-i18n="navMore">More</span>
+    </button>
+  </div>
+</nav>
 
 <!-- ═══════════════════════════════════════════════════
      DIALOGS & MODALS
@@ -3003,6 +3330,224 @@ body.lang-bn {
     </div>
   </div>
 </dialog>
+<!-- ═══════════════════════════════════════════════════
+     MORE MENU MODAL (Streamlined Secondary Tools)
+═══════════════════════════════════════════════════ -->
+<dialog id="moreMenuModal" class="modal" aria-labelledby="moreMenuTitle">
+  <div class="modal-box" style="max-width:720px;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
+      <h3 id="moreMenuTitle" style="font-family:var(--font-display);font-size:1.25rem;display:flex;align-items:center;gap:8px;margin:0;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        <span data-i18n="moreMenuTitle">All Features & Tools</span>
+      </h3>
+      <button class="modal-close" onclick="document.getElementById('moreMenuModal').close()" aria-label="Close">&times;</button>
+    </div>
+
+    <!-- Active Tournament Quick Selection -->
+    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:0.8rem;font-weight:700;color:var(--clr-gold);text-transform:uppercase;">Tournament:</span>
+        <select id="tournamentSelectMore" class="modal-input" style="width:auto;padding:4px 10px;font-size:0.85rem;" onchange="switchActiveTournament(this.value)">
+          <option value="main">The Badminton Cup 2026</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-xs" onclick="document.getElementById('moreMenuModal').close();showScreen('setupScreen');">
+        + New Tournament
+      </button>
+    </div>
+
+    <!-- Grid of Features -->
+    <div class="more-grid">
+      <!-- 1. Tournament Setup -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('setupScreen');">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Setup & Roster</span>
+          <span class="more-card-desc">Configure players, categories & courts</span>
+        </div>
+      </button>
+
+      <!-- 2. Pool Draw -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('draftScreen');">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83M16.62 12l-5.74 9.94"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Pool Draw</span>
+          <span class="more-card-desc">Interactive live group seed machine</span>
+        </div>
+      </button>
+
+      <!-- 3. Schedule -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('scheduleScreen');">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Full Schedule</span>
+          <span class="more-card-desc">Court time slots and match order</span>
+        </div>
+      </button>
+
+      <!-- 4. Scorecards -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('scorecardsScreen');">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Scorecards</span>
+          <span class="more-card-desc">Detailed match scores & exports</span>
+        </div>
+      </button>
+
+      <!-- 5. Head-to-Head Analytics -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('analyticsScreen');">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">H2H Analytics</span>
+          <span class="more-card-desc">Player stats, win rates & streaks</span>
+        </div>
+      </button>
+
+      <!-- 6. BWF Rules & Guide -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('rulesScreen');">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">BWF Rules & Laws</span>
+          <span class="more-card-desc">Scoring rules, service faults & guides</span>
+        </div>
+      </button>
+
+      <!-- 7. Stadium Arena TV -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('stadiumScreen');">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Stadium Arena TV</span>
+          <span class="more-card-desc">Multi-court projector / big screen mode</span>
+        </div>
+      </button>
+
+      <!-- 8. Coin Toss -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();openCoinTossModal();">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Digital Coin Toss</span>
+          <span class="more-card-desc">Flip to decide serve or court side</span>
+        </div>
+      </button>
+
+      <!-- 9. Push Notifications -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();openNotificationModal();">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Push Notifications</span>
+          <span class="more-card-desc">Get match finish & challenge alerts</span>
+        </div>
+      </button>
+
+      <!-- 10. Install App (PWA) -->
+      <button class="more-card-item" id="moreInstallBtn" onclick="promptInstallPWA();">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Install App (PWA)</span>
+          <span class="more-card-desc">Add to phone home screen & offline use</span>
+        </div>
+      </button>
+
+      <!-- 11. Theme Switcher -->
+      <button class="more-card-item" onclick="cycleTheme();">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Toggle Theme</span>
+          <span class="more-card-desc">Switch Dark / Light / High Contrast</span>
+        </div>
+      </button>
+
+      <!-- 12. Admin Dashboard -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();openAdminDashboardWithGuard();">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Admin Dashboard</span>
+          <span class="more-card-desc">Director oversight & security audit</span>
+        </div>
+      </button>
+
+      <!-- 13. Reset Tournament Data -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();openDataResetModal();" style="border-color:rgba(239,68,68,0.3);">
+        <div class="more-card-icon" style="color:#f87171;">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title" style="color:#f87171;">Reset / Start Over</span>
+          <span class="more-card-desc">Clear tournament matches or factory reset</span>
+        </div>
+      </button>
+    </div>
+
+    <div style="text-align:right;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('moreMenuModal').close()" data-i18n="cancelBtn">Close Menu</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ═══════════════════════════════════════════════════
+     PUSH NOTIFICATIONS MODAL
+═══════════════════════════════════════════════════ -->
+<dialog id="notificationSettingsModal" class="modal" aria-labelledby="notifyModalTitle">
+  <div class="modal-box" style="max-width:480px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
+      <h3 id="notifyModalTitle" style="font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:8px;margin:0;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span data-i18n="notifyModalTitle">Push Notifications</span>
+      </h3>
+      <button class="modal-close" onclick="document.getElementById('notificationSettingsModal').close()" aria-label="Close">&times;</button>
+    </div>
+
+    <div style="text-align:center;padding:16px 0;">
+      <div id="notifyStatusIcon" style="display:inline-flex;padding:16px;border-radius:50%;background:rgba(16,185,129,0.1);color:var(--clr-green);margin-bottom:12px;">
+        <svg class="icon icon-2xl" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <h4 id="notifyStatusHeading" style="font-size:1.05rem;font-weight:700;margin:0 0 6px;">Notification Status</h4>
+      <p id="notifyStatusDesc" style="font-size:0.85rem;color:var(--clr-text-muted);line-height:1.4;margin:0 0 18px;">
+        Get instant alerts on your phone or computer whenever a new open challenge is posted, a match completes, or a tournament champion is crowned.
+      </p>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="btn btn-primary" id="btnRequestNotification" onclick="requestNotificationPermission()" style="padding:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span data-i18n="enableNotifyBtn">Turn On Push Notifications</span>
+        </button>
+
+        <button class="btn btn-ghost" id="btnTestNotification" onclick="testPushNotification()" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span data-i18n="testNotifyBtn">⚡ Send Test Notification</span>
+        </button>
+      </div>
+    </div>
+
+    <div style="text-align:right;border-top:1px solid var(--clr-border);padding-top:12px;margin-top:14px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('notificationSettingsModal').close()" data-i18n="cancelBtn">Close</button>
+    </div>
+  </div>
+</dialog>
 
 <script>
 
@@ -3061,6 +3606,16 @@ const TRANSLATIONS = {
   en: {
     resetNav: 'Reset',
     tossNav: 'Toss',
+        navMatches: 'Matches & Courts',
+    navChallenges: 'Open Challenges',
+    navBracket: 'Playoff Bracket',
+    navRanking: 'Standings & Ranks',
+    navMore: 'Menu',
+    moreMenuTitle: 'All Features & Tools',
+    notifyModalTitle: 'Push Notifications',
+    enableNotifyBtn: 'Turn On Push Notifications',
+    testNotifyBtn: '⚡ Send Test Notification',
+    installApp: 'Install',
     tabChallenges: 'Open Challenges',
     tabScorecards: 'Scorecards',
     quickScoreTitle: 'Quick Score & Win',
@@ -3093,6 +3648,16 @@ const TRANSLATIONS = {
   bn: {
     resetNav: 'রিসেট',
     tossNav: 'টস',
+        navMatches: 'ম্যাচ ও কোর্ট',
+    navChallenges: 'ওপেন চ্যালেঞ্জ',
+    navBracket: 'প্লে-অফ ব্র্যাকেট',
+    navRanking: 'র‍্যাংকিং ও পয়েন্ট',
+    navMore: 'মেনু',
+    moreMenuTitle: 'সকল ফিচার ও টুলস',
+    notifyModalTitle: 'পুশ নোটিফিকেশন',
+    enableNotifyBtn: 'পুশ নোটিফিকেশন চালু করুন',
+    testNotifyBtn: '⚡ টেস্ট নোটিফিকেশন পাঠান',
+    installApp: 'ইনস্টল',
     tabChallenges: 'ওপেন চ্যালেঞ্জ',
     tabScorecards: 'স্কোরকার্ড',
     quickScoreTitle: 'সহজ স্কোর ও তাৎক্ষণিক জয়',
@@ -3160,8 +3725,8 @@ function openQuickScoreModal(matchId) {
   document.getElementById('quickScoreModal').showModal();
 }
 
-function awardInstantWinner(side) {
-  const matchId = document.getElementById('quickMatchId').value;
+function awardInstantWinner(side, specificMatchId = null) {
+  const matchId = specificMatchId || document.getElementById('quickMatchId')?.value;
   const match = state.matches.find(m => m.id === matchId);
   if (!match) return;
 
@@ -3178,7 +3743,7 @@ function awardInstantWinner(side) {
 
   recordMatchStats(match);
   logAdminAudit(`Quick Win recorded: ${winName} won match ${match.id} (2-0)`);
-  document.getElementById('quickScoreModal').close();
+  const qModal = document.getElementById('quickScoreModal'); if (qModal && qModal.open) qModal.close();
 
   if (match.pool === 'KO') {
     advanceKnockoutRounds();
@@ -3191,6 +3756,10 @@ function awardInstantWinner(side) {
   renderAdminDashboard();
   renderScheduleScreen();
   showToast(currentLang === 'bn' ? `${winName} ম্যাচ বিজয়ী হিসেবে রেকর্ড করা হয়েছে!` : `${winName} recorded as match winner (2-0)!`);
+  sendAppNotification(
+    currentLang === 'bn' ? '🏆 ম্যাচ বিজয়ী ঘোষণা!' : '🏆 Match Winner!',
+    `${winName} ` + (currentLang === 'bn' ? 'ম্যাচ জিতেছেন (২-০)!' : 'has won the match (2-0)!')
+  );
 }
 
 function saveQuickCustomScore() {
@@ -3218,7 +3787,7 @@ function saveQuickCustomScore() {
 
   recordMatchStats(match);
   logAdminAudit(`Quick custom score: ${match.a} ${ptsA} - ${ptsB} ${match.b} (Winner: ${winName})`);
-  document.getElementById('quickScoreModal').close();
+  const qModal = document.getElementById('quickScoreModal'); if (qModal && qModal.open) qModal.close();
 
   if (match.pool === 'KO') {
     advanceKnockoutRounds();
@@ -5411,37 +5980,64 @@ function showScreen(screenId) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // Auto-sync Stage Navigation Tabs
+  // Auto-sync Stage Navigation Tabs (Desktop & Mobile)
   const tabMap = {
-    setupScreen: 'tabNavSetup',
-    draftScreen: 'tabNavDraft',
-    groupsScreen: 'tabNavGroups',
+    groupsScreen: 'tabNavMatches',
+    challengesScreen: 'tabNavChallenges',
     knockoutScreen: 'tabNavKnockout',
     championScreen: 'tabNavKnockout',
-    scheduleScreen: 'tabNavSchedule',
     leaderboardScreen: 'tabNavLeaderboard',
-    analyticsScreen: 'tabNavAnalytics',
-    rulesScreen: 'tabNavRules',
-    scorecardsScreen: 'tabNavScorecards',
-    challengesScreen: 'tabNavChallenges',
-    stadiumScreen: 'tabNavStadium',
-    playerHubScreen: 'tabNavPlayerHub'
+    setupScreen: 'tabNavMore',
+    draftScreen: 'tabNavMore',
+    scheduleScreen: 'tabNavMore',
+    analyticsScreen: 'tabNavMore',
+    rulesScreen: 'tabNavMore',
+    scorecardsScreen: 'tabNavMore',
+    stadiumScreen: 'tabNavMore',
+    playerHubScreen: 'tabNavMore',
+    adminDashboardScreen: 'tabNavMore'
+  };
+
+  const mobMap = {
+    groupsScreen: 'mobNavMatches',
+    challengesScreen: 'mobNavChallenges',
+    knockoutScreen: 'mobNavKnockout',
+    championScreen: 'mobNavKnockout',
+    leaderboardScreen: 'mobNavLeaderboard',
+    setupScreen: 'mobNavMore',
+    draftScreen: 'mobNavMore',
+    scheduleScreen: 'mobNavMore',
+    analyticsScreen: 'mobNavMore',
+    rulesScreen: 'mobNavMore',
+    scorecardsScreen: 'mobNavMore',
+    stadiumScreen: 'mobNavMore',
+    playerHubScreen: 'mobNavMore',
+    adminDashboardScreen: 'mobNavMore'
   };
 
   document.querySelectorAll('.stage-tab').forEach(t => t.classList.remove('active'));
-  const activeTabId = tabMap[screenId];
-  if (activeTabId) {
-    const activeTab = document.getElementById(activeTabId);
-    if (activeTab) {
-      activeTab.classList.add('active');
-      activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    }
+  const activeTabId = tabMap[screenId] || 'tabNavMore';
+  const activeTab = document.getElementById(activeTabId);
+  if (activeTab) {
+    activeTab.classList.add('active');
+    activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
   }
 
-  // Hide stage nav during live umpire match for complete distraction-free refereeing
+  document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+  const activeMobId = mobMap[screenId] || 'mobNavMore';
+  const activeMobBtn = document.getElementById(activeMobId);
+  if (activeMobBtn) {
+    activeMobBtn.classList.add('active');
+  }
+
+  // Hide stage nav & mobile nav during live umpire match for distraction-free refereeing
   const stageNav = document.getElementById('appStageNav');
   if (stageNav) {
     stageNav.style.display = (screenId === 'liveUmpireScreen' || screenId === 'stadiumScreen') ? 'none' : 'block';
+  }
+  const mobNav = document.getElementById('mobileBottomNav');
+  if (mobNav) {
+    mobNav.style.display = (screenId === 'liveUmpireScreen' || screenId === 'stadiumScreen') ? 'none' : '';
   }
 
   if (screenId === 'stadiumScreen') renderStadiumScreen();
@@ -5450,6 +6046,7 @@ function showScreen(screenId) {
   if (screenId === 'analyticsScreen') renderAnalyticsScreen();
   if (screenId === 'scorecardsScreen') renderScorecardsScreen();
   if (screenId === 'challengesScreen') renderChallengesBoard();
+  if (screenId === 'groupsScreen') renderGroups();
 }
 
 function updateTournamentTitle(val) {
@@ -5758,34 +6355,70 @@ function renderGroupMatches() {
   }
 
   if (!matches.length) {
-    container.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:24px;color:var(--clr-text-muted);">No fixtures match the selected court filter.</div>`;
+    container.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:32px 20px;background:var(--clr-surface-card);border:1px dashed var(--clr-border);border-radius:var(--radius-md);">
+        <div style="font-size:1.05rem;font-weight:700;margin-bottom:6px;color:var(--clr-text);">No Matches Found</div>
+        <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:14px;">No fixtures match the selected filter, or tournament has not started yet.</p>
+        <button class="btn btn-primary btn-sm" onclick="showScreen('setupScreen')">🚀 Setup Tournament</button>
+      </div>`;
     return;
   }
 
   container.innerHTML = matches.map(m => {
     const isLive = (m.id === state.currentMatchId);
-    const scoreStr = m.sets.map(s => `${s.score[0]}–${s.score[1]}`).join(' | ');
+    const scoreStr = (m.sets && m.sets.length) ? m.sets.map(s => `${s.score[0]}–${s.score[1]}`).join(' | ') : 'VS';
     const winnerName = m.winner ? (m.winner === 'a' ? m.a : m.b) : null;
     return `
-      <div class="card" style="padding:14px;background:rgba(0,0,0,0.25);border:1.5px solid ${isLive ? 'var(--clr-green)' : (m.winner ? 'rgba(34,197,94,0.3)' : 'var(--clr-border)')};">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:0.75rem;">
-          <span style="font-weight:800;color:var(--clr-text-muted);">Pool ${m.pool} · Court ${m.court}</span>
-          ${isLive ? '<span class="status-badge-live badge-game-point">' + svgIcon('dot') + ' LIVE</span>' : (m.winner ? '<span style="color:var(--clr-green);font-weight:bold;">COMPLETED</span>' : '<span>SCHEDULED</span>')}
+      <div class="card" style="padding:16px;border:1.5px solid ${isLive ? 'var(--clr-green)' : (m.winner ? 'rgba(16,185,129,0.3)' : 'var(--clr-border)')};">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:0.75rem;">
+          <span style="font-weight:700;color:var(--clr-text-muted);background:rgba(255,255,255,0.05);padding:3px 8px;border-radius:var(--radius-xs);">
+            Pool ${m.pool} · Court ${m.court}
+          </span>
+          ${isLive ?
+            '<span class="status-badge-live badge-game-point" style="display:inline-flex;align-items:center;gap:4px;color:#34d399;font-weight:700;">● LIVE</span>' :
+            (m.winner ?
+              '<span style="color:var(--clr-green);font-weight:700;font-size:0.72rem;text-transform:uppercase;">COMPLETED</span>' :
+              '<span style="color:var(--clr-text-muted);font-size:0.72rem;">UPCOMING</span>'
+            )}
         </div>
-        <div style="font-size:0.95rem;font-weight:800;margin-bottom:10px;">
-          <span style="color:${m.winner === 'a' ? 'var(--clr-green)' : '#60a5fa'}">${m.a}</span>
-          <span style="color:var(--clr-text-muted);font-size:0.8rem;"> vs </span>
-          <span style="color:${m.winner === 'b' ? 'var(--clr-green)' : '#f87171'}">${m.b}</span>
+
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-bottom:14px;">
+          <div style="text-align:left;">
+            <div style="font-weight:800;font-size:1.05rem;color:${m.winner === 'a' ? 'var(--clr-green)' : 'var(--clr-text)'};">${m.a}</div>
+            <div style="font-size:0.72rem;color:var(--clr-text-muted);">Team A</div>
+          </div>
+          <div style="text-align:center;padding:0 8px;">
+            <div style="font-family:monospace;font-size:1.1rem;font-weight:800;color:var(--clr-gold);">${m.winner ? scoreStr : 'VS'}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-weight:800;font-size:1.05rem;color:${m.winner === 'b' ? 'var(--clr-green)' : 'var(--clr-text)'};">${m.b}</div>
+            <div style="font-size:0.72rem;color:var(--clr-text-muted);">Team B</div>
+          </div>
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;">
-          <span style="font-family:monospace;font-size:0.85rem;color:var(--clr-gold);">${scoreStr}</span>
-          ${m.winner ?
-            `<span style="font-size:0.75rem;color:var(--clr-text-muted);">Won by ${winnerName}</span>` :
-            `<div style="display:flex;gap:4px;">
-               <button class="quick-win-btn" onclick="openQuickScoreModal('${m.id}')" title="Quick Score without live refereeing">Quick Score</button>
-               <button class="btn btn-primary btn-xs" onclick="startUmpireMatch('${m.id}')">Live Match &rarr;</button>
-             </div>`
-          }
+
+        <div class="quick-match-row">
+          ${m.winner ? `
+            <div style="width:100%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+              <span style="font-size:0.82rem;color:var(--clr-green);font-weight:700;">🏆 Winner: ${winnerName}</span>
+              <div style="display:flex;gap:6px;">
+                <button class="btn btn-ghost btn-xs" onclick="openScorecardModal('${m.id}')">Scorecard</button>
+                <button class="btn btn-ghost btn-xs" onclick="openQuickScoreModal('${m.id}')">Edit Score</button>
+              </div>
+            </div>
+          ` : `
+            <button class="quick-win-btn" onclick="awardInstantWinner('a', '${m.id}')" title="Award instant 2-0 win to ${m.a}">
+              🏆 ${m.a} Won
+            </button>
+            <button class="quick-score-btn" onclick="openQuickScoreModal('${m.id}')" title="Enter manual final score">
+              ⚡ Score
+            </button>
+            <button class="quick-win-btn" onclick="awardInstantWinner('b', '${m.id}')" title="Award instant 2-0 win to ${m.b}">
+              🏆 ${m.b} Won
+            </button>
+            <button class="btn btn-ghost btn-xs" onclick="startUmpireMatch('${m.id}')" title="Open live court umpire referee">
+              🏸 Referee
+            </button>
+          `}
         </div>
       </div>
     `;
@@ -7252,6 +7885,183 @@ document.addEventListener('DOMContentLoaded', () => {
   updateNetworkStatusPill();
   applyLanguage(currentLang);
 });
+
+
+/* ═══════════════════════════════════════════════════
+   PWA & PUSH NOTIFICATION SYSTEM
+═══════════════════════════════════════════════════ */
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const btn = document.getElementById('installAppBtn');
+  if (btn) btn.style.display = 'inline-flex';
+  const moreBtn = document.getElementById('moreInstallBtn');
+  if (moreBtn) moreBtn.style.display = 'flex';
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  const btn = document.getElementById('installAppBtn');
+  if (btn) btn.style.display = 'none';
+  showToast(currentLang === 'bn' ? 'ব্যাডমিন্টন কাপ অ্যাপ সফলভাবে ইনস্টল হয়েছে!' : 'Badminton Cup app installed successfully!', 'success');
+});
+
+function promptInstallPWA() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(choice => {
+      if (choice.outcome === 'accepted') {
+        showToast(currentLang === 'bn' ? 'ইনস্টলেশন শুরু হয়েছে...' : 'Installation starting...', 'success');
+      }
+      deferredInstallPrompt = null;
+    });
+  } else {
+    showToast(currentLang === 'bn' ? 'ব্রাউজার মেনু (⋮ অথবা Share) থেকে "Add to Home Screen" নির্বাচন করুন।' : 'Tap browser menu (⋮ or Share) and select "Add to Home Screen"', 'info');
+  }
+}
+
+function openMoreMenu() {
+  const modal = document.getElementById('moreMenuModal');
+  if (modal) modal.showModal();
+}
+
+function playChimeSound(type = 'ping') {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    if (type === 'win') {
+      const now = ctx.currentTime;
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(523.25, now);
+      osc.frequency.setValueAtTime(659.25, now + 0.1);
+      osc.frequency.setValueAtTime(783.99, now + 0.2);
+      osc.frequency.setValueAtTime(1046.50, now + 0.3);
+      gain.gain.setValueAtTime(0.3, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+      osc.start(now);
+      osc.stop(now + 0.6);
+    } else {
+      const now = ctx.currentTime;
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(880, now);
+      osc.frequency.exponentialRampToValueAtTime(440, now + 0.25);
+      gain.gain.setValueAtTime(0.2, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+      osc.start(now);
+      osc.stop(now + 0.3);
+    }
+  } catch (err) {}
+}
+
+function updateNotificationUI() {
+  const notifyBtn = document.getElementById('notifyBtn');
+  if (!notifyBtn) return;
+  const isGranted = ('Notification' in window) && Notification.permission === 'granted';
+  notifyBtn.classList.toggle('active', isGranted);
+  notifyBtn.title = isGranted 
+    ? (currentLang === 'bn' ? 'নোটিফিকেশন সক্রিয়' : 'Notifications Active') 
+    : (currentLang === 'bn' ? 'নোটিফিকেশন চালু করুন' : 'Enable Notifications');
+}
+
+function openNotificationModal() {
+  updateNotificationModalUI();
+  const modal = document.getElementById('notificationSettingsModal');
+  if (modal) modal.showModal();
+}
+
+function updateNotificationModalUI() {
+  const heading = document.getElementById('notifyStatusHeading');
+  const desc = document.getElementById('notifyStatusDesc');
+  const btn = document.getElementById('btnRequestNotification');
+  if (!('Notification' in window)) {
+    if (heading) heading.textContent = currentLang === 'bn' ? 'নোটিফিকেশন সমর্থিত নয়' : 'Notifications Not Supported';
+    if (desc) desc.textContent = currentLang === 'bn' ? 'এই ব্রাউজারে ওয়েব পুশ নোটিফিকেশন সমর্থিত নয়।' : 'This browser does not support Web Push Notifications.';
+    if (btn) btn.style.display = 'none';
+    return;
+  }
+
+  const perm = Notification.permission;
+  if (perm === 'granted') {
+    if (heading) heading.textContent = currentLang === 'bn' ? 'নোটিফিকেশন সক্রিয় আছে ✓' : 'Notifications Active ✓';
+    if (desc) desc.textContent = currentLang === 'bn' ? 'চমৎকার! আপনি এখন নতুন চ্যালেঞ্জ, খেলার জয় এবং টুর্নামেন্ট আপডেটের নোটিফিকেশন পাচ্ছেন।' : 'Awesome! You will receive live alerts for challenges, match wins, and champion announcements.';
+    if (btn) {
+      btn.innerHTML = '<svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> ' + (currentLang === 'bn' ? 'নোটিফিকেশন চালু আছে' : 'Notifications Enabled');
+      btn.classList.remove('btn-primary');
+      btn.classList.add('btn-ghost');
+    }
+  } else if (perm === 'denied') {
+    if (heading) heading.textContent = currentLang === 'bn' ? 'নোটিফিকেশন ব্লক করা হয়েছে' : 'Notifications Blocked';
+    if (desc) desc.textContent = currentLang === 'bn' ? 'ব্রাউজারের সাইট সেটিংস থেকে নোটিফিকেশন পারমিশন আনব্লক করুন।' : 'Notifications were blocked in your browser settings. Please allow notifications in site permissions.';
+    if (btn) btn.style.display = 'none';
+  } else {
+    if (heading) heading.textContent = currentLang === 'bn' ? 'নোটিফিকেশন চালু করুন' : 'Enable Notifications';
+    if (desc) desc.textContent = currentLang === 'bn' ? 'নতুন কোনো খেলোয়াড় চ্যালেঞ্জ দিলে কিংবা ম্যাচ বিজয়ী হলে তৎক্ষণাৎ জানতে নোটিফিকেশন চালু করুন।' : 'Stay updated! Get instant notifications when a challenge is posted or match results are recorded.';
+    if (btn) {
+      btn.style.display = 'flex';
+      btn.innerHTML = '<svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> ' + (currentLang === 'bn' ? 'পুশ নোটিফিকেশন চালু করুন' : 'Turn On Push Notifications');
+      btn.classList.add('btn-primary');
+      btn.classList.remove('btn-ghost');
+    }
+  }
+  updateNotificationUI();
+}
+
+function requestNotificationPermission() {
+  if (!('Notification' in window)) {
+    showToast(currentLang === 'bn' ? 'এই ব্রাউজারে নোটিফিকেশন কাজ করে না' : 'Notifications not supported in this browser', 'warning');
+    return;
+  }
+  Notification.requestPermission().then(permission => {
+    updateNotificationModalUI();
+    updateNotificationUI();
+    if (permission === 'granted') {
+      sendAppNotification(
+        currentLang === 'bn' ? 'ব্যাডমিন্টন কাপ নোটিফিকেশন সক্রিয়!' : 'Badminton Cup Notifications Active!',
+        currentLang === 'bn' ? 'আপনাকে স্বাগতম! এখন থেকে লাইভ স্কোর ও নতুন চ্যালেঞ্জের অ্যালার্ট পাবেন।' : 'Welcome! You will now receive alerts for challenges and match updates.'
+      );
+      showToast(currentLang === 'bn' ? 'নোটিফিকেশন সফলভাবে চালু হয়েছে!' : 'Notifications enabled successfully!', 'success');
+    } else {
+      showToast(currentLang === 'bn' ? 'নোটিফিকেশন অনুমতি পাওয়া যায়নি।' : 'Notification permission not granted.', 'warning');
+    }
+  });
+}
+
+function testPushNotification() {
+  sendAppNotification(
+    currentLang === 'bn' ? '🏸 ব্যাডমিন্টন কাপ টেস্ট অ্যালার্ট' : '🏸 Badminton Cup Test Alert',
+    currentLang === 'bn' ? 'আপনার ফোনে বা কম্পিউটারে পুশ নোটিফিকেশন চমৎকারভাবে কাজ করছে!' : 'Push notifications are working smoothly on your device!'
+  );
+  showToast(currentLang === 'bn' ? 'টেস্ট নোটিফিকেশন পাঠানো হয়েছে!' : 'Test notification triggered!', 'info');
+}
+
+function sendAppNotification(title, body, tag = 'badminton-alert') {
+  playChimeSound(tag === 'champion' ? 'win' : 'ping');
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.ready.then(reg => {
+      reg.showNotification(title, {
+        body: body,
+        icon: 'icons/icon-192.png',
+        badge: 'icons/icon-192.png',
+        tag: tag,
+        vibrate: [120, 60, 120]
+      });
+    }).catch(() => {
+      try { new Notification(title, { body, icon: 'icons/icon-192.png' }); } catch (e) {}
+    });
+  } else {
+    try { new Notification(title, { body, icon: 'icons/icon-192.png' }); } catch (e) {}
+  }
+}
+
 </script>
 
 </body>

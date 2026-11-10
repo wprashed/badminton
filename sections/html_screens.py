@@ -2,8 +2,10 @@
 SCREENS_CONTENT = """
 <header class="top-bar">
   <div class="brand-title">
-    <span class="brand-badge"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg> BWF PRO SaaS</span>
-    <h1 class="brand-heading">Badminton <span class="accent">Cup</span></h1>
+    <button class="btn btn-ghost btn-xs" onclick="showScreen('groupsScreen')" title="Badminton Cup Home" style="padding:4px;border:none;">
+      <svg class="icon icon-md" viewBox="0 0 24 24" style="color:var(--clr-green);"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>
+    </button>
+    <h1 class="brand-heading" onclick="showScreen('groupsScreen')" style="cursor:pointer;">Badminton <span class="accent">Cup</span></h1>
     <span class="sync-pill" id="networkSyncPill" title="Application Network and Sync Status">
       <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
       <span id="syncStatusLabel">Online</span>
@@ -11,86 +13,61 @@ SCREENS_CONTENT = """
   </div>
   <div id="ariaLiveAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"></div>
 
-  <!-- Tournament Quick Switcher (Item 19) -->
-  <div style="display:flex;align-items:center;gap:6px;">
-    <select id="tournamentSelectHeader" class="modal-input" style="width:auto;padding:4px 10px;font-size:0.8rem;background:rgba(0,0,0,0.4);border-color:var(--clr-gold);" onchange="switchActiveTournament(this.value)">
-      <option value="main">The Badminton Cup 2026</option>
-    </select>
-  </div>
+  <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+    <!-- Push Notification Bell -->
+    <button class="notify-btn" id="notifyBtn" onclick="openNotificationModal()" title="Push Notifications">
+      <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="notify-badge-dot"></span>
+    </button>
 
-  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-    <button class="btn btn-ghost btn-xs" id="navArenaBtn" onclick="showScreen('stadiumScreen')" title="Multi-Court Arena TV Display"><svg class="icon icon-xs" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg> Arena TV</button>
-    <button class="btn btn-ghost btn-xs" id="navPlayerHubBtn" onclick="showScreen('playerHubScreen')" style="display:none;" title="Personalized Player Hub"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> My Matches</button>
-    <button class="btn btn-ghost btn-xs" id="navAdminBtn" onclick="openAdminDashboardWithGuard()" title="Tournament Director Dashboard"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Admin</button>
-    <button class="btn btn-ghost btn-xs" id="themeToggleBtn" onclick="cycleTheme()" title="Toggle Theme (Dark / Light / High Contrast)"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg> Theme</button>
+    <!-- Language Toggle (EN / বাংলা) -->
     <button class="lang-toggle-btn" id="langToggleBtn" onclick="toggleLanguage()" title="Toggle Language (English / বাংলা)">
       <span style="font-weight:bold;color:var(--clr-green);">বাং</span> / EN
     </button>
-    <button class="btn btn-ghost btn-xs" onclick="openDataResetModal()" title="Start Over / Reset Data" style="color:#f87171;">
-      <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> <span data-i18n="resetNav">Reset</span>
+
+    <!-- PWA Install Button -->
+    <button class="install-app-pill" id="installAppBtn" onclick="promptInstallPWA()" style="display:none;" title="Install Badminton Cup App">
+      <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span data-i18n="installApp">Install</span>
     </button>
-    <button class="btn btn-ghost btn-xs" id="fsToggleBtn" onclick="toggleFullScreen()" title="Full Screen"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
-    <button class="btn btn-ghost btn-xs" onclick="openCoinTossModal()"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg> <span data-i18n="tossNav">Toss</span></button>
-  
+
+    <!-- More / Menu Button -->
+    <button class="btn btn-ghost btn-xs" id="headerMoreBtn" onclick="openMoreMenu()" title="More Tools & Menu">
+      <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      <span data-i18n="navMore">Menu</span>
+    </button>
+
+    <!-- User Panel / Sign In -->
     <div class="user-panel" id="userStatusPanel">
       <div class="user-avatar" id="headerAvatar">?</div>
-      <span class="user-name-label" id="headerUsername">Guest Player</span>
-      <span class="user-role-badge" id="headerUserRole" style="display:none;">ADMIN</span>
+      <span class="user-name-label" id="headerUsername" style="display:none;">Guest</span>
       <button class="btn btn-primary btn-xs" id="authBtn" onclick="openAuthModal()">Sign In</button>
     </div>
   </div>
 </header>
 
-<!-- Global Tournament Stage Navigation (Tabs) -->
+<!-- Global Tournament Stage Navigation (Desktop 5-Tab Bar) -->
 <nav class="app-stage-nav" id="appStageNav" aria-label="Tournament Stages">
   <div class="stage-nav-inner">
-    <button class="stage-tab active" id="tabNavSetup" onclick="showScreen('setupScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
-      <span>Setup & Roster</span>
-    </button>
-    <button class="stage-tab" id="tabNavDraft" onclick="showScreen('draftScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></span>
-      <span>Pool Draw</span>
-    </button>
-    <button class="stage-tab" id="tabNavGroups" onclick="showScreen('groupsScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
-      <span>Groups & Courts</span>
-    </button>
-    <button class="stage-tab" id="tabNavKnockout" onclick="showScreen('knockoutScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg></span>
-      <span>Playoff Bracket</span>
-    </button>
-    <button class="stage-tab" id="tabNavSchedule" onclick="showScreen('scheduleScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
-      <span>Match Schedule</span>
-    </button>
-    <button class="stage-tab" id="tabNavLeaderboard" onclick="showScreen('leaderboardScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg></span>
-      <span>Hall of Fame</span>
-    </button>
-    <button class="stage-tab" id="tabNavAnalytics" onclick="showScreen('analyticsScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM7 21h10M12 3v18M3 7h18"/></svg></span>
-      <span>H2H Analytics</span>
-    </button>
-    <button class="stage-tab" id="tabNavRules" onclick="showScreen('rulesScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
-      <span>BWF Rules & Guide</span>
+    <button class="stage-tab active" id="tabNavMatches" onclick="showScreen('groupsScreen')">
+      <span class="tab-icon"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg></span>
+      <span data-i18n="navMatches">Matches & Courts</span>
     </button>
     <button class="stage-tab" id="tabNavChallenges" onclick="showScreen('challengesScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg></span>
-      <span data-i18n="tabChallenges">Open Challenges</span>
+      <span class="tab-icon"><svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
+      <span data-i18n="navChallenges">Open Challenges</span>
     </button>
-    <button class="stage-tab" id="tabNavScorecards" onclick="showScreen('scorecardsScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg></span>
-      <span data-i18n="tabScorecards">Scorecards</span>
+    <button class="stage-tab" id="tabNavKnockout" onclick="showScreen('knockoutScreen')">
+      <span class="tab-icon"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg></span>
+      <span data-i18n="navBracket">Playoff Bracket</span>
     </button>
-    <button class="stage-tab" id="tabNavStadium" onclick="showScreen('stadiumScreen')">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg></span>
-      <span>Arena TV</span>
+    <button class="stage-tab" id="tabNavLeaderboard" onclick="showScreen('leaderboardScreen')">
+      <span class="tab-icon"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></span>
+      <span data-i18n="navRanking">Standings & Ranks</span>
     </button>
-    <button class="stage-tab" id="tabNavPlayerHub" onclick="showScreen('playerHubScreen')" style="display:none;">
-      <span class="tab-icon"><svg class="icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
-      <span>My Matches</span>
+    <button class="stage-tab" id="tabNavMore" onclick="openMoreMenu()">
+      <span class="tab-icon"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></span>
+      <span data-i18n="navMore">More Tools</span>
     </button>
   </div>
 </nav>
@@ -100,7 +77,7 @@ SCREENS_CONTENT = """
   <!-- ═══════════════════════════════════════════════════
        1. SETUP SCREEN (ENHANCED WITH REGISTERED USERS)
   ═══════════════════════════════════════════════════ -->
-  <section id="setupScreen" class="screen active">
+  <section id="setupScreen" class="screen">
     <div class="card" style="max-width:880px;margin:0 auto;">
       <div class="card-header">
         <div>
@@ -249,26 +226,35 @@ SCREENS_CONTENT = """
   <!-- ═══════════════════════════════════════════════════
        3. GROUP STAGES SCREEN
   ═══════════════════════════════════════════════════ -->
-  <section id="groupsScreen" class="screen">
-    <!-- Golden Awards Header Bar -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px;margin-bottom:24px;">
-      <div class="card" style="background:linear-gradient(135deg, rgba(245,158,11,0.12), rgba(0,0,0,0.3));border-color:rgba(245,158,11,0.3);display:flex;align-items:center;gap:16px;">
-        <div style="display:flex;justify-content:center;color:var(--clr-green);margin-bottom:8px;"><svg class="icon icon-3xl" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg></div>
-        <div>
-          <div style="font-size:0.75rem;font-weight:900;color:var(--clr-gold);letter-spacing:0.1em;text-transform:uppercase;">Golden Racket (Top Attack)</div>
-          <div id="goldenRacketLeader" style="font-size:1.2rem;font-weight:900;">Leader: None</div>
-          <div id="goldenRacketStats" style="font-size:0.8rem;color:var(--clr-text-muted);">0 smash points scored</div>
+  <section id="groupsScreen" class="screen active">
+    <!-- Friendly Quick Start / Welcome Launcher for School Students & Players -->
+    <div id="groupsWelcomeBanner" style="background:linear-gradient(135deg, rgba(16,185,129,0.14), rgba(245,158,11,0.08));border:1px solid rgba(16,185,129,0.3);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div style="font-weight:900;font-size:1rem;color:var(--clr-green);display:flex;align-items:center;gap:6px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span>Welcome to Badminton Cup!</span>
+        </div>
+        <div style="font-size:0.82rem;color:var(--clr-text-muted);margin-top:2px;">
+          Jump straight into matches, challenge anyone on the open board, or start a new tournament.
         </div>
       </div>
-      <div class="card" style="background:linear-gradient(135deg, rgba(34,197,94,0.12), rgba(0,0,0,0.3));border-color:rgba(34,197,94,0.3);display:flex;align-items:center;gap:16px;">
-        <div style="display:flex;justify-content:center;color:var(--clr-blue);margin-bottom:8px;"><svg class="icon icon-3xl" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-        <div>
-          <div style="font-size:0.75rem;font-weight:900;color:var(--clr-green);letter-spacing:0.1em;text-transform:uppercase;">Iron Net (Best Defense)</div>
-          <div id="goldenGloveLeader" style="font-size:1.2rem;font-weight:900;">Leader: None</div>
-          <div id="goldenGloveStats" style="font-size:0.8rem;color:var(--clr-text-muted);">0.0 points conceded / match</div>
-        </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-primary btn-xs" onclick="openNewChallengeModal()">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span data-i18n="createChalBtn">+ Open Challenge</span>
+        </button>
+        <button class="btn btn-ghost btn-xs" onclick="showScreen('setupScreen')">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span>Tournament Setup</span>
+        </button>
+        <button class="btn btn-ghost btn-xs" onclick="loadDemoData()">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span>Load Demo</span>
+        </button>
       </div>
     </div>
+
+
 
     <!-- Navigation & Action bar -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
@@ -742,6 +728,30 @@ SCREENS_CONTENT = """
         <button class="btn btn-ghost btn-sm" onclick="showScreen('groupsScreen')">&larr; Back to Tournament</button>
         <button class="btn btn-primary btn-sm" onclick="exportStandingsCSV()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV</button>
       </div>
+    <!-- Special Awards & Records -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:14px;margin-bottom:20px;">
+      <div class="card" style="display:flex;align-items:center;gap:14px;padding:14px;border-left:3px solid var(--clr-gold);">
+        <div style="color:var(--clr-gold);flex-shrink:0;">
+          <svg class="icon icon-2xl" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>
+        </div>
+        <div>
+          <div style="font-size:0.72rem;font-weight:700;color:var(--clr-gold);text-transform:uppercase;letter-spacing:0.04em;">Golden Racket (Top Attack)</div>
+          <div id="goldenRacketLeader" style="font-size:1.05rem;font-weight:800;color:var(--clr-text);">Leader: None</div>
+          <div id="goldenRacketStats" style="font-size:0.75rem;color:var(--clr-text-muted);">0 smash points scored</div>
+        </div>
+      </div>
+      <div class="card" style="display:flex;align-items:center;gap:14px;padding:14px;border-left:3px solid var(--clr-green);">
+        <div style="color:var(--clr-green);flex-shrink:0;">
+          <svg class="icon icon-2xl" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <div style="font-size:0.72rem;font-weight:700;color:var(--clr-green);text-transform:uppercase;letter-spacing:0.04em;">Iron Net (Best Defense)</div>
+          <div id="goldenGloveLeader" style="font-size:1.05rem;font-weight:800;color:var(--clr-text);">Leader: None</div>
+          <div id="goldenGloveStats" style="font-size:0.75rem;color:var(--clr-text-muted);">0.0 points conceded / match</div>
+        </div>
+      </div>
+    </div>
+
     </div>
 
     <div class="card">
@@ -1037,4 +1047,30 @@ SCREENS_CONTENT = """
   </section>
 
 </main>
+<!-- Mobile Bottom Navigation Bar (100% Mobile Responsive) -->
+<nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
+  <div class="mobile-bottom-nav-inner">
+    <button class="mobile-nav-btn active" id="mobNavMatches" onclick="showScreen('groupsScreen')">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>
+      <span data-i18n="navMatches">Matches</span>
+    </button>
+    <button class="mobile-nav-btn" id="mobNavChallenges" onclick="showScreen('challengesScreen')">
+      <svg class="icon" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <span data-i18n="navChallenges">Challenges</span>
+    </button>
+    <button class="mobile-nav-btn" id="mobNavKnockout" onclick="showScreen('knockoutScreen')">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg>
+      <span data-i18n="navBracket">Bracket</span>
+    </button>
+    <button class="mobile-nav-btn" id="mobNavLeaderboard" onclick="showScreen('leaderboardScreen')">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+      <span data-i18n="navRanking">Ranking</span>
+    </button>
+    <button class="mobile-nav-btn" id="mobNavMore" onclick="openMoreMenu()">
+      <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+      <span data-i18n="navMore">More</span>
+    </button>
+  </div>
+</nav>
+
 """

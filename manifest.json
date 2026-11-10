@@ -1,26 +1,54 @@
 {
   "name": "Badminton Cup — Pro Tournament Suite",
   "short_name": "BadmintonCup",
-  "description": "Pro BWF Tournament Suite with live umpire scoring, official laws, pool draw, bracket engine, and admin dashboard",
+  "description": "Pro BWF Tournament Suite with live umpire scoring, official laws, open challenges, pool draw, bracket engine, and push notifications",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#090d16",
   "theme_color": "#10b981",
+  "categories": ["sports", "games", "utilities"],
   "icons": [
     {
       "src": "icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "icons/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Live Matches",
+      "short_name": "Matches",
+      "description": "View live court matches and scores",
+      "url": "./index.html#groupsScreen",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Open Challenges",
+      "short_name": "Challenges",
+      "description": "Post or join open badminton challenges",
+      "url": "./index.html#challengesScreen",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Tournament Bracket",
+      "short_name": "Bracket",
+      "description": "Playoff knockout bracket and podium",
+      "url": "./index.html#knockoutScreen",
+      "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

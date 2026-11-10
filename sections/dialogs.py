@@ -547,5 +547,222 @@ DIALOGS_CONTENT = """
     </div>
   </div>
 </dialog>
+<!-- ═══════════════════════════════════════════════════
+     MORE MENU MODAL (Streamlined Secondary Tools)
+═══════════════════════════════════════════════════ -->
+<dialog id="moreMenuModal" class="modal" aria-labelledby="moreMenuTitle">
+  <div class="modal-box" style="max-width:720px;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
+      <h3 id="moreMenuTitle" style="font-family:var(--font-display);font-size:1.25rem;display:flex;align-items:center;gap:8px;margin:0;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        <span data-i18n="moreMenuTitle">All Features & Tools</span>
+      </h3>
+      <button class="modal-close" onclick="document.getElementById('moreMenuModal').close()" aria-label="Close">&times;</button>
+    </div>
 
+    <!-- Active Tournament Quick Selection -->
+    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:0.8rem;font-weight:700;color:var(--clr-gold);text-transform:uppercase;">Tournament:</span>
+        <select id="tournamentSelectMore" class="modal-input" style="width:auto;padding:4px 10px;font-size:0.85rem;" onchange="switchActiveTournament(this.value)">
+          <option value="main">The Badminton Cup 2026</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-xs" onclick="document.getElementById('moreMenuModal').close();showScreen('setupScreen');">
+        + New Tournament
+      </button>
+    </div>
+
+    <!-- Grid of Features -->
+    <div class="more-grid">
+      <!-- 1. Tournament Setup -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('setupScreen');">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Setup & Roster</span>
+          <span class="more-card-desc">Configure players, categories & courts</span>
+        </div>
+      </button>
+
+      <!-- 2. Pool Draw -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('draftScreen');">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83M16.62 12l-5.74 9.94"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Pool Draw</span>
+          <span class="more-card-desc">Interactive live group seed machine</span>
+        </div>
+      </button>
+
+      <!-- 3. Schedule -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('scheduleScreen');">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Full Schedule</span>
+          <span class="more-card-desc">Court time slots and match order</span>
+        </div>
+      </button>
+
+      <!-- 4. Scorecards -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('scorecardsScreen');">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Scorecards</span>
+          <span class="more-card-desc">Detailed match scores & exports</span>
+        </div>
+      </button>
+
+      <!-- 5. Head-to-Head Analytics -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('analyticsScreen');">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">H2H Analytics</span>
+          <span class="more-card-desc">Player stats, win rates & streaks</span>
+        </div>
+      </button>
+
+      <!-- 6. BWF Rules & Guide -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('rulesScreen');">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">BWF Rules & Laws</span>
+          <span class="more-card-desc">Scoring rules, service faults & guides</span>
+        </div>
+      </button>
+
+      <!-- 7. Stadium Arena TV -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('stadiumScreen');">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Stadium Arena TV</span>
+          <span class="more-card-desc">Multi-court projector / big screen mode</span>
+        </div>
+      </button>
+
+      <!-- 8. Coin Toss -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();openCoinTossModal();">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Digital Coin Toss</span>
+          <span class="more-card-desc">Flip to decide serve or court side</span>
+        </div>
+      </button>
+
+      <!-- 9. Push Notifications -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();openNotificationModal();">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Push Notifications</span>
+          <span class="more-card-desc">Get match finish & challenge alerts</span>
+        </div>
+      </button>
+
+      <!-- 10. Install App (PWA) -->
+      <button class="more-card-item" id="moreInstallBtn" onclick="promptInstallPWA();">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Install App (PWA)</span>
+          <span class="more-card-desc">Add to phone home screen & offline use</span>
+        </div>
+      </button>
+
+      <!-- 11. Theme Switcher -->
+      <button class="more-card-item" onclick="cycleTheme();">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Toggle Theme</span>
+          <span class="more-card-desc">Switch Dark / Light / High Contrast</span>
+        </div>
+      </button>
+
+      <!-- 12. Admin Dashboard -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();openAdminDashboardWithGuard();">
+        <div class="more-card-icon">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Admin Dashboard</span>
+          <span class="more-card-desc">Director oversight & security audit</span>
+        </div>
+      </button>
+
+      <!-- 13. Reset Tournament Data -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();openDataResetModal();" style="border-color:rgba(239,68,68,0.3);">
+        <div class="more-card-icon" style="color:#f87171;">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title" style="color:#f87171;">Reset / Start Over</span>
+          <span class="more-card-desc">Clear tournament matches or factory reset</span>
+        </div>
+      </button>
+    </div>
+
+    <div style="text-align:right;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('moreMenuModal').close()" data-i18n="cancelBtn">Close Menu</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ═══════════════════════════════════════════════════
+     PUSH NOTIFICATIONS MODAL
+═══════════════════════════════════════════════════ -->
+<dialog id="notificationSettingsModal" class="modal" aria-labelledby="notifyModalTitle">
+  <div class="modal-box" style="max-width:480px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
+      <h3 id="notifyModalTitle" style="font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:8px;margin:0;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span data-i18n="notifyModalTitle">Push Notifications</span>
+      </h3>
+      <button class="modal-close" onclick="document.getElementById('notificationSettingsModal').close()" aria-label="Close">&times;</button>
+    </div>
+
+    <div style="text-align:center;padding:16px 0;">
+      <div id="notifyStatusIcon" style="display:inline-flex;padding:16px;border-radius:50%;background:rgba(16,185,129,0.1);color:var(--clr-green);margin-bottom:12px;">
+        <svg class="icon icon-2xl" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <h4 id="notifyStatusHeading" style="font-size:1.05rem;font-weight:700;margin:0 0 6px;">Notification Status</h4>
+      <p id="notifyStatusDesc" style="font-size:0.85rem;color:var(--clr-text-muted);line-height:1.4;margin:0 0 18px;">
+        Get instant alerts on your phone or computer whenever a new open challenge is posted, a match completes, or a tournament champion is crowned.
+      </p>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="btn btn-primary" id="btnRequestNotification" onclick="requestNotificationPermission()" style="padding:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span data-i18n="enableNotifyBtn">Turn On Push Notifications</span>
+        </button>
+
+        <button class="btn btn-ghost" id="btnTestNotification" onclick="testPushNotification()" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span data-i18n="testNotifyBtn">⚡ Send Test Notification</span>
+        </button>
+      </div>
+    </div>
+
+    <div style="text-align:right;border-top:1px solid var(--clr-border);padding-top:12px;margin-top:14px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('notificationSettingsModal').close()" data-i18n="cancelBtn">Close</button>
+    </div>
+  </div>
+</dialog>
 """
