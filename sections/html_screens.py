@@ -92,7 +92,7 @@ SCREENS_CONTENT = """
       </div>
 
       <!-- Quick Launch Banner -->
-      <div style="background:linear-gradient(135deg, rgba(34,197,94,0.1), rgba(245,158,11,0.06));border:1px solid rgba(34,197,94,0.25);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+      <div style="background:var(--clr-surface-card);border:1px solid var(--clr-border);border-left:3px solid var(--clr-green);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
         <div>
           <div style="font-weight:900;font-size:0.95rem;color:var(--clr-green);display:flex;align-items:center;gap:6px;">
             <span><svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
@@ -228,7 +228,7 @@ SCREENS_CONTENT = """
   ═══════════════════════════════════════════════════ -->
   <section id="groupsScreen" class="screen active">
     <!-- Friendly Quick Start / Welcome Launcher for School Students & Players -->
-    <div id="groupsWelcomeBanner" style="background:linear-gradient(135deg, rgba(16,185,129,0.14), rgba(245,158,11,0.08));border:1px solid rgba(16,185,129,0.3);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+    <div id="groupsWelcomeBanner" style="background:var(--clr-surface-card);border:1px solid var(--clr-border);border-left:3px solid var(--clr-green);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
       <div>
         <div style="font-weight:900;font-size:1rem;color:var(--clr-green);display:flex;align-items:center;gap:6px;">
           <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
@@ -593,7 +593,7 @@ SCREENS_CONTENT = """
     <!-- ── TAB 1: APP USER GUIDE ── -->
     <div id="guideSectionApp" class="guide-content-section">
       <!-- Quick Start Overview -->
-      <div class="card" style="margin-bottom:20px;background:linear-gradient(135deg, rgba(16,185,129,0.1), rgba(6,182,212,0.06));border-color:rgba(16,185,129,0.3);">
+      <div class="card" style="margin-bottom:20px;background:var(--clr-surface-card);border:1px solid var(--clr-border);border-left:3px solid var(--clr-green);">
         <h3 style="font-size:1.1rem;font-weight:800;color:var(--clr-green);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           Quick Start: Get Started in 30 Seconds

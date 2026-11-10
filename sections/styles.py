@@ -695,7 +695,7 @@ body.theme-light .signature-canvas-container {
 }
 .score-side-panel.serving {
   border-color: var(--clr-green);
-  box-shadow: 0 0 16px var(--clr-green-glow);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 .score-side-panel.serving::before {
   content: '• SERVING';
@@ -709,7 +709,7 @@ body.theme-light .signature-canvas-container {
   padding: 2px 8px;
   border-radius: var(--radius-xs);
   letter-spacing: 0.06em;
-  box-shadow: 0 2px 6px var(--clr-green-glow);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 .score-digit {
   font-family: var(--font-display);
@@ -750,7 +750,7 @@ body.theme-light .score-digit {
 .set-pip.won {
   background: var(--clr-green);
   border-color: var(--clr-green);
-  box-shadow: 0 0 6px var(--clr-green);
+  box-shadow: 0 0 0 1px var(--clr-green);
 }
 
 /* Status Badges (SupportHub Flat Sub-surface Style) */
@@ -888,7 +888,7 @@ body.theme-light .score-digit {
 }
 .stadium-court-card.live-court {
   border-color: var(--clr-green);
-  box-shadow: 0 0 16px var(--clr-green-glow);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* ═══════════════════════════════════════════════════
@@ -1091,7 +1091,7 @@ body.theme-light .modal-input {
 .modal-input:focus {
   outline: none;
   border-color: var(--clr-green);
-  box-shadow: 0 0 0 2px var(--clr-green-glow);
+  box-shadow: 0 0 0 1px var(--clr-green);
 }
 
 #appToast {
@@ -1160,7 +1160,7 @@ body.theme-light .schedule-filter-bar {
 }
 .schedule-card.live-fixture {
   border-color: var(--clr-green);
-  box-shadow: 0 0 12px var(--clr-green-glow);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
 }
 .court-pill {
   font-size: 0.8rem;
@@ -1416,7 +1416,7 @@ body.theme-light .schedule-filter-bar {
   height: 7px;
   border-radius: 50%;
   background: #10b981;
-  box-shadow: 0 0 6px #10b981;
+  box-shadow: none;
   display: none;
 }
 .notify-btn.active .notify-badge-dot {
