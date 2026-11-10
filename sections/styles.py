@@ -2355,5 +2355,78 @@ body.modal-open {
   animation: intervalPulse 1.8s ease-in-out infinite;
 }
 
+
+/* ═══════════════════════════════════════════════════
+   BASELINE UI: TYPOGRAPHY, MOTION & COMPOSITOR RULES
+═══════════════════════════════════════════════════ */
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+  font-family: var(--font-display);
+  letter-spacing: -0.012em;
+}
+
+p, .lead-desc, .modal-desc, .empty-state-desc, .more-card-desc, .rule-item-desc {
+  text-wrap: pretty;
+}
+
+/* Tabular numerals for stable live sports figures */
+.score-digit,
+.score-tag,
+.stat-value,
+.coin-val,
+#matchDurationClock,
+#intervalSecondsDisplay,
+#headerCoinCount,
+.table-rank,
+td,
+th,
+.bracket-team-row span:last-child {
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+
+/* Micro-interaction feedback (max 150ms, compositor only) */
+.btn,
+.stage-tab,
+.mobile-nav-btn,
+.more-card-item,
+.notify-btn,
+.quick-win-btn,
+.quick-score-btn {
+  touch-action: manipulation;
+  transition: transform 120ms ease-out, opacity 120ms ease-out, background-color 140ms ease-out, border-color 140ms ease-out;
+}
+
+.btn:active,
+.stage-tab:active,
+.mobile-nav-btn:active,
+.more-card-item:active,
+.notify-btn:active,
+.quick-win-btn:active,
+.quick-score-btn:active {
+  transform: scale(0.975);
+}
+
+/* Accessibility: Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Table row interactive feedback */
+tbody tr {
+  transition: background-color 100ms ease;
+}
+tbody tr:hover {
+  background: rgba(255, 255, 255, 0.025);
+}
+body.theme-light tbody tr:hover {
+  background: #f8fafc;
+}
+
 </style>
 """
