@@ -557,83 +557,293 @@ SCREENS_CONTENT = """
   <!-- ═══════════════════════════════════════════════════
        7. OFFICIAL BWF RULES & REGULATIONS HUB
   ═══════════════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════════
+       7. COMPLETE USER GUIDE & BWF RULES HUB
+  ═══════════════════════════════════════════════════ -->
   <section id="rulesScreen" class="screen">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
       <div>
-        <h2 style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Official BWF Rules & Regulations Hub</h2>
-        <p style="color:var(--clr-text-muted);font-size:0.85rem;">Standard laws of badminton governed by the Badminton World Federation (BWF).</p>
+        <h2 style="font-family:var(--font-display);font-size:1.3rem;font-weight:800;display:flex;align-items:center;gap:8px;">
+          <svg class="icon icon-md" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          <span>Complete User Guide & BWF Rules</span>
+        </h2>
+        <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-top:2px;">
+          Everything you need to know about playing, scoring, challenges, betting, and official BWF laws.
+        </p>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="showScreen('groupsScreen')">&larr; Back to Tournament</button>
+      <button class="btn btn-ghost btn-sm" onclick="showScreen('groupsScreen')">&larr; Back to Matches</button>
     </div>
 
-    <!-- Rules Cards Grid -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:20px;margin-bottom:24px;">
-      <div class="rules-card">
-        <h3>21-Point Rally Scoring System</h3>
-        <p style="font-size:0.86rem;color:var(--clr-text-muted);">
-          A match consists of the best of 3 games of 21 points. The side winning a rally adds a point to its score regardless of who served.
+    <!-- Guide Sub-Navigation Tabs -->
+    <div style="display:flex;gap:8px;margin-bottom:20px;overflow-x:auto;padding-bottom:6px;border-bottom:1px solid var(--clr-border);">
+      <button class="btn btn-ghost btn-sm active" id="guideTabAppBtn" onclick="switchGuideTab('app')">
+        📱 App User Guide
+      </button>
+      <button class="btn btn-ghost btn-sm" id="guideTabRulesBtn" onclick="switchGuideTab('rules')">
+        🏸 Official BWF Rules
+      </button>
+      <button class="btn btn-ghost btn-sm" id="guideTabRolesBtn" onclick="switchGuideTab('roles')">
+        🛡️ Roles & Permissions
+      </button>
+      <button class="btn btn-ghost btn-sm" id="guideTabFaqBtn" onclick="switchGuideTab('faq')">
+        ❓ Frequently Asked Questions
+      </button>
+    </div>
+
+    <!-- ── TAB 1: APP USER GUIDE ── -->
+    <div id="guideSectionApp" class="guide-content-section">
+      <!-- Quick Start Overview -->
+      <div class="card" style="margin-bottom:20px;background:linear-gradient(135deg, rgba(16,185,129,0.1), rgba(6,182,212,0.06));border-color:rgba(16,185,129,0.3);">
+        <h3 style="font-size:1.1rem;font-weight:800;color:var(--clr-green);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Quick Start: Get Started in 30 Seconds
+        </h3>
+        <p style="font-size:0.88rem;color:var(--clr-text);line-height:1.5;">
+          Badminton Cup is built for casual players, school students, and professional tournament directors. 
+          You can jump directly into matches, open challenges for classmates or colleagues, bet virtual coins on match winners, or manage full multi-court tournament brackets.
         </p>
-        <div class="rules-callout">
-          <strong>Deuce Rule:</strong> At 20-all, the side which gains a 2-point lead first wins the game (e.g. 22-20, 24-22).
-        </div>
-        <div class="rules-callout">
-          <strong>Sudden Death Cap:</strong> At 29-all, the side scoring the 30th point wins the game (30-29 max cap).
-        </div>
       </div>
 
-      <div class="rules-card">
-        <h3>Service Courts & Diagonal Serving</h3>
-        <p style="font-size:0.86rem;color:var(--clr-text-muted);">
-          Service court position is determined strictly by the server's score:
-        </p>
-        <div class="rules-callout">
-          <strong>0 or Even Score (0, 2, 4, 6...):</strong> Serve from the <strong>RIGHT</strong> service court into the diagonal right court.
+      <!-- Step-by-Step Grid -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px;margin-bottom:24px;">
+        <!-- Step 1 -->
+        <div class="card" style="padding:18px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span style="width:28px;height:28px;border-radius:50%;background:rgba(16,185,129,0.15);color:var(--clr-green);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;">1</span>
+            <h4 style="font-size:0.95rem;font-weight:700;color:var(--clr-text);margin:0;">Open Challenges</h4>
+          </div>
+          <p style="font-size:0.82rem;color:var(--clr-text-muted);line-height:1.45;margin-bottom:10px;">
+            Head to the <strong>Challenges</strong> tab to post an open match invite. Enter your name, choose Singles or Doubles, set target points (e.g. 21 pts), and write your court location.
+          </p>
+          <div style="font-size:0.75rem;color:var(--clr-green);font-weight:600;">✓ Open to all general users & students</div>
         </div>
-        <div class="rules-callout">
-          <strong>Odd Score (1, 3, 5, 7...):</strong> Serve from the <strong>LEFT</strong> service court into the diagonal left court.
-        </div>
-      </div>
 
-      <div class="rules-card">
-        <h3>Intervals & Change of Ends</h3>
-        <p style="font-size:0.86rem;color:var(--clr-text-muted);">
-          Standard rest and coaching intervals:
-        </p>
-        <div class="rules-callout">
-          <strong>11-Point Interval:</strong> A 60-second break occurs when the leading score reaches 11 points in any game.
+        <!-- Step 2 -->
+        <div class="card" style="padding:18px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span style="width:28px;height:28px;border-radius:50%;background:rgba(16,185,129,0.15);color:var(--clr-green);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;">2</span>
+            <h4 style="font-size:0.95rem;font-weight:700;color:var(--clr-text);margin:0;">Instant Winner & Scoring</h4>
+          </div>
+          <p style="font-size:0.82rem;color:var(--clr-text-muted);line-height:1.45;margin-bottom:10px;">
+            On any match card on the <strong>Matches</strong> tab, you can record a game in 3 ways:
+          </p>
+          <ul style="font-size:0.8rem;color:var(--clr-text-muted);padding-left:18px;line-height:1.4;">
+            <li><strong>[🏆 Team Won]</strong>: 1-tap instant 2-0 victory.</li>
+            <li><strong>[⚡ Score]</strong>: Type exact final set scores (e.g. 21–18).</li>
+            <li><strong>[🏸 Referee]</strong>: Point-by-point live umpire with speech.</li>
+          </ul>
         </div>
-        <div class="rules-callout">
-          <strong>Between Games:</strong> A 120-second (2-minute) interval is allowed between games.
-        </div>
-        <div class="rules-callout">
-          <strong>Deciding 3rd Game:</strong> Players change ends when the leading score reaches 11 points.
-        </div>
-      </div>
 
-      <div class="rules-card">
-        <h3>Card Penalties & Disciplinary Code</h3>
-        <p style="font-size:0.86rem;color:var(--clr-text-muted);">
-          The official umpire administers cards for misconduct or intentional delay:
-        </p>
-        <div class="rules-callout" style="border-color:#fde047;">
-          <strong style="color:#fde047;"><span style="display:inline-block;width:10px;height:14px;background:#f59e0b;border-radius:2px;vertical-align:-2px;margin-right:4px;"></span>Yellow Card:</strong> Warning for misconduct or time wasting.
+        <!-- Step 3 -->
+        <div class="card" style="padding:18px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span style="width:28px;height:28px;border-radius:50%;background:rgba(245,158,11,0.15);color:var(--clr-gold);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;">3</span>
+            <h4 style="font-size:0.95rem;font-weight:700;color:var(--clr-text);margin:0;">Virtual Coin Betting</h4>
+          </div>
+          <p style="font-size:0.82rem;color:var(--clr-text-muted);line-height:1.45;margin-bottom:10px;">
+            Every user starts with <strong>100 free coins</strong>. Tap <strong>[🎲 Predict]</strong> on any scheduled match to wager coins on Team A or Team B at 1.90x odds.
+          </p>
+          <div style="font-size:0.75rem;color:var(--clr-gold);font-weight:600;">✓ Instant automatic coin payouts on match win!</div>
         </div>
-        <div class="rules-callout" style="border-color:#ef4444;">
-          <strong style="color:#fca5a5;"><span style="display:inline-block;width:10px;height:14px;background:#ef4444;border-radius:2px;vertical-align:-2px;margin-right:4px;"></span>Red Card:</strong> Fault awarded against offender; 1 point awarded to opponent.
-        </div>
-        <div class="rules-callout" style="border-color:#94a3b8;">
-          <strong style="color:#f1f5f9;">⬛ Black Card:</strong> Disqualification from tournament (awarded by Referee).
+
+        <!-- Step 4 -->
+        <div class="card" style="padding:18px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <span style="width:28px;height:28px;border-radius:50%;background:rgba(6,182,212,0.15);color:var(--clr-cyan);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;">4</span>
+            <h4 style="font-size:0.95rem;font-weight:700;color:var(--clr-text);margin:0;">PWA & Push Notifications</h4>
+          </div>
+          <p style="font-size:0.82rem;color:var(--clr-text-muted);line-height:1.45;margin-bottom:10px;">
+            Install the app on your phone via the <strong>+ Install</strong> button or browser menu. Tap the 🔔 bell in the top bar to enable live alerts for match finishes and open challenges.
+          </p>
+          <div style="font-size:0.75rem;color:var(--clr-cyan);font-weight:600;">✓ Works 100% offline with cached service worker</div>
         </div>
       </div>
     </div>
 
-    <!-- Interactive Service Court Simulator -->
-    <div class="card" style="margin-bottom:24px;">
-      <h3 class="card-title" style="margin-bottom:12px;">Interactive Service Court Calculator</h3>
-      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-        <label for="ruleScoreTestInput" style="font-size:0.85rem;font-weight:700;">Enter Server's Current Score:</label>
-        <input type="number" id="ruleScoreTestInput" class="modal-input" style="width:120px;" value="14" min="0" max="30" oninput="testRuleServiceCourt(this.value)">
-        <div id="ruleScoreTestResult" style="font-weight:800;font-size:0.95rem;color:var(--clr-gold);">Right (Even) Court &rarr; Serving diagonally to Right Court</div>
+    <!-- ── TAB 2: OFFICIAL BWF RULES & LAWS ── -->
+    <div id="guideSectionRules" class="guide-content-section" style="display:none;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:18px;margin-bottom:24px;">
+        <div class="rules-card">
+          <h3>21-Point Rally Scoring System</h3>
+          <p style="font-size:0.85rem;color:var(--clr-text-muted);">
+            A match consists of the best of 3 games of 21 points. The side winning a rally adds a point to its score regardless of who served.
+          </p>
+          <div class="rules-callout">
+            <strong>Deuce Rule:</strong> At 20-all, the side which gains a 2-point lead first wins the game (e.g. 22-20, 24-22).
+          </div>
+          <div class="rules-callout">
+            <strong>Sudden Death Cap:</strong> At 29-all, the side scoring the 30th point wins the game (30-29 max cap).
+          </div>
+        </div>
+
+        <div class="rules-card">
+          <h3>Service Courts & Diagonal Serving</h3>
+          <p style="font-size:0.85rem;color:var(--clr-text-muted);">
+            Service court position is determined strictly by the server's score:
+          </p>
+          <div class="rules-callout">
+            <strong>0 or Even Score (0, 2, 4, 6...):</strong> Serve from the <strong>RIGHT</strong> service court into the diagonal right court.
+          </div>
+          <div class="rules-callout">
+            <strong>Odd Score (1, 3, 5, 7...):</strong> Serve from the <strong>LEFT</strong> service court into the diagonal left court.
+          </div>
+        </div>
+
+        <div class="rules-card">
+          <h3>Intervals & Change of Ends</h3>
+          <p style="font-size:0.85rem;color:var(--clr-text-muted);">
+            Standard rest and coaching intervals:
+          </p>
+          <div class="rules-callout">
+            <strong>11-Point Interval:</strong> A 60-second break occurs when the leading score reaches 11 points in any game.
+          </div>
+          <div class="rules-callout">
+            <strong>Between Games:</strong> A 120-second (2-minute) interval is allowed between games.
+          </div>
+          <div class="rules-callout">
+            <strong>Deciding 3rd Game:</strong> Players change ends when the leading score reaches 11 points.
+          </div>
+        </div>
+
+        <div class="rules-card">
+          <h3>Card Penalties & Disciplinary Code</h3>
+          <p style="font-size:0.85rem;color:var(--clr-text-muted);">
+            The umpire administers official cards for misconduct or intentional delay:
+          </p>
+          <div class="rules-callout" style="border-color:#fde047;">
+            <strong style="color:#fde047;">🟨 Yellow Card:</strong> Warning for misconduct or time wasting.
+          </div>
+          <div class="rules-callout" style="border-color:#ef4444;">
+            <strong style="color:#fca5a5;">🟥 Red Card:</strong> Fault awarded against offender; 1 point awarded to opponent.
+          </div>
+          <div class="rules-callout" style="border-color:#94a3b8;">
+            <strong style="color:#f1f5f9;">⬛ Black Card:</strong> Disqualification from tournament (awarded by Referee).
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactive Service Court Simulator -->
+      <div class="card" style="margin-bottom:24px;">
+        <h3 class="card-title" style="margin-bottom:12px;">Interactive Service Court Calculator</h3>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <label for="ruleScoreTestInput" style="font-size:0.85rem;font-weight:700;">Enter Server's Current Score:</label>
+          <input type="number" id="ruleScoreTestInput" class="modal-input" style="width:120px;" value="14" min="0" max="30" oninput="testRuleServiceCourt(this.value)">
+          <div id="ruleScoreTestResult" style="font-weight:800;font-size:0.95rem;color:var(--clr-gold);">Right (Even) Court &rarr; Serving diagonally to Right Court</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB 3: ROLES & CAPABILITIES REFERENCE ── -->
+    <div id="guideSectionRoles" class="guide-content-section" style="display:none;">
+      <div class="card" style="margin-bottom:20px;overflow-x:auto;">
+        <h3 class="card-title" style="margin-bottom:14px;">Capabilities & Permissions Matrix</h3>
+        <table class="table" style="width:100%;font-size:0.86rem;">
+          <thead>
+            <tr>
+              <th style="text-align:left;">Feature / Capability</th>
+              <th style="text-align:center;">General User (Player / Guest)</th>
+              <th style="text-align:center;">Tournament Director (Admin)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Open Public Challenges</strong></td>
+              <td style="text-align:center;color:var(--clr-green);font-weight:700;">✓ Allowed</td>
+              <td style="text-align:center;color:var(--clr-green);font-weight:700;">✓ Allowed</td>
+            </tr>
+            <tr>
+              <td><strong>Accept & Play Matches</strong></td>
+              <td style="text-align:center;color:var(--clr-green);font-weight:700;">✓ Allowed</td>
+              <td style="text-align:center;color:var(--clr-green);font-weight:700;">✓ Allowed</td>
+            </tr>
+            <tr>
+              <td><strong>Virtual Coin Betting & Predictions</strong></td>
+              <td style="text-align:center;color:var(--clr-green);font-weight:700;">✓ Allowed (100 free coins)</td>
+              <td style="text-align:center;color:var(--clr-green);font-weight:700;">✓ Allowed</td>
+            </tr>
+            <tr>
+              <td><strong>Live Referee Umpire Mode</strong></td>
+              <td style="text-align:center;color:var(--clr-green);font-weight:700;">✓ Allowed</td>
+              <td style="text-align:center;color:var(--clr-green);font-weight:700;">✓ Allowed</td>
+            </tr>
+            <tr>
+              <td><strong>View Standings, Bracket & Stats</strong></td>
+              <td style="text-align:center;color:var(--clr-green);font-weight:700;">✓ Allowed</td>
+              <td style="text-align:center;color:var(--clr-green);font-weight:700;">✓ Allowed</td>
+            </tr>
+            <tr>
+              <td><strong>Configure Tournament & Roster</strong></td>
+              <td style="text-align:center;color:var(--clr-red);font-weight:750;">✕ Admin Guard</td>
+              <td style="text-align:center;color:var(--clr-green);font-weight:700;">✓ Full Control</td>
+            </tr>
+            <tr>
+              <td><strong>Run / Re-shuffle Pool Draw</strong></td>
+              <td style="text-align:center;color:var(--clr-red);font-weight:750;">✕ Admin Guard</td>
+              <td style="text-align:center;color:var(--clr-green);font-weight:700;">✓ Full Control</td>
+            </tr>
+            <tr>
+              <td><strong>Override Official Match Scores</strong></td>
+              <td style="text-align:center;color:var(--clr-red);font-weight:750;">✕ Admin Guard</td>
+              <td style="text-align:center;color:var(--clr-green);font-weight:700;">✓ Full Control</td>
+            </tr>
+            <tr>
+              <td><strong>Reset Data / Factory Reset</strong></td>
+              <td style="text-align:center;color:var(--clr-red);font-weight:750;">✕ Admin Guard</td>
+              <td style="text-align:center;color:var(--clr-green);font-weight:700;">✓ Full Control</td>
+            </tr>
+            <tr>
+              <td><strong>Director Dashboard & Audit Logs</strong></td>
+              <td style="text-align:center;color:var(--clr-red);font-weight:750;">✕ Admin Guard</td>
+              <td style="text-align:center;color:var(--clr-green);font-weight:700;">✓ Full Control</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="text-align:center;margin-top:14px;">
+        <button class="btn btn-primary btn-sm" onclick="toggleRoleDemo()">
+          ⚡ Quick Switch Role (Toggle Admin / Player)
+        </button>
+      </div>
+    </div>
+
+    <!-- ── TAB 4: FREQUENTLY ASKED QUESTIONS (FAQ) ── -->
+    <div id="guideSectionFaq" class="guide-content-section" style="display:none;">
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px;">
+        <div class="card" style="padding:16px;">
+          <h4 style="font-size:0.95rem;font-weight:700;color:var(--clr-text);margin-bottom:6px;">
+            Q: How do I start a tournament from scratch?
+          </h4>
+          <p style="font-size:0.84rem;color:var(--clr-text-muted);line-height:1.45;">
+            Switch to Admin mode (or sign in as Director), open the Menu, and select <strong>Setup & Roster</strong>. You can click <strong>"Load Pro Demo Roster"</strong> to instantly populate 8 world champions, or enter your own custom player roster and click <strong>"Start Tournament"</strong>.
+          </p>
+        </div>
+
+        <div class="card" style="padding:16px;">
+          <h4 style="font-size:0.95rem;font-weight:700;color:var(--clr-text);margin-bottom:6px;">
+            Q: Can I use this app without an internet connection?
+          </h4>
+          <p style="font-size:0.84rem;color:var(--clr-text-muted);line-height:1.45;">
+            Yes! Badminton Cup is a full Progressive Web App (PWA) with a Service Worker cache. Once loaded, you can score matches, flip coins, view rules, and record results completely offline in a gym or school court.
+          </p>
+        </div>
+
+        <div class="card" style="padding:16px;">
+          <h4 style="font-size:0.95rem;font-weight:700;color:var(--clr-text);margin-bottom:6px;">
+            Q: Are coins real money?
+          </h4>
+          <p style="font-size:0.84rem;color:var(--clr-text-muted);line-height:1.45;">
+            No. Coins are 100% virtual fun points for fan predictions and school friendly competitions. There are no real money payments or microtransactions. You receive 100 free coins and can claim 50 bonus coins anytime.
+          </p>
+        </div>
+
+        <div class="card" style="padding:16px;">
+          <h4 style="font-size:0.95rem;font-weight:700;color:var(--clr-text);margin-bottom:6px;">
+            Q: How does the Playoff Bracket work?
+          </h4>
+          <p style="font-size:0.84rem;color:var(--clr-text-muted);line-height:1.45;">
+            After group matches finish, top players from Pool A and Pool B are seeded into the knockout bracket (Quarter-Finals, Semi-Finals, and Grand Final). Tap the winner on each bracket match card to automatically advance them to the next round until the Champion is crowned!
+          </p>
+        </div>
       </div>
     </div>
   </section>

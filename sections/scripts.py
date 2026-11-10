@@ -2418,6 +2418,17 @@ function runAnalyticsComparison() {
 /* ═══════════════════════════════════════════════════
    BWF RULES INTERACTIVE SERVICE COURT TESTER
 ═══════════════════════════════════════════════════ */
+
+function switchGuideTab(tabName) {
+  const tabs = ['app', 'rules', 'roles', 'faq'];
+  tabs.forEach(t => {
+    const sec = document.getElementById('guideSection' + t.charAt(0).toUpperCase() + t.slice(1));
+    const btn = document.getElementById('guideTab' + t.charAt(0).toUpperCase() + t.slice(1) + 'Btn');
+    if (sec) sec.style.display = (t === tabName) ? 'block' : 'none';
+    if (btn) btn.classList.toggle('active', t === tabName);
+  });
+}
+
 function testRuleServiceCourt(val) {
   const score = parseInt(val, 10);
   const res = document.getElementById('ruleScoreTestResult');

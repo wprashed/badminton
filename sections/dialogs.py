@@ -636,8 +636,8 @@ DIALOGS_CONTENT = """
           <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
         </div>
         <div class="more-card-text">
-          <span class="more-card-title">BWF Rules & Laws</span>
-          <span class="more-card-desc">Scoring rules, service faults & guides</span>
+          <span class="more-card-title">Complete User Guide & Rules</span>
+          <span class="more-card-desc">Step-by-step app guide, betting, challenge rules & BWF laws</span>
         </div>
       </button>
 
