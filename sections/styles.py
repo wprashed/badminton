@@ -1066,35 +1066,42 @@ dialog::backdrop {
   box-sizing: border-box;
   position: relative;
 }
+button.modal-close,
 .modal-close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-xs);
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--clr-text-muted);
-  cursor: pointer;
-  padding: 0;
-  transition: all 140ms ease;
-  font-family: inherit;
-  font-size: 1.15rem;
-  line-height: 1;
-  -webkit-tap-highlight-color: transparent;
-  outline: none;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: var(--radius-xs) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--clr-text-muted) !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  transition: all 140ms ease !important;
+  font-family: inherit !important;
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
 }
+button.modal-close:hover,
 .modal-close:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08) !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: var(--clr-text) !important;
 }
+button.modal-close .icon,
 .modal-close .icon {
-  width: 18px;
-  height: 18px;
-  stroke: currentColor;
-  stroke-width: 2.2;
+  width: 18px !important;
+  height: 18px !important;
+  stroke: currentColor !important;
+  stroke-width: 2.2 !important;
+  fill: none !important;
 }
 .modal-card {
   padding: 22px;

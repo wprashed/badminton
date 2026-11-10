@@ -587,8 +587,8 @@ DIALOGS_CONTENT = """
         <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
         <span data-i18n="moreMenuTitle">All Features & Tools</span>
       </h3>
-      <button class="modal-close" onclick="document.getElementById('moreMenuModal').close()" aria-label="Close">
-        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <button class="modal-close" onclick="document.getElementById('moreMenuModal').close()" aria-label="Close" style="background:transparent!important;border:none!important;color:var(--clr-text-muted);cursor:pointer;padding:0;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;outline:none;">
+        <svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;stroke-width:2.2;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
 
@@ -813,8 +813,8 @@ DIALOGS_CONTENT = """
         <svg class="icon icon-sm" viewBox="0 0 24 24" style="color:var(--clr-green);"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span data-i18n="notifyModalTitle">Push Notifications</span>
       </h3>
-      <button class="modal-close" onclick="document.getElementById('notificationSettingsModal').close()" aria-label="Close">
-        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <button class="modal-close" onclick="document.getElementById('notificationSettingsModal').close()" aria-label="Close" style="background:transparent!important;border:none!important;color:var(--clr-text-muted);cursor:pointer;padding:0;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;outline:none;">
+        <svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;stroke-width:2.2;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
 
@@ -855,8 +855,8 @@ DIALOGS_CONTENT = """
         <span style="font-size:1.2rem;">🎲</span>
         <span>Match Prediction & Wager</span>
       </h3>
-      <button class="modal-close" onclick="document.getElementById('matchBettingModal').close()" aria-label="Close">
-        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <button class="modal-close" onclick="document.getElementById('matchBettingModal').close()" aria-label="Close" style="background:transparent!important;border:none!important;color:var(--clr-text-muted);cursor:pointer;padding:0;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;outline:none;">
+        <svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;stroke-width:2.2;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
 
@@ -915,8 +915,8 @@ DIALOGS_CONTENT = """
         <svg class="icon icon-sm" viewBox="0 0 24 24" style="color:var(--clr-gold);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         <span>Admin Access Required</span>
       </h3>
-      <button class="modal-close" onclick="document.getElementById('adminAuthGuardModal').close()" aria-label="Close">
-        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <button class="modal-close" onclick="document.getElementById('adminAuthGuardModal').close()" aria-label="Close" style="background:transparent!important;border:none!important;color:var(--clr-text-muted);cursor:pointer;padding:0;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;outline:none;">
+        <svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;stroke-width:2.2;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
 
@@ -953,30 +953,47 @@ DIALOGS_CONTENT = """
 ═══════════════════════════════════════════════════ -->
 <dialog id="coinBalanceModal" class="modal" aria-labelledby="coinModalTitle">
   <div class="modal-box" style="max-width:440px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
-      <h3 id="coinModalTitle" style="font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:8px;margin:0;">
-        <span style="font-size:1.3rem;">🪙</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:16px;">
+      <h3 id="coinModalTitle" style="font-family:var(--font-display);font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:8px;margin:0;color:var(--clr-text);">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" style="color:var(--clr-gold);"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M15 9.5a3 3 0 0 0-3-2.5h-1a2.5 2.5 0 0 0 0 5h2a2.5 2.5 0 0 1 0 5h-1a3 3 0 0 1-3-2.5"/></svg>
         <span>Virtual Coin Wallet</span>
       </h3>
-      <button class="modal-close" onclick="document.getElementById('coinBalanceModal').close()" aria-label="Close">
-        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <button class="modal-close" onclick="document.getElementById('coinBalanceModal').close()" aria-label="Close" style="background:transparent!important;border:none!important;color:var(--clr-text-muted);cursor:pointer;padding:0;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;outline:none;">
+        <svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;stroke-width:2.2;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
 
-    <div style="text-align:center;padding:16px 0;">
-      <div style="font-size:2.4rem;font-weight:900;color:var(--clr-gold);font-family:monospace;" id="coinModalBigCount">100</div>
-      <div style="font-size:0.8rem;color:var(--clr-text-muted);margin-bottom:18px;">Virtual Coins Available</div>
-
-      <button class="btn btn-primary" onclick="claimDailyBonus()" style="margin-bottom:14px;padding:10px 16px;">
-        🎁 Claim 50 Free Bonus Coins
-      </button>
-      <p style="font-size:0.78rem;color:var(--clr-text-muted);line-height:1.4;">
-        Use your coins to predict match winners on any court and win rewards! General users can place wagers on all games.
-      </p>
+    <!-- Hero Balance Display -->
+    <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius-sm);padding:20px 16px;text-align:center;margin-bottom:18px;">
+      <div style="font-size:0.75rem;font-weight:700;color:var(--clr-gold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Available Prediction Balance</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
+        <svg class="icon icon-lg" viewBox="0 0 24 24" style="color:var(--clr-gold);"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M15 9.5a3 3 0 0 0-3-2.5h-1a2.5 2.5 0 0 0 0 5h2a2.5 2.5 0 0 1 0 5h-1a3 3 0 0 1-3-2.5"/></svg>
+        <span style="font-family:var(--font-display);font-size:2.8rem;font-weight:900;color:var(--clr-text);line-height:1;" id="coinModalBigCount">100</span>
+        <span style="font-size:0.9rem;font-weight:700;color:var(--clr-gold);">COINS</span>
+      </div>
+      <div style="font-size:0.8rem;color:var(--clr-text-muted);margin-top:8px;">
+        Use coins to predict match winners & earn bonus multipliers
+      </div>
     </div>
 
-    <div style="text-align:right;border-top:1px solid var(--clr-border);padding-top:12px;">
-      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('coinBalanceModal').close()">Close</button>
+    <!-- Action Buttons -->
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
+      <button class="btn btn-primary btn-md" onclick="claimDailyBonus()" style="width:100%;min-height:44px;font-size:0.92rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <span>🎁 Claim Daily Bonus (+50 Free Coins)</span>
+      </button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('coinBalanceModal').close();showScreen('groupsScreen');" style="width:100%;min-height:38px;display:flex;align-items:center;justify-content:center;gap:6px;">
+        <span>🎲 Explore Live Matches to Predict</span>
+      </button>
+    </div>
+
+    <!-- Info Banner -->
+    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:12px 14px;font-size:0.8rem;color:var(--clr-text-muted);line-height:1.45;text-align:center;">
+      Coins are 100% free virtual points for sports predictions. Correct match predictions earn 1.90x coin payouts!
+    </div>
+
+    <!-- Footer -->
+    <div style="display:flex;justify-content:center;border-top:1px solid var(--clr-border);padding-top:14px;margin-top:16px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('coinBalanceModal').close()" style="min-width:140px;">Done</button>
     </div>
   </div>
 </dialog>
