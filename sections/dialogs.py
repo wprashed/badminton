@@ -1,0 +1,428 @@
+# Dialogs module for Badminton Cup
+DIALOGS_CONTENT = """
+<!-- ═══════════════════════════════════════════════════
+     DIALOGS & MODALS
+═══════════════════════════════════════════════════ -->
+
+<!-- 1. Authentication Modal -->
+<dialog id="authModal" closedby="any" aria-labelledby="authModalHeading">
+  <div class="modal-card">
+    <h2 id="authModalHeading" style="font-size:1.4rem;font-weight:900;margin-bottom:6px;">Player Account</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:20px;">Sign in to access your personal tournament hub, wagers, and medals.</p>
+    
+    <div style="display:flex;justify-content:center;gap:8px;margin-bottom:18px;">
+      <button class="btn btn-xs btn-ghost active" id="tabAuthLogin" onclick="switchAuthTab('login')">Log In</button>
+      <button class="btn btn-xs btn-ghost" id="tabAuthRegister" onclick="switchAuthTab('register')">Register</button>
+    </div>
+
+    <form method="dialog" id="authForm" onsubmit="handleAuthSubmit(event)">
+      <div class="modal-form-item">
+        <label for="authUsernameInput">Player / Team Name or Email</label>
+        <input type="text" id="authUsernameInput" class="modal-input" placeholder="e.g. Lin Dan or player@example.com" required autofocus>
+      </div>
+      <div class="modal-form-item">
+        <label for="authPasswordInput">Passcode (PIN or Password)</label>
+        <input type="password" id="authPasswordInput" class="modal-input" placeholder="••••••••" required>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;margin-top:20px;">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="closeAuthModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm" id="authSubmitBtn">Sign In</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<!-- 2. Admin Invite User Modal (Items 1, 2, 3) -->
+<dialog id="inviteUserModal" closedby="any">
+  <div class="modal-card">
+    <h2 style="font-size:1.35rem;font-weight:900;margin-bottom:6px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Invite New User / Player</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:16px;">The user will be created and receive an invitation email with an acceptance token.</p>
+    
+    <form method="dialog" id="inviteUserForm" onsubmit="handleInviteUserSubmit(event)">
+      <div class="modal-form-item">
+        <label for="inviteFullNameInput">Athlete / User Full Name</label>
+        <input type="text" id="inviteFullNameInput" class="modal-input" placeholder="e.g. Viktor Axelsen" required>
+      </div>
+
+      <div class="modal-form-item">
+        <label for="inviteEmailInput">Email Address (for notifications)</label>
+        <input type="email" id="inviteEmailInput" class="modal-input" placeholder="e.g. viktor@badminton.dk" required>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+        <div>
+          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);margin-bottom:4px;display:block;">Assigned Role</label>
+          <select id="inviteRoleSelect" class="modal-input">
+            <option value="player">Player / Athlete</option>
+            <option value="umpire">Official Umpire</option>
+            <option value="admin">Tournament Director</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);margin-bottom:4px;display:block;">Club / Department</label>
+          <input type="text" id="inviteClubInput" class="modal-input" placeholder="e.g. Odense BK">
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+        <div>
+          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);margin-bottom:4px;display:block;">Initial Rating / Elo</label>
+          <input type="number" id="inviteEloInput" class="modal-input" value="1200" step="25">
+        </div>
+        <div>
+          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);margin-bottom:4px;display:block;">Seeding / Ranking Tier</label>
+          <select id="inviteFeeStatusSelect" class="modal-input">
+            <option value="seeded">Top Seeded</option>
+            <option value="standard">Standard Entry</option>
+            <option value="qualifier">Qualifier</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('inviteUserModal').close()">Cancel</button>
+        <button type="submit" class="btn btn-gold btn-sm">Send Invitation &rarr;</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<!-- 3. Invitation Success & Magic Link Modal (Item 3) -->
+<dialog id="inviteSuccessModal" closedby="any" style="max-width:600px;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:center;color:var(--clr-gold);margin-bottom:8px;"><svg class="icon icon-3xl" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+    <h2 style="font-size:1.35rem;font-weight:900;text-align:center;margin-bottom:4px;">Invitation Dispatched!</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.85rem;text-align:center;margin-bottom:16px;">
+      An invitation record has been created. You can share the magic link directly or use the automated email notification.
+    </p>
+
+    <!-- Magic Link Box -->
+    <div style="background:rgba(0,0,0,0.3);border:1px solid var(--clr-border);padding:12px;border-radius:var(--radius-sm);margin-bottom:16px;">
+      <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:bold;margin-bottom:4px;">MAGIC INVITATION LINK</div>
+      <div id="magicInviteLinkDisplay" style="font-family:monospace;font-size:0.82rem;word-break:break-all;color:var(--clr-gold);margin-bottom:8px;"></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost btn-xs" onclick="copyMagicInviteLink()"><svg class="icon icon-xs" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy Link</button>
+        <a id="mailtoInviteBtn" class="btn btn-ghost btn-xs" target="_blank"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Open in Email Client</a>
+      </div>
+    </div>
+
+    <!-- Simulated Email Preview -->
+    <div style="background:rgba(255,255,255,0.03);border:1px dashed var(--clr-border);padding:14px;border-radius:var(--radius-sm);margin-bottom:20px;font-size:0.82rem;">
+      <div style="font-weight:bold;color:var(--clr-green);margin-bottom:6px;">Simulated Outgoing Email Notification:</div>
+      <div id="simulatedEmailSubject" style="font-weight:bold;color:#fff;margin-bottom:4px;"></div>
+      <div id="simulatedEmailBody" style="color:var(--clr-text-muted);line-height:1.4;white-space:pre-line;"></div>
+    </div>
+
+    <div style="text-align:right;">
+      <button class="btn btn-primary btn-sm" onclick="document.getElementById('inviteSuccessModal').close()">Done</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 4. Accept Invitation Onboarding Modal (Item 4) -->
+<dialog id="acceptInviteModal" closedby="any" style="max-width:540px;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:center;color:var(--clr-green);margin-bottom:8px;"><svg class="icon icon-3xl" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg></div>
+    <h2 style="font-size:1.4rem;font-weight:900;text-align:center;margin-bottom:4px;">Tournament Invitation</h2>
+    <p id="acceptInviteSubtitle" style="color:var(--clr-gold);font-weight:bold;text-align:center;font-size:0.95rem;margin-bottom:16px;">
+      You have been invited to compete in The Badminton Cup!
+    </p>
+
+    <form method="dialog" id="acceptInviteForm" onsubmit="handleAcceptInviteSubmit(event)">
+      <div class="modal-form-item">
+        <label for="acceptAthleteName">Your Name</label>
+        <input type="text" id="acceptAthleteName" class="modal-input" readonly style="opacity:0.8;">
+      </div>
+
+      <div class="modal-form-item">
+        <label for="acceptAthleteEmail">Your Email</label>
+        <input type="email" id="acceptAthleteEmail" class="modal-input" readonly style="opacity:0.8;">
+      </div>
+
+      <div class="modal-form-item">
+        <label for="acceptPasswordInput">Create a Personal Passcode / PIN</label>
+        <input type="password" id="acceptPasswordInput" class="modal-input" placeholder="••••••••" required>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+        <div>
+          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);margin-bottom:4px;display:block;">Dominant Hand</label>
+          <select id="acceptHandSelect" class="modal-input">
+            <option value="Right-Handed">Right-Handed</option>
+            <option value="Left-Handed">Left-Handed</option>
+          </select>
+        </div>
+        <div>
+          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);margin-bottom:4px;display:block;">Preferred Avatar Icon</label>
+          <select id="acceptAvatarSelect" class="modal-input">
+            <option value="Racket">Racket</option>
+            <option value="Lightning">Lightning</option>
+            <option value="Eagle">Eagle</option>
+            <option value="Fire">Fire</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="handleDeclineInvite()">Decline Invitation</button>
+        <button type="submit" class="btn btn-primary btn-sm">Accept & Activate Profile &rarr;</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<!-- 5. Registered Player Picker Modal (Item 11) -->
+<dialog id="playerPickerModal" closedby="any" style="max-width:640px;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h2 style="font-size:1.35rem;font-weight:900;"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Select Registered Athletes</h2>
+      <button class="btn btn-ghost btn-xs" onclick="document.getElementById('playerPickerModal').close()"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <p style="color:var(--clr-text-muted);font-size:0.82rem;margin-bottom:12px;">
+      Choose active registered or invited athletes to assign to <strong id="pickerTargetPoolLabel">Pool A</strong>.
+    </p>
+
+    <input type="text" id="playerPickerSearch" class="modal-input" placeholder="Search by name, email, or club..." oninput="filterPlayerPickerList(this.value)" style="margin-bottom:12px;">
+
+    <div class="player-picker-list" id="playerPickerListContainer"></div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
+      <span style="font-size:0.8rem;color:var(--clr-text-muted);" id="pickerSelectedCount">0 selected</span>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('playerPickerModal').close()">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="confirmPlayerPickerSelection()">Add to Pool &rarr;</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<!-- 6. Bulk Invite CSV Modal (Item 6) -->
+<dialog id="bulkInviteModal" closedby="any">
+  <div class="modal-card">
+    <h2 style="font-size:1.35rem;font-weight:900;margin-bottom:8px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Bulk CSV User Invitations</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:12px;">
+      Paste lines in format: <code>Full Name, Email, Role, Club</code>
+    </p>
+    <textarea id="bulkInviteCsvTextarea" class="modal-input" rows="8" placeholder="Lin Dan, lindan@china.cn, player, Beijing Club&#10;Lee Chong Wei, lcw@malaysia.my, player, KL Club&#10;Official John, umpire@bwf.org, umpire, BWF"></textarea>
+    
+    <div style="display:flex;justify-content:space-between;margin-top:16px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('bulkInviteModal').close()">Cancel</button>
+      <button class="btn btn-gold btn-sm" onclick="processBulkInviteCsv()">Dispatch Batch Invitations</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 7. Official BWF Printable Scorecard Modal (Item 23) -->
+<dialog id="scorecardModal" closedby="any" style="max-width:760px;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h2 style="font-size:1.35rem;font-weight:900;"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Official BWF Match Scorecard</h2>
+      <div style="display:flex;gap:6px;">
+        <button class="btn btn-primary btn-xs" onclick="window.print()"><svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Print Sheet</button>
+        <button class="btn btn-ghost btn-xs" onclick="document.getElementById('scorecardModal').close()"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+    </div>
+    
+    <div id="scorecardPrintContainer" class="scorecard-sheet"></div>
+  </div>
+</dialog>
+
+<!-- 8. Manual Score Override Modal (Admin) -->
+<dialog id="scoreOverrideModal" closedby="any">
+  <div class="modal-card">
+    <h2 style="font-size:1.4rem;font-weight:900;margin-bottom:6px;">Manual Match Score Override</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:16px;">Correct an official score, overturn a call, or mark a forfeit.</p>
+    
+    <div class="modal-form-item">
+      <label for="overrideMatchSelect">Select Fixture</label>
+      <select id="overrideMatchSelect" class="modal-input"></select>
+    </div>
+    <div class="modal-form-item">
+      <label for="overrideSetsInput">Sets Score (comma separated, e.g. 21-18, 19-21, 21-14)</label>
+      <input type="text" id="overrideSetsInput" class="modal-input" placeholder="21-18, 21-15">
+    </div>
+    <div class="modal-form-item">
+      <label for="overrideWinnerSelect">Winner</label>
+      <select id="overrideWinnerSelect" class="modal-input">
+        <option value="a">Side A Wins</option>
+        <option value="b">Side B Wins</option>
+      </select>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:20px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('scoreOverrideModal').close()">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="saveManualScoreOverride()">Save Override</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 9. Coin Toss Modal -->
+<dialog id="coinTossModal" closedby="any">
+  <div class="modal-card" style="text-align:center;">
+    <h2 style="font-size:1.4rem;font-weight:900;margin-bottom:8px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg> BWF Official Coin Toss</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:20px;">Decides initial serve or court end preference before match start.</p>
+    
+    <div id="coinGraphic" style="display:flex;justify-content:center;color:var(--clr-gold);margin:16px auto;user-select:none;transition:transform 600ms cubic-bezier(0.175, 0.885, 0.32, 1.275);"><svg class="icon icon-3xl" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg></div>
+    <div id="coinResultText" style="font-size:1.2rem;font-weight:900;color:var(--clr-gold);margin-bottom:20px;">Tap Flip to Begin</div>
+
+    <div style="display:flex;justify-content:center;gap:12px;">
+      <button class="btn btn-primary btn-lg" onclick="flipCoin()">Flip Coin</button>
+      <button class="btn btn-ghost btn-lg" onclick="document.getElementById('coinTossModal').close()">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 10. Match Win Modal -->
+<dialog id="matchWinModal" closedby="any">
+  <div class="modal-card" style="text-align:center;">
+    <div style="display:flex;justify-content:center;color:var(--clr-green);margin-bottom:8px;"><svg class="icon icon-3xl" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg></div>
+    <h2 style="font-size:1.6rem;font-weight:900;margin-bottom:4px;">Match Completed!</h2>
+    <p id="winSubtitle" style="color:var(--clr-gold);font-size:1.1rem;font-weight:800;margin-bottom:12px;"></p>
+    <div id="winScoreSummary" style="font-family:var(--font-display);font-size:2rem;margin-bottom:20px;color:#fff;"></div>
+    
+    <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="advanceToNextMatch()">Next Fixture &rarr;</button>
+      <button class="btn btn-ghost" onclick="closeWinModal()">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 11. Victory Poster Modal -->
+<dialog id="shareCanvasModal" closedby="any" style="max-width:680px;">
+  <div class="modal-card" style="text-align:center;">
+    <h2 style="font-size:1.3rem;font-weight:900;margin-bottom:6px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Official Tournament Celebration Poster</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.82rem;margin-bottom:14px;">High-resolution 1200x1200px graphic suitable for Slack, WhatsApp, and Instagram.</p>
+    
+    <div style="border-radius:var(--radius-md);overflow:hidden;border:2px solid var(--clr-border);margin-bottom:16px;background:#000;">
+      <canvas id="victoryShareCanvas" width="1200" height="1200" style="width:100%;height:auto;display:block;"></canvas>
+    </div>
+
+    <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;">
+      <button class="btn btn-gold" onclick="downloadVictoryPoster()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download Poster</button>
+      <button class="btn btn-primary" onclick="copyVictoryPosterToClipboard()"><svg class="icon icon-xs" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy to Clipboard</button>
+      <button class="btn btn-ghost" onclick="shareVictoryPosterOS()"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share Sheet</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('shareCanvasModal').close()">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 12. Crowdsourced Score Suggestion Modal -->
+<dialog id="suggestScoreModal" closedby="any">
+  <div class="modal-card">
+    <h2 style="font-size:1.3rem;font-weight:900;margin-bottom:6px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Suggest Completed Match Score</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:16px;">Spectators & athletes can submit scores. Admins verify submissions.</p>
+
+    <div class="modal-form-item">
+      <label for="suggestMatchSelect">Select Encounter</label>
+      <select id="suggestMatchSelect" class="modal-input"></select>
+    </div>
+    <div class="modal-form-item">
+      <label for="suggestSetsInput">Finished Sets Score (e.g. 21-17, 21-19)</label>
+      <input type="text" id="suggestSetsInput" class="modal-input" placeholder="21-17, 21-19" required>
+    </div>
+    <div class="modal-form-item">
+      <label for="suggestWinnerSelect">Match Winner</label>
+      <select id="suggestWinnerSelect" class="modal-input">
+        <option value="a">Player / Team A</option>
+        <option value="b">Player / Team B</option>
+      </select>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:20px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('suggestScoreModal').close()">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="submitSuggestedScore()">Submit Score</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 13. Walkover / Penalty Modal (Items 1, 2, 3, 4) -->
+<dialog id="walkoverModal" closedby="any">
+  <div class="modal-card">
+    <h2 id="walkoverModalTitle" style="font-size:1.3rem;font-weight:900;margin-bottom:6px;">Record Match Penalty / Walkover</h2>
+    <p id="walkoverModalDesc" style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:16px;">Specify which side committed the offense or requested forfeit.</p>
+    
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+      <button class="btn btn-ghost" id="walkoverSideABtn" style="padding:14px;display:flex;flex-direction:column;gap:4px;" onclick="confirmWalkoverSelection('a')">
+        <span style="font-weight:900;font-size:1rem;" id="walkoverNameA">Side A</span>
+        <span style="font-size:0.75rem;color:var(--clr-text-muted);" id="walkoverRoleA">Action Side A</span>
+      </button>
+      <button class="btn btn-ghost" id="walkoverSideBBtn" style="padding:14px;display:flex;flex-direction:column;gap:4px;" onclick="confirmWalkoverSelection('b')">
+        <span style="font-weight:900;font-size:1rem;" id="walkoverNameB">Side B</span>
+        <span style="font-size:0.75rem;color:var(--clr-text-muted);" id="walkoverRoleB">Action Side B</span>
+      </button>
+    </div>
+
+    <div style="text-align:right;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('walkoverModal').close()">Cancel</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 16. Head-to-Head (H2H) Comparison Modal (Item 53) -->
+<dialog id="h2hModal" closedby="any" style="max-width:640px;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+      <h2 style="font-size:1.3rem;font-weight:900;"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM7 21h10M12 3v18M3 7h18"/></svg> Head-to-Head Encounter History</h2>
+      <button class="btn btn-ghost btn-xs" onclick="document.getElementById('h2hModal').close()"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div id="h2hModalBody"></div>
+    <div style="text-align:right;margin-top:16px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('h2hModal').close()">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 17. Umpire Audio & Voice Settings Modal (Items 39 & 40) -->
+<dialog id="soundSettingsModal" closedby="any">
+  <div class="modal-card">
+    <h2 style="font-size:1.3rem;font-weight:900;margin-bottom:12px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> Umpire Audio & Speech Settings</h2>
+    
+    <div class="modal-form-item">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <label for="masterVolumeRange" style="margin:0;">Sound Effects Volume</label>
+        <span id="masterVolumeDisplay" style="font-weight:bold;color:var(--clr-green);">80%</span>
+      </div>
+      <input type="range" id="masterVolumeRange" min="0" max="100" value="80" oninput="updateMasterVolume(this.value)" style="width:100%;">
+    </div>
+
+    <div class="modal-form-item">
+      <label for="umpireVoiceSelect">Umpire Speech Voice / Accent</label>
+      <select id="umpireVoiceSelect" class="modal-input" onchange="updateUmpireVoice(this.value)"></select>
+    </div>
+
+    <div class="modal-form-item">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input type="checkbox" id="buzzerSoundCheck" checked onchange="toggleBuzzerSound(this.checked)">
+        <span>Play dual 600Hz buzzer on interval expiry (60s / 120s)</span>
+      </label>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:20px;">
+      <button class="btn btn-ghost btn-sm" onclick="testUmpireVoice()"><svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg> Test Voice</button>
+      <button class="btn btn-primary btn-sm" onclick="document.getElementById('soundSettingsModal').close()">Save & Close</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 18. Bulk Roster Import / Export Modal (Item 34) -->
+<dialog id="bulkRosterModal" closedby="any">
+  <div class="modal-card">
+    <h2 style="font-size:1.3rem;font-weight:900;margin-bottom:8px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Bulk Roster Import / Export</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:12px;">Paste names (one per line or comma-separated). They will be split into Pool A & Pool B.</p>
+    
+    <textarea id="bulkRosterTextarea" class="modal-input" rows="8" placeholder="Lin Dan&#10;Lee Chong Wei&#10;Viktor Axelsen&#10;Kento Momota"></textarea>
+
+    <div style="display:flex;justify-content:space-between;margin-top:16px;">
+      <button class="btn btn-ghost btn-sm" onclick="exportCurrentRosterToBulk()">Copy Current</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('bulkRosterModal').close()">Cancel</button>
+        <button class="btn btn-primary btn-sm" onclick="applyBulkRoster()">Apply Roster</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<!-- App Toast Notification -->
+<div id="appToast" role="alert" aria-live="polite"></div>
+"""
