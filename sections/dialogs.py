@@ -568,7 +568,7 @@ DIALOGS_CONTENT = """
           <option value="main">The Badminton Cup 2026</option>
         </select>
       </div>
-      <button class="btn btn-primary btn-xs" onclick="document.getElementById('moreMenuModal').close();showScreen('setupScreen');">
+      <button class="btn btn-primary btn-xs" onclick="document.getElementById('moreMenuModal').close();handleSetupNav();">
         + New Tournament
       </button>
     </div>
@@ -576,7 +576,7 @@ DIALOGS_CONTENT = """
     <!-- Grid of Features -->
     <div class="more-grid">
       <!-- 1. Tournament Setup -->
-      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('setupScreen');">
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();handleSetupNav();">
         <div class="more-card-icon">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>
         </div>
@@ -587,7 +587,7 @@ DIALOGS_CONTENT = """
       </button>
 
       <!-- 2. Pool Draw -->
-      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();showScreen('draftScreen');">
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();handleDraftNav();">
         <div class="more-card-icon">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83M16.62 12l-5.74 9.94"/></svg>
         </div>
@@ -685,7 +685,29 @@ DIALOGS_CONTENT = """
         </div>
       </button>
 
-      <!-- 11. Theme Switcher -->
+      
+      <!-- Role Switcher -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();toggleRoleDemo();">
+        <div class="more-card-icon" style="color:var(--clr-gold);">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Switch Role (Admin / Player)</span>
+          <span class="more-card-desc">Toggle Director vs General User permissions</span>
+        </div>
+      </button>
+
+      <!-- Coin Wallet & Betting -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();openCoinBalanceModal();">
+        <div class="more-card-icon" style="color:var(--clr-gold);">
+          <span style="font-size:1.1rem;">🪙</span>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">Coin Wallet & Betting</span>
+          <span class="more-card-desc">Free bonus coins & match prediction balance</span>
+        </div>
+      </button>
+<!-- 11. Theme Switcher -->
       <button class="more-card-item" onclick="cycleTheme();">
         <div class="more-card-icon">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -708,7 +730,7 @@ DIALOGS_CONTENT = """
       </button>
 
       <!-- 13. Reset Tournament Data -->
-      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();openDataResetModal();" style="border-color:rgba(239,68,68,0.3);">
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();handleResetNav();" style="border-color:rgba(239,68,68,0.3);">
         <div class="more-card-icon" style="color:#f87171;">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         </div>
@@ -762,6 +784,132 @@ DIALOGS_CONTENT = """
 
     <div style="text-align:right;border-top:1px solid var(--clr-border);padding-top:12px;margin-top:14px;">
       <button class="btn btn-ghost btn-sm" onclick="document.getElementById('notificationSettingsModal').close()" data-i18n="cancelBtn">Close</button>
+    </div>
+  </div>
+</dialog>
+<!-- ═══════════════════════════════════════════════════
+     MATCH PREDICTION & BETTING MODAL (General User Capability)
+═══════════════════════════════════════════════════ -->
+<dialog id="matchBettingModal" class="modal" aria-labelledby="betModalTitle">
+  <div class="modal-box" style="max-width:440px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
+      <h3 id="betModalTitle" style="font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:8px;margin:0;">
+        <span style="font-size:1.2rem;">🎲</span>
+        <span>Match Prediction & Wager</span>
+      </h3>
+      <button class="modal-close" onclick="document.getElementById('matchBettingModal').close()" aria-label="Close">&times;</button>
+    </div>
+
+    <input type="hidden" id="betModalMatchId">
+
+    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:12px;margin-bottom:14px;text-align:center;">
+      <div style="font-size:0.75rem;color:var(--clr-text-muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px;">Match Fixture</div>
+      <div style="font-size:1.05rem;font-weight:800;color:var(--clr-text);">
+        <span id="betModalTeamAName">Team A</span> <span style="color:var(--clr-text-muted);font-size:0.85rem;">vs</span> <span id="betModalTeamBName">Team B</span>
+      </div>
+      <div style="font-size:0.75rem;color:var(--clr-gold);margin-top:4px;font-weight:600;">Payout Odds: 1.90x on correct prediction</div>
+    </div>
+
+    <!-- Select Prediction Side -->
+    <div style="margin-bottom:16px;">
+      <label style="display:block;font-size:0.8rem;color:var(--clr-text-muted);margin-bottom:6px;">Select Predicted Winner:</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button type="button" id="betModalTeamABtn" class="btn btn-secondary" onclick="selectBetSide('a')" style="font-size:0.82rem;padding:10px;">
+          Predict Team A
+        </button>
+        <button type="button" id="betModalTeamBBtn" class="btn btn-secondary" onclick="selectBetSide('b')" style="font-size:0.82rem;padding:10px;">
+          Predict Team B
+        </button>
+      </div>
+    </div>
+
+    <!-- Wager Amount -->
+    <div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <label style="font-size:0.8rem;color:var(--clr-text-muted);">Prediction Wager (Coins):</label>
+        <span style="font-size:0.78rem;color:var(--clr-gold);font-weight:700;">Balance: <span id="bettingModalUserBalance">100</span> 🪙</span>
+      </div>
+      <input type="number" id="betModalAmountInput" class="modal-input" min="1" max="10000" value="25" style="font-family:monospace;font-size:1.1rem;font-weight:700;margin-bottom:8px;">
+      <div style="display:flex;gap:6px;">
+        <button type="button" class="btn btn-ghost btn-xs" onclick="setBetAmount(10)">10 🪙</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="setBetAmount(25)">25 🪙</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="setBetAmount(50)">50 🪙</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="setBetAmount(getUserCoins())">All In</button>
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--clr-border);padding-top:12px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('matchBettingModal').close()">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="placeBet()">Confirm Prediction Wager</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ═══════════════════════════════════════════════════
+     ADMIN ACCESS GUARD MODAL (Capability Protection)
+═══════════════════════════════════════════════════ -->
+<dialog id="adminAuthGuardModal" class="modal" aria-labelledby="guardModalTitle">
+  <div class="modal-box" style="max-width:460px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
+      <h3 id="guardModalTitle" style="font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:8px;margin:0;color:var(--clr-gold);">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Admin Permission Required</span>
+      </h3>
+      <button class="modal-close" onclick="document.getElementById('adminAuthGuardModal').close()" aria-label="Close">&times;</button>
+    </div>
+
+    <div style="padding:10px 0 16px;">
+      <div style="font-size:0.92rem;color:var(--clr-text);line-height:1.5;margin-bottom:12px;">
+        <strong id="guardActionName" style="color:var(--clr-gold);">This action</strong> is restricted to Tournament Directors & Admins.
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:12px;font-size:0.8rem;color:var(--clr-text-muted);line-height:1.4;margin-bottom:16px;">
+        <div style="font-weight:700;color:var(--clr-green);margin-bottom:4px;">✓ General User Capabilities:</div>
+        Open challenges, accept & play matches, referee casual games, and place prediction bets with virtual coins.
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn btn-primary" onclick="quickSwitchToAdmin()" style="padding:10px;font-weight:700;">
+          ⚡ Switch to Admin Mode (Instant Access)
+        </button>
+        <button class="btn btn-ghost" onclick="document.getElementById('adminAuthGuardModal').close();openAuthModal();">
+          Sign In with Director Credentials
+        </button>
+      </div>
+    </div>
+
+    <div style="text-align:right;border-top:1px solid var(--clr-border);padding-top:10px;">
+      <button class="btn btn-ghost btn-xs" onclick="document.getElementById('adminAuthGuardModal').close()">Cancel</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- ═══════════════════════════════════════════════════
+     COIN WALLET & BONUS MODAL
+═══════════════════════════════════════════════════ -->
+<dialog id="coinBalanceModal" class="modal" aria-labelledby="coinModalTitle">
+  <div class="modal-box" style="max-width:440px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
+      <h3 id="coinModalTitle" style="font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:8px;margin:0;">
+        <span style="font-size:1.3rem;">🪙</span>
+        <span>Virtual Coin Wallet</span>
+      </h3>
+      <button class="modal-close" onclick="document.getElementById('coinBalanceModal').close()" aria-label="Close">&times;</button>
+    </div>
+
+    <div style="text-align:center;padding:16px 0;">
+      <div style="font-size:2.4rem;font-weight:900;color:var(--clr-gold);font-family:monospace;" id="coinModalBigCount">100</div>
+      <div style="font-size:0.8rem;color:var(--clr-text-muted);margin-bottom:18px;">Virtual Coins Available</div>
+
+      <button class="btn btn-primary" onclick="claimDailyBonus()" style="margin-bottom:14px;padding:10px 16px;">
+        🎁 Claim 50 Free Bonus Coins
+      </button>
+      <p style="font-size:0.78rem;color:var(--clr-text-muted);line-height:1.4;">
+        Use your coins to predict match winners on any court and win rewards! General users can place wagers on all games.
+      </p>
+    </div>
+
+    <div style="text-align:right;border-top:1px solid var(--clr-border);padding-top:12px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('coinBalanceModal').close()">Close</button>
     </div>
   </div>
 </dialog>

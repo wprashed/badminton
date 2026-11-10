@@ -856,6 +856,7 @@ function setCurrentUser(user) {
   } catch (e) {}
   updateUserUI();
   updateBettingUI();
+  updateBettingUI();
   renderPlayerHub();
 }
 
@@ -869,6 +870,7 @@ function loadAuthUser() {
     }
   } catch (e) {}
   updateUserUI();
+  updateBettingUI();
   renderPlayerHub();
 }
 
@@ -876,6 +878,7 @@ function logoutUser() {
   currentUser = null;
   localStorage.removeItem(STORAGE_KEY_AUTH);
   updateUserUI();
+  updateBettingUI();
   updateBettingUI();
   showToast('Logged out.');
 }
@@ -1816,6 +1819,7 @@ function toggleUserRole(userId) {
     logAdminAudit(`Changed role for user ${user.name} to ${user.role}`);
     renderAdminDashboard();
     updateUserUI();
+  updateBettingUI();
     showToast(`User ${user.name} is now ${user.role}.`);
   }
 }
@@ -2013,11 +2017,178 @@ function recordTransaction(username, type, amount, balanceAfter, desc) {
   } catch (e) {}
 }
 
-function getUserCoins() { return 0; }
-function setUserCoins() {}
-function claimDailyBonus() {}
-function updateBettingUI() {}
-function settleMatchBets(match) {}
+
+/* ═══════════════════════════════════════════════════
+   VIRTUAL COIN WALLET & MATCH PREDICTION ENGINE
+   - General Users & Everyone can predict match winners and place wagers with virtual coins.
+═══════════════════════════════════════════════════ */
+function getUserCoins() {
+  const username = currentUser ? currentUser.name : 'Guest';
+  const wallets = getWalletsDB();
+  if (wallets[username] === undefined) {
+    wallets[username] = 100; // 100 free starter coins for everyone!
+    saveWalletsDB(wallets);
+  }
+  return wallets[username];
+}
+
+function setUserCoins(amount) {
+  const username = currentUser ? currentUser.name : 'Guest';
+  const wallets = getWalletsDB();
+  wallets[username] = Math.max(0, amount);
+  saveWalletsDB(wallets);
+  updateBettingUI();
+}
+
+function claimDailyBonus() {
+  const current = getUserCoins();
+  const bonus = 50;
+  setUserCoins(current + bonus);
+  recordTransaction(currentUser ? currentUser.name : 'Guest', 'bonus', bonus, current + bonus, 'Daily reward bonus');
+  const bigCount = document.getElementById('coinModalBigCount');
+  if (bigCount) bigCount.textContent = (current + bonus).toLocaleString();
+  showToast('🎁 Claimed 50 Free Bonus Coins!', 'success');
+  playChimeSound('win');
+}
+
+function openCoinBalanceModal() {
+  const coins = getUserCoins();
+  const bigCount = document.getElementById('coinModalBigCount');
+  if (bigCount) bigCount.textContent = coins.toLocaleString();
+  const modal = document.getElementById('coinBalanceModal');
+  if (modal) modal.showModal();
+}
+
+function updateBettingUI() {
+  const coins = getUserCoins();
+  const headerCoinEl = document.getElementById('headerCoinCount');
+  if (headerCoinEl) headerCoinEl.textContent = coins.toLocaleString();
+  const betBalanceEl = document.getElementById('bettingModalUserBalance');
+  if (betBalanceEl) betBalanceEl.textContent = coins.toLocaleString();
+}
+
+function openBettingModal(matchId) {
+  const match = state.matches.find(m => m.id === matchId);
+  if (!match) return;
+
+  activeBetMatch = match;
+  activeBetSide = 'a';
+
+  document.getElementById('betModalMatchId').value = match.id;
+  document.getElementById('betModalTeamAName').textContent = match.a;
+  document.getElementById('betModalTeamBName').textContent = match.b;
+  document.getElementById('betModalTeamABtn').textContent = `Predict ${match.a} (1.90x)`;
+  document.getElementById('betModalTeamBBtn').textContent = `Predict ${match.b} (1.90x)`;
+  selectBetSide('a');
+  setBetAmount(25);
+  updateBettingUI();
+  document.getElementById('matchBettingModal').showModal();
+}
+
+function selectBetSide(side) {
+  activeBetSide = side;
+  const btnA = document.getElementById('betModalTeamABtn');
+  const btnB = document.getElementById('betModalTeamBBtn');
+  if (btnA && btnB) {
+    btnA.classList.toggle('active', side === 'a');
+    btnB.classList.toggle('active', side === 'b');
+    if (side === 'a') {
+      btnA.style.borderColor = 'var(--clr-green)';
+      btnA.style.background = 'rgba(16, 185, 129, 0.15)';
+      btnB.style.borderColor = '';
+      btnB.style.background = '';
+    } else {
+      btnB.style.borderColor = 'var(--clr-green)';
+      btnB.style.background = 'rgba(16, 185, 129, 0.15)';
+      btnA.style.borderColor = '';
+      btnA.style.background = '';
+    }
+  }
+}
+
+function setBetAmount(amount) {
+  const input = document.getElementById('betModalAmountInput');
+  if (input) input.value = amount;
+}
+
+function placeBet() {
+  if (!activeBetMatch) return;
+  const amount = parseInt(document.getElementById('betModalAmountInput')?.value, 10);
+  if (isNaN(amount) || amount <= 0) {
+    showToast('Please enter a valid coin amount.', 'warning');
+    return;
+  }
+
+  const coins = getUserCoins();
+  if (coins < amount) {
+    showToast(`Insufficient coins! You have ${coins} coins. Claim bonus coins in your wallet.`, 'warning');
+    return;
+  }
+
+  const username = currentUser ? currentUser.name : 'Guest';
+  const teamName = (activeBetSide === 'a') ? activeBetMatch.a : activeBetMatch.b;
+  const odds = 1.90;
+
+  setUserCoins(coins - amount);
+  recordTransaction(username, 'bet_placed', amount, coins - amount, `Placed prediction on ${teamName}`);
+
+  const bets = getBetsDB();
+  bets.push({
+    id: 'bet_' + Date.now(),
+    matchId: activeBetMatch.id,
+    username,
+    teamName,
+    side: activeBetSide,
+    amount,
+    odds,
+    status: 'pending',
+    placedAt: new Date().toLocaleTimeString()
+  });
+  saveBetsDB(bets);
+
+  document.getElementById('matchBettingModal').close();
+  showToast(`Placed ${amount} coin prediction on ${teamName}!`, 'success');
+  updateBettingUI();
+}
+
+function settleMatchBets(match) {
+  if (!match || !match.winner) return;
+  const bets = getBetsDB();
+  let updated = false;
+  const currentUsername = currentUser ? currentUser.name : 'Guest';
+
+  bets.forEach(b => {
+    if (b.matchId === match.id && b.status === 'pending') {
+      b.settledAt = new Date().toLocaleTimeString();
+      if (b.side === match.winner) {
+        b.status = 'won';
+        const payout = Math.round(b.amount * (b.odds || 1.90));
+        b.payout = payout;
+
+        const wallets = getWalletsDB();
+        wallets[b.username] = (wallets[b.username] || 0) + payout;
+        saveWalletsDB(wallets);
+        recordTransaction(b.username, 'bet_won', payout, wallets[b.username], `Won prediction on match ${match.a} vs ${match.b}`);
+
+        if (b.username === currentUsername) {
+          showToast(`🎉 Congratulations! You won ${payout} coins on ${b.teamName}!`, 'success');
+          playChimeSound('win');
+        }
+      } else {
+        b.status = 'lost';
+        b.payout = 0;
+        recordTransaction(b.username, 'bet_lost', b.amount, getUserCoins(), `Lost prediction on match ${match.a} vs ${match.b}`);
+      }
+      updated = true;
+    }
+  });
+
+  if (updated) {
+    saveBetsDB(bets);
+    updateBettingUI();
+  }
+}
+
 
 /* ═══════════════════════════════════════════════════
    TOURNAMENT SCHEDULE & TIMETABLE ENGINE
@@ -2310,6 +2481,83 @@ function renderScorecardsScreen() {
 /* ═══════════════════════════════════════════════════
    TOURNAMENT SETUP & DATA HELPERS
 ═══════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════
+   CAPABILITIES & ROLE-BASED ACCESS CONTROL (RBAC)
+   - General Users: Open challenges, accept & play matches, referee casual games, coin betting & predictions.
+   - Admin Users: Full control over tournament setup, pool draw, score overrides, and data reset.
+═══════════════════════════════════════════════════ */
+function isAdminUser() {
+  return !!(currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin'));
+}
+
+function requireAdmin(actionName, onAllowed) {
+  if (isAdminUser()) {
+    onAllowed();
+    return;
+  }
+  const nameEl = document.getElementById('guardActionName');
+  if (nameEl) nameEl.textContent = actionName;
+  const guardModal = document.getElementById('adminAuthGuardModal');
+  if (guardModal) guardModal.showModal();
+}
+
+function handleSetupNav() {
+  requireAdmin('Tournament Setup & Roster', () => showScreen('setupScreen'));
+}
+
+function handleDraftNav() {
+  requireAdmin('Pool Draw Machine', () => showScreen('draftScreen'));
+}
+
+function handleResetNav() {
+  requireAdmin('Reset Tournament Data', () => openDataResetModal());
+}
+
+function quickSwitchToAdmin() {
+  const users = getUsersDB();
+  let admin = users.find(u => u.role === 'admin' || u.role === 'super_admin');
+  if (!admin) {
+    admin = {
+      id: 999999,
+      name: 'Tournament Director',
+      email: 'admin@badminton.local',
+      role: 'admin',
+      status: 'active',
+      avatar: 'D',
+      createdAt: new Date().toLocaleDateString()
+    };
+    users.push(admin);
+    saveUsersDB(users);
+  }
+  setCurrentUser(admin);
+  const guardModal = document.getElementById('adminAuthGuardModal');
+  if (guardModal && guardModal.open) guardModal.close();
+  showToast('Switched to Tournament Director (Admin) mode with full privileges!', 'success');
+}
+
+function quickSwitchToGeneralUser() {
+  const player = {
+    id: 10001,
+    name: 'Player User',
+    email: 'player@badminton.local',
+    role: 'player',
+    status: 'active',
+    avatar: 'P',
+    createdAt: new Date().toLocaleDateString()
+  };
+  setCurrentUser(player);
+  showToast('Switched to General User mode (Open challenges, betting, play).', 'info');
+}
+
+function toggleRoleDemo() {
+  if (isAdminUser()) {
+    quickSwitchToGeneralUser();
+  } else {
+    quickSwitchToAdmin();
+  }
+}
+
 function showScreen(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(screenId);
@@ -2752,6 +3000,9 @@ function renderGroupMatches() {
             </button>
             <button class="quick-win-btn" onclick="awardInstantWinner('b', '${m.id}')" title="Award instant 2-0 win to ${m.b}">
               🏆 ${m.b} Won
+            </button>
+            <button class="btn btn-secondary btn-xs" onclick="openBettingModal('${m.id}')" title="Place virtual coin prediction on this match">
+              🎲 Predict
             </button>
             <button class="btn btn-ghost btn-xs" onclick="startUmpireMatch('${m.id}')" title="Open live court umpire referee">
               🏸 Referee

@@ -21,7 +21,12 @@ SCREENS_CONTENT = """
     </button>
 
     <!-- PWA Install Button -->
-    <button class="install-app-pill" id="installAppBtn" onclick="promptInstallPWA()" style="display:none;" title="Install Badminton Cup App">
+    
+    <!-- Virtual Coin Wallet for General Users -->
+    <button class="btn btn-ghost btn-xs" id="headerCoinBtn" onclick="openCoinBalanceModal()" title="Virtual Coin Balance & Predictions" style="color:var(--clr-gold);font-weight:700;border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08);">
+      <span style="font-size:0.9rem;">🪙</span> <span id="headerCoinCount">100</span>
+    </button>
+<button class="install-app-pill" id="installAppBtn" onclick="promptInstallPWA()" style="display:none;" title="Install Badminton Cup App">
       <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       <span data-i18n="installApp">Install</span>
     </button>
@@ -238,7 +243,7 @@ SCREENS_CONTENT = """
           <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           <span data-i18n="createChalBtn">+ Open Challenge</span>
         </button>
-        <button class="btn btn-ghost btn-xs" onclick="showScreen('setupScreen')">
+        <button class="btn btn-ghost btn-xs" onclick="handleSetupNav()">
           <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           <span>Tournament Setup</span>
         </button>
@@ -705,7 +710,7 @@ SCREENS_CONTENT = """
       <div style="display:flex;justify-content:center;gap:12px;margin-top:20px;flex-wrap:wrap;">
         <button class="btn btn-gold btn-lg" onclick="openSharePosterModal()"><svg class="icon icon-xs" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Generate Victory Poster</button>
         <button class="btn btn-ghost" onclick="showScreen('leaderboardScreen')">View Global Leaderboard</button>
-        <button class="btn btn-ghost" onclick="showScreen('setupScreen')">Start New Cup</button>
+        <button class="btn btn-ghost" onclick="handleSetupNav()">Start New Cup</button>
       </div>
     </div>
   </section>
