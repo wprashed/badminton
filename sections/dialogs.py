@@ -30,6 +30,36 @@ DIALOGS_CONTENT = """
         <button type="submit" class="btn btn-primary btn-sm" id="authSubmitBtn">Sign In</button>
       </div>
     </form>
+    <!-- 1-Click Demo User Switcher -->
+    <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--clr-border);">
+      <div style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:8px;">
+        1-Click Quick Sign In
+      </div>
+      <div style="margin-bottom:8px;">
+        <button type="button" class="btn btn-primary btn-xs" onclick="loginAsUser('Rashed')" style="width:100%;font-weight:800;background:var(--clr-gold);color:#000;border-color:var(--clr-gold);">
+          👑 Sign in as Rashed (Tournament Admin)
+        </button>
+      </div>
+      <div style="font-size:0.72rem;color:var(--clr-text-muted);margin-bottom:6px;">Or sign in as any player:</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;max-height:110px;overflow-y:auto;">
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Parag Das')">Parag Das</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Rifat Haque')">Rifat Haque</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Rifat Tariq')">Rifat Tariq</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Jobayer')">Jobayer</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Shewa')">Shewa</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Sazedul')">Sazedul</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Nur')">Nur</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Ofi')">Ofi</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Sifat')">Sifat</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Sajeeb')">Sajeeb</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Jakir')">Jakir</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Saiful')">Saiful</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Al Emran')">Al Emran</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Toufiq')">Toufiq</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Abir')">Abir</button>
+      </div>
+    </div>
+
   </div>
 </dialog>
 

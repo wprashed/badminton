@@ -3006,6 +3006,36 @@ body.theme-contrast .mobile-bottom-nav {
         <button type="submit" class="btn btn-primary btn-sm" id="authSubmitBtn">Sign In</button>
       </div>
     </form>
+    <!-- 1-Click Demo User Switcher -->
+    <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--clr-border);">
+      <div style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:8px;">
+        1-Click Quick Sign In
+      </div>
+      <div style="margin-bottom:8px;">
+        <button type="button" class="btn btn-primary btn-xs" onclick="loginAsUser('Rashed')" style="width:100%;font-weight:800;background:var(--clr-gold);color:#000;border-color:var(--clr-gold);">
+          👑 Sign in as Rashed (Tournament Admin)
+        </button>
+      </div>
+      <div style="font-size:0.72rem;color:var(--clr-text-muted);margin-bottom:6px;">Or sign in as any player:</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;max-height:110px;overflow-y:auto;">
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Parag Das')">Parag Das</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Rifat Haque')">Rifat Haque</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Rifat Tariq')">Rifat Tariq</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Jobayer')">Jobayer</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Shewa')">Shewa</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Sazedul')">Sazedul</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Nur')">Nur</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Ofi')">Ofi</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Sifat')">Sifat</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Sajeeb')">Sajeeb</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Jakir')">Jakir</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Saiful')">Saiful</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Al Emran')">Al Emran</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Toufiq')">Toufiq</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('Abir')">Abir</button>
+      </div>
+    </div>
+
   </div>
 </dialog>
 
@@ -4647,6 +4677,19 @@ function saveUsersDB(users) {
 
 let authMode = 'login';
 
+
+function loginAsUser(name) {
+  const users = getUsersDB();
+  const target = users.find(u => u.name.toLowerCase() === name.toLowerCase());
+  if (target) {
+    setCurrentUser(target);
+    closeAuthModal();
+    showToast(`Signed in as ${target.name} (${target.role.toUpperCase()})!`, 'success');
+  } else {
+    showToast(`User ${name} not found.`, 'warning');
+  }
+}
+
 function openAuthModal() {
   if (currentUser) {
     if (confirm(`Currently signed in as ${currentUser.name} (${currentUser.role}). Sign out?`)) {
@@ -4748,6 +4791,93 @@ function setCurrentUser(user) {
   updateBettingUI();
   updateBettingUI();
   renderPlayerHub();
+}
+
+
+function ensureDemoUsersSeeded() {
+  const users = getUsersDB();
+  const demoList = [
+    { name: 'Rashed', email: 'rashed@badminton.local', role: 'admin', club: 'Tournament Director', elo: 1650, avatar: 'R' },
+    { name: 'Parag Das', email: 'parag@badminton.local', role: 'player', club: 'Dhaka Smashers', elo: 1610, avatar: 'P' },
+    { name: 'Rifat Haque', email: 'rifat.haque@badminton.local', role: 'player', club: 'Uttara Shuttlers', elo: 1590, avatar: 'R' },
+    { name: 'Rifat Tariq', email: 'rifat.tariq@badminton.local', role: 'player', club: 'Banani BC', elo: 1580, avatar: 'R' },
+    { name: 'Jobayer', email: 'jobayer@badminton.local', role: 'player', club: 'Gulshan Aces', elo: 1570, avatar: 'J' },
+    { name: 'Shewa', email: 'shewa@badminton.local', role: 'player', club: 'Mirpur Warriors', elo: 1560, avatar: 'S' },
+    { name: 'Sazedul', email: 'sazedul@badminton.local', role: 'player', club: 'Dhanmondi Club', elo: 1550, avatar: 'S' },
+    { name: 'Nur', email: 'nur@badminton.local', role: 'player', club: 'Mohakhali Spikers', elo: 1540, avatar: 'N' },
+    { name: 'Ofi', email: 'ofi@badminton.local', role: 'player', club: 'Bashundhara BC', elo: 1530, avatar: 'O' },
+    { name: 'Sifat', email: 'sifat@badminton.local', role: 'player', club: 'Foosball & Shuttlers', elo: 1620, avatar: 'S' },
+    { name: 'Sajeeb', email: 'sajeeb@badminton.local', role: 'player', club: 'Paltan Smashers', elo: 1520, avatar: 'S' },
+    { name: 'Jakir', email: 'jakir@badminton.local', role: 'player', club: 'Rampura Rackets', elo: 1510, avatar: 'J' },
+    { name: 'Saiful', email: 'saiful@badminton.local', role: 'player', club: 'Khilgaon Shuttlers', elo: 1500, avatar: 'S' },
+    { name: 'Al Emran', email: 'emran@badminton.local', role: 'player', club: 'Chittagong Aces', elo: 1580, avatar: 'A' },
+    { name: 'Toufiq', email: 'toufiq@badminton.local', role: 'player', club: 'Sylhet Smashers', elo: 1540, avatar: 'T' },
+    { name: 'Abir', email: 'abir@badminton.local', role: 'player', club: 'Rajshahi Smashers', elo: 1560, avatar: 'A' }
+  ];
+
+  let added = false;
+  demoList.forEach((d, idx) => {
+    let existing = users.find(u => u.name.toLowerCase() === d.name.toLowerCase());
+    if (!existing) {
+      users.push({
+        id: 3000 + idx,
+        name: d.name,
+        email: d.email,
+        role: d.role,
+        status: 'active',
+        feeStatus: 'paid',
+        elo: d.elo,
+        dominantHand: 'Right-Handed',
+        club: d.club,
+        avatar: d.avatar,
+        createdAt: new Date().toLocaleDateString()
+      });
+      added = true;
+    } else {
+      if (d.name === 'Rashed' && existing.role !== 'admin') {
+        existing.role = 'admin';
+        added = true;
+      }
+    }
+  });
+
+  if (added) {
+    saveUsersDB(users);
+  }
+
+  // Pre-seed sample open challenges if empty
+  const chalList = getChallengesDB();
+  if (!chalList.length) {
+    chalList.push({
+      id: 'chal_seed_1',
+      creator: 'Parag Das',
+      opponent: null,
+      category: 'singles',
+      points: 21,
+      note: 'Court 1 · Friendly Singles Match',
+      status: 'open',
+      createdAt: 'Today'
+    });
+    chalList.push({
+      id: 'chal_seed_2',
+      creator: 'Sifat',
+      opponent: null,
+      category: 'singles',
+      points: 21,
+      note: 'Court 2 · Ready for high-paced match!',
+      status: 'open',
+      createdAt: 'Today'
+    });
+    saveChallengesDB(chalList);
+  }
+
+  // If no currentUser is saved, default to Rashed as Admin
+  if (!currentUser) {
+    const rashed = users.find(u => u.name.toLowerCase() === 'rashed');
+    if (rashed) {
+      setCurrentUser(rashed);
+    }
+  }
 }
 
 function loadAuthUser() {
@@ -6417,24 +6547,29 @@ function handleResetNav() {
 
 function quickSwitchToAdmin() {
   const users = getUsersDB();
-  let admin = users.find(u => u.role === 'admin' || u.role === 'super_admin');
+  let admin = users.find(u => u.name.toLowerCase() === 'rashed');
   if (!admin) {
     admin = {
-      id: 999999,
-      name: 'Tournament Director',
-      email: 'admin@badminton.local',
+      id: 1001,
+      name: 'Rashed',
+      email: 'rashed@badminton.local',
       role: 'admin',
       status: 'active',
-      avatar: 'D',
+      avatar: 'R',
+      club: 'Tournament Director',
+      elo: 1650,
       createdAt: new Date().toLocaleDateString()
     };
-    users.push(admin);
+    users.unshift(admin);
+    saveUsersDB(users);
+  } else {
+    admin.role = 'admin';
     saveUsersDB(users);
   }
   setCurrentUser(admin);
   const guardModal = document.getElementById('adminAuthGuardModal');
   if (guardModal && guardModal.open) guardModal.close();
-  showToast('Switched to Tournament Director (Admin) mode with full privileges!', 'success');
+  showToast('Signed in as Rashed (Admin & Tournament Director)!', 'success');
 }
 
 function quickSwitchToGeneralUser() {
@@ -6584,14 +6719,14 @@ function getCleanRoster(textareaId) {
 
 function loadDemoData() {
   if (state.category === 'doubles') {
-    document.getElementById('rosterAInput').value = "Lin Dan / Lee Chong Wei\nViktor Axelsen / Anders Antonsen\nAhsan / Setiawan\nAlfian / Ardianto";
-    document.getElementById('rosterBInput').value = "Gideon / Sukamuljo\nRankireddy / Shetty\nChia / Soh\nAstrup / Rasmussen";
+    document.getElementById('rosterAInput').value = "Parag Das / Rifat Haque\nRifat Tariq / Jobayer\nShewa / Sazedul\nNur / Ofi";
+    document.getElementById('rosterBInput').value = "Sifat / Sajeeb\nJakir / Saiful\nAl Emran / Toufiq\nAbir / Rashed";
   } else {
-    document.getElementById('rosterAInput').value = "Lin Dan\nLee Chong Wei\nViktor Axelsen\nAnders Antonsen";
-    document.getElementById('rosterBInput').value = "Kento Momota\nChen Long\nJonatan Christie\nShi Yuqi";
+    document.getElementById('rosterAInput').value = "Parag Das\nRifat Haque\nRifat Tariq\nJobayer\nShewa\nSazedul\nNur\nOfi";
+    document.getElementById('rosterBInput').value = "Sifat\nSajeeb\nJakir\nSaiful\nAl Emran\nToufiq\nAbir\nRashed";
   }
   updatePlayerCounts();
-  showToast('Demo roster loaded!');
+  showToast('Roster loaded with Rashed (Admin) & 15 players!');
 }
 
 function openBulkRosterModal() {
@@ -8295,8 +8430,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       const adminHash = await hashPassword('admin123');
       users.push({
         id: 1001,
-        name: 'admin',
-        email: 'admin@badmintoncup.org',
+        name: 'Rashed',
+        email: 'rashed@badminton.local',
         passHash: adminHash,
         role: 'admin',
         status: 'active',
@@ -8304,17 +8439,27 @@ window.addEventListener('DOMContentLoaded', async () => {
         elo: 1600,
         dominantHand: 'Right-Handed',
         club: 'Tournament Director',
-        avatar: 'A',
+        avatar: 'R',
         createdAt: 'Initial'
       });
 
-      // Seed verified demo athletes with invitation tokens
+      // Seed verified demo players requested by user
       const demoAthletes = [
-        { name: 'Viktor Axelsen', email: 'viktor@badminton.dk', club: 'Odense BK', elo: 1620, role: 'player', status: 'active' },
-        { name: 'Lin Dan', email: 'lindan@china.cn', club: 'Beijing National', elo: 1650, role: 'player', status: 'active' },
-        { name: 'Lee Chong Wei', email: 'lcw@malaysia.my', club: 'Petaling Jaya', elo: 1640, role: 'player', status: 'active' },
-        { name: 'Kento Momota', email: 'momota@japan.jp', club: 'NTT East', elo: 1590, role: 'player', status: 'invited' },
-        { name: 'Official John', email: 'referee@bwf.org', club: 'BWF Official', elo: 1400, role: 'umpire', status: 'active' }
+        { name: 'Parag Das', email: 'parag@badminton.local', club: 'Dhaka Smashers', elo: 1610, role: 'player', status: 'active' },
+        { name: 'Rifat Haque', email: 'rifat.haque@badminton.local', club: 'Uttara Shuttlers', elo: 1590, role: 'player', status: 'active' },
+        { name: 'Rifat Tariq', email: 'rifat.tariq@badminton.local', club: 'Banani BC', elo: 1580, role: 'player', status: 'active' },
+        { name: 'Jobayer', email: 'jobayer@badminton.local', club: 'Gulshan Aces', elo: 1570, role: 'player', status: 'active' },
+        { name: 'Shewa', email: 'shewa@badminton.local', club: 'Mirpur Warriors', elo: 1560, role: 'player', status: 'active' },
+        { name: 'Sazedul', email: 'sazedul@badminton.local', club: 'Dhanmondi Club', elo: 1550, role: 'player', status: 'active' },
+        { name: 'Nur', email: 'nur@badminton.local', club: 'Mohakhali Spikers', elo: 1540, role: 'player', status: 'active' },
+        { name: 'Ofi', email: 'ofi@badminton.local', club: 'Bashundhara BC', elo: 1530, role: 'player', status: 'active' },
+        { name: 'Sifat', email: 'sifat@badminton.local', club: 'Foosball & Shuttlers', elo: 1620, role: 'player', status: 'active' },
+        { name: 'Sajeeb', email: 'sajeeb@badminton.local', club: 'Paltan Smashers', elo: 1520, role: 'player', status: 'active' },
+        { name: 'Jakir', email: 'jakir@badminton.local', club: 'Rampura Rackets', elo: 1510, role: 'player', status: 'active' },
+        { name: 'Saiful', email: 'saiful@badminton.local', club: 'Khilgaon Shuttlers', elo: 1500, role: 'player', status: 'active' },
+        { name: 'Al Emran', email: 'emran@badminton.local', club: 'Chittagong Aces', elo: 1580, role: 'player', status: 'active' },
+        { name: 'Toufiq', email: 'toufiq@badminton.local', club: 'Sylhet Smashers', elo: 1540, role: 'player', status: 'active' },
+        { name: 'Abir', email: 'abir@badminton.local', club: 'Rajshahi Smashers', elo: 1560, role: 'player', status: 'active' }
       ];
 
       for (let i = 0; i < demoAthletes.length; i++) {
@@ -8341,6 +8486,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
   } catch (e) {}
 
+  ensureDemoUsersSeeded();
   loadAuthUser();
   loadSavedState();
   renderTournamentSwitcher();
