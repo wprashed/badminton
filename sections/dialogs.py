@@ -984,4 +984,43 @@ DIALOGS_CONTENT = """
     </div>
   </div>
 </dialog>
+<!-- ═══════════════════════════════════════════════════
+     GENERIC CUSTOM CONFIRM & PROMPT MODALS (PWA NATIVE ALTERNATIVES)
+═══════════════════════════════════════════════════ -->
+<dialog id="appConfirmModal" class="modal" aria-labelledby="appConfirmTitle">
+  <div class="modal-box" style="max-width:440px;text-align:center;">
+    <div style="display:flex;justify-content:flex-end;">
+      <button class="modal-close" onclick="document.getElementById('appConfirmModal').close()" aria-label="Close">
+        <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div style="width:48px;height:48px;border-radius:50%;background:rgba(239,68,68,0.12);color:#ef4444;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;border:1px solid rgba(239,68,68,0.25);">
+      <svg class="icon icon-md" viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+    <h3 id="appConfirmTitle" style="font-family:var(--font-display);font-size:1.25rem;font-weight:800;margin:0 0 8px;color:var(--clr-text);">Confirmation Required</h3>
+    <p id="appConfirmMsg" style="color:var(--clr-text-muted);font-size:0.88rem;margin:0 auto 20px;max-width:360px;line-height:1.45;">Are you sure you want to proceed?</p>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button type="button" class="btn btn-ghost btn-sm" id="appConfirmCancelBtn" style="min-width:110px;">Cancel</button>
+      <button type="button" class="btn btn-primary btn-sm" id="appConfirmOkBtn" style="min-width:130px;">Confirm</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="appPromptModal" class="modal" aria-labelledby="appPromptTitle">
+  <div class="modal-box" style="max-width:440px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
+      <h3 id="appPromptTitle" style="font-family:var(--font-display);font-size:1.15rem;font-weight:700;margin:0;color:var(--clr-text);">Input Required</h3>
+      <button class="modal-close" onclick="document.getElementById('appPromptModal').close()" aria-label="Close">
+        <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <p id="appPromptMsg" style="color:var(--clr-text-muted);font-size:0.85rem;margin:0 0 12px;line-height:1.4;"></p>
+    <input type="text" id="appPromptInput" class="modal-input" style="width:100%;margin-bottom:18px;">
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button type="button" class="btn btn-ghost btn-sm" id="appPromptCancelBtn">Cancel</button>
+      <button type="button" class="btn btn-primary btn-sm" id="appPromptOkBtn">Submit</button>
+    </div>
+  </div>
+</dialog>
+
 """

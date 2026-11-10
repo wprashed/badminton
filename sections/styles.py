@@ -2270,5 +2270,90 @@ body.theme-light dialog .modal-close:hover {
   border-color: #94a3b8 !important;
 }
 
+
+/* ═══════════════════════════════════════════════════
+   MODAL SCROLL LOCK & PRINT STYLES
+═══════════════════════════════════════════════════ */
+body.modal-open {
+  overflow: hidden !important;
+  touch-action: none !important;
+}
+
+/* Print-optimized stylesheet for tournament venue posters & scorecards */
+@media print {
+  header,
+  nav,
+  .top-bar,
+  .app-stage-nav,
+  .mobile-bottom-nav,
+  .btn,
+  .modal-close,
+  #headerThemeBtn,
+  #headerSoundBtn,
+  #headerMoreBtn,
+  .hotkey-legend,
+  .quick-match-row,
+  .more-grid {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 10pt !important;
+    margin: 0 !important;
+    padding: 10px !important;
+  }
+
+  .screen {
+    display: block !important;
+  }
+
+  .card, .table-container, table {
+    border: 1px solid #1e293b !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    page-break-inside: avoid;
+  }
+
+  th, td {
+    border-color: #cbd5e1 !important;
+    color: #000000 !important;
+  }
+
+  .badge-active, .badge-pool {
+    border: 1px solid #000000 !important;
+    color: #000000 !important;
+    background: transparent !important;
+  }
+}
+
+/* Offline mode status badge */
+.badge-offline {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 3px 8px;
+  border-radius: 12px;
+  line-height: 1;
+}
+
+/* Umpire interval timer pulse */
+@keyframes intervalPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+#intervalTimerOverlay {
+  animation: intervalPulse 1.8s ease-in-out infinite;
+}
+
 </style>
 """

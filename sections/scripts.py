@@ -1,5 +1,222 @@
-# Scripts module for Badminton Cup
 SCRIPTS_CONTENT = r"""
+/* ═══════════════════════════════════════════════════
+   GLOBAL UTILITIES & RESILIENCE HELPERS
+═══════════════════════════════════════════════════ */
+window.escapeHtml = function(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+};
+
+/* Modern Accessible Non-Blocking Modals replacing native window.confirm & prompt */
+function appConfirm(message, title = 'Confirmation Required', okText = 'Confirm', danger = false) {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('appConfirmModal');
+    if (!modal) {
+      resolve(window.confirm(message));
+      return;
+    }
+    const titleEl = document.getElementById('appConfirmTitle');
+    const msgEl = document.getElementById('appConfirmMsg');
+    const okBtn = document.getElementById('appConfirmOkBtn');
+    const cancelBtn = document.getElementById('appConfirmCancelBtn');
+
+    if (titleEl) titleEl.textContent = title;
+    if (msgEl) msgEl.textContent = message;
+    if (okBtn) {
+      okBtn.textContent = okText;
+      okBtn.className = danger ? 'btn btn-danger btn-sm' : 'btn btn-primary btn-sm';
+    }
+
+    const onOk = () => { cleanup(); modal.close(); resolve(true); };
+    const onCancel = () => { cleanup(); modal.close(); resolve(false); };
+    const onEsc = (e) => { if (e.key === 'Escape') { cleanup(); resolve(false); } };
+
+    function cleanup() {
+      if (okBtn) okBtn.removeEventListener('click', onOk);
+      if (cancelBtn) cancelBtn.removeEventListener('click', onCancel);
+      modal.removeEventListener('keydown', onEsc);
+    }
+
+    if (okBtn) okBtn.addEventListener('click', onOk);
+    if (cancelBtn) cancelBtn.addEventListener('click', onCancel);
+    modal.addEventListener('keydown', onEsc);
+
+    modal.showModal();
+  });
+}
+
+function appPrompt(message, defaultValue = '', title = 'Input Required') {
+  return new Promise((resolve) => {
+    const modal = document.getElementById('appPromptModal');
+    if (!modal) {
+      resolve(window.prompt(message, defaultValue));
+      return;
+    }
+    const titleEl = document.getElementById('appPromptTitle');
+    const msgEl = document.getElementById('appPromptMsg');
+    const inputEl = document.getElementById('appPromptInput');
+    const okBtn = document.getElementById('appPromptOkBtn');
+    const cancelBtn = document.getElementById('appPromptCancelBtn');
+
+    if (titleEl) titleEl.textContent = title;
+    if (msgEl) msgEl.textContent = message;
+    if (inputEl) {
+      inputEl.value = defaultValue;
+      setTimeout(() => { inputEl.focus(); inputEl.select(); }, 50);
+    }
+
+    const onOk = () => {
+      const val = inputEl ? inputEl.value : '';
+      cleanup();
+      modal.close();
+      resolve(val);
+    };
+    const onCancel = () => { cleanup(); modal.close(); resolve(null); };
+    const onKey = (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); onOk(); }
+      else if (e.key === 'Escape') { cleanup(); resolve(null); }
+    };
+
+    function cleanup() {
+      if (okBtn) okBtn.removeEventListener('click', onOk);
+      if (cancelBtn) cancelBtn.removeEventListener('click', onCancel);
+      if (inputEl) inputEl.removeEventListener('keydown', onKey);
+    }
+
+    if (okBtn) okBtn.addEventListener('click', onOk);
+    if (cancelBtn) cancelBtn.addEventListener('click', onCancel);
+    if (inputEl) inputEl.addEventListener('keydown', onKey);
+
+    modal.showModal();
+  });
+}
+
+/* Web Audio API unlocking on iOS / Safari first interaction */
+let audioCtxUnlocked = false;
+function unlockAudioContext() {
+  if (audioCtxUnlocked) return;
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) {
+      if (!window.__appAudioCtx) window.__appAudioCtx = new AudioCtx();
+      if (window.__appAudioCtx.state === 'suspended') {
+        window.__appAudioCtx.resume();
+      }
+      audioCtxUnlocked = true;
+    }
+  } catch (e) {}
+}
+['click', 'touchstart', 'keydown'].forEach(evt => {
+  document.addEventListener(evt, unlockAudioContext, { once: true, passive: true });
+});
+
+/* Global Audio Mute Controller */
+let isAppAudioMuted = localStorage.getItem('badminton_sound_muted') === 'true';
+
+function toggleMuteAudio() {
+  isAppAudioMuted = !isAppAudioMuted;
+  localStorage.setItem('badminton_sound_muted', isAppAudioMuted ? 'true' : 'false');
+  updateSoundIconUI();
+  showToast(isAppAudioMuted ? 'Audio chime muted 🔇' : 'Audio chime enabled 🔊', 'info');
+}
+
+function updateSoundIconUI() {
+  const onIcon = document.getElementById('soundIconOn');
+  const offIcon = document.getElementById('soundIconOff');
+  if (onIcon && offIcon) {
+    onIcon.style.display = isAppAudioMuted ? 'none' : 'block';
+    offIcon.style.display = isAppAudioMuted ? 'block' : 'none';
+  }
+}
+
+/* Online / Offline Connectivity Tracker */
+function updateNetworkStatus() {
+  const pill = document.getElementById('offlineStatusPill');
+  if (!pill) return;
+  if (!navigator.onLine) {
+    pill.style.display = 'inline-flex';
+    showToast('Offline Mode: matches, bets and scores are saved in local cache.', 'warning');
+  } else {
+    pill.style.display = 'none';
+  }
+}
+window.addEventListener('online', updateNetworkStatus);
+window.addEventListener('offline', updateNetworkStatus);
+
+/* CSV Export Functions */
+function exportMatchesCSV() {
+  if (!state.matches || !state.matches.length) {
+    showToast('No matches to export.', 'warning');
+    return;
+  }
+  let csv = 'Match ID,Pool,Court,Team A,Team B,Winner,Set Scores,Duration (s),Status\n';
+  state.matches.forEach(m => {
+    const scores = (m.sets || []).map(s => `${s.score[0]}-${s.score[1]}`).join(' | ');
+    const winnerName = m.winner ? (m.winner === 'a' ? m.a : m.b) : 'Pending';
+    csv += `"${m.id}","${m.pool}","${m.court || 1}","${m.a}","${m.b}","${winnerName}","${scores}","${m.durationSeconds || 0}","${m.winner ? 'Completed' : 'Scheduled'}"\n`;
+  });
+  downloadFile(csv, `${(state.title || 'Badminton_Cup').replace(/\\s+/g, '_')}_matches.csv`, 'text/csv');
+  showToast('Match records exported to CSV!', 'success');
+}
+
+function exportStandingsCSV() {
+  const standingsA = computePoolStandings(state.poolA, 'A');
+  const standingsB = computePoolStandings(state.poolB, 'B');
+  let csv = 'Pool,Rank,Athlete,Played,Wins,Losses,Games Won,Games Lost,Points Won,Points Lost,Point Diff\n';
+  standingsA.forEach((s, idx) => {
+    csv += `"A",${idx + 1},"${s.name}",${s.W + s.L},${s.W},${s.L},${s.gamesWon},${s.gamesLost},${s.ptsWon},${s.ptsLost},${s.ptsWon - s.ptsLost}\n`;
+  });
+  standingsB.forEach((s, idx) => {
+    csv += `"B",${idx + 1},"${s.name}",${s.W + s.L},${s.W},${s.L},${s.gamesWon},${s.gamesLost},${s.ptsWon},${s.ptsLost},${s.ptsWon - s.ptsLost}\n`;
+  });
+  downloadFile(csv, `${(state.title || 'Badminton_Cup').replace(/\\s+/g, '_')}_standings.csv`, 'text/csv');
+  showToast('Pool standings exported to CSV!', 'success');
+}
+
+function downloadFile(content, fileName, mimeType) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* Dynamic ELO Rating Calculation (FIDE / BWF K=32) */
+function updateMatchELO(match) {
+  if (!match || !match.winner) return;
+  const users = getUsersDB();
+  const playerA = users.find(u => u.name.toLowerCase() === match.a.toLowerCase());
+  const playerB = users.find(u => u.name.toLowerCase() === match.b.toLowerCase());
+  if (!playerA || !playerB) return;
+
+  const rA = playerA.elo || 1500;
+  const rB = playerB.elo || 1500;
+  const eA = 1 / (1 + Math.pow(10, (rB - rA) / 400));
+  const eB = 1 / (1 + Math.pow(10, (rA - rB) / 400));
+  const sA = match.winner === 'a' ? 1 : 0;
+  const sB = match.winner === 'b' ? 1 : 0;
+  const K = 32;
+
+  const deltaA = Math.round(K * (sA - eA));
+  const deltaB = Math.round(K * (sB - eB));
+
+  playerA.elo = Math.max(1000, rA + deltaA);
+  playerB.elo = Math.max(1000, rB + deltaB);
+  saveUsersDB(users);
+  renderLeaderboardScreen();
+}
+
+# Scripts module for Badminton Cup
+
 <script>
 
 /* ═══════════════════════════════════════════════════
@@ -262,14 +479,14 @@ function renderChallengesBoard() {
           <span style="font-size:0.75rem;color:var(--clr-text-muted);">${c.createdAt}</span>
         </div>
         <div style="font-weight:700;font-size:1.05rem;color:var(--clr-text);margin-bottom:4px;">
-          ${c.creator} ${c.opponent ? `<span style="color:var(--clr-green);">vs</span> ${c.opponent}` : ''}
+          ${escapeHtml(c.creator)} ${c.opponent ? `<span style="color:var(--clr-green);">vs</span> ${escapeHtml(c.opponent)}` : ''}
         </div>
         <div style="font-size:0.8rem;color:var(--clr-text-muted);display:flex;gap:8px;margin-top:6px;">
           <span>${c.category === 'doubles' ? 'Doubles (2v2)' : 'Singles (1v1)'}</span>
           <span>·</span>
           <span>${c.points} Points</span>
           <span>·</span>
-          <span>${c.note}</span>
+          <span>${escapeHtml(c.note)}</span>
         </div>
       </div>
       <div>
@@ -298,12 +515,13 @@ function openDataResetModal() {
   document.getElementById('dataResetModal').showModal();
 }
 
-function resetCurrentTournamentOnly() {
+async function resetCurrentTournamentOnly() {
   if (!isAdminUser()) {
     showToast('Only Admin (Rashed) can reset tournament data.', 'error');
     return;
   }
-  if (!confirm('Wipe all fixtures for the current tournament and start over at setup?')) return;
+  const confirmed = await appConfirm('Wipe all fixtures for the current tournament and start over at setup?', 'Reset Current Tournament', 'Wipe Fixtures', true);
+  if (!confirmed) return;
   state.matches = [];
   state.koRounds = [];
   state.champion = null;
@@ -311,17 +529,19 @@ function resetCurrentTournamentOnly() {
   state.thirdPlace = null;
   state.currentMatchId = null;
   saveState();
-  document.getElementById('dataResetModal').close();
+  const dModal = document.getElementById('dataResetModal');
+  if (dModal && dModal.open) dModal.close();
   showScreen('setupScreen');
   showToast('Tournament matches reset to setup.');
 }
 
-function resetEverythingFullFactory() {
+async function resetEverythingFullFactory() {
   if (!isAdminUser()) {
     showToast('Only Admin (Rashed) can reset tournament data.', 'error');
     return;
   }
-  if (!confirm('WARNING: Complete Factory Reset will wipe all tournaments, challenges, and stats. Are you sure?')) return;
+  const confirmed = await appConfirm('WARNING: Complete Factory Reset will wipe all tournaments, challenges, wallets, and stats. Are you sure?', 'Factory Reset Warning', 'Factory Reset Everything', true);
+  if (!confirmed) return;
   localStorage.clear();
   showToast('All data successfully reset!');
   setTimeout(() => {
@@ -1160,15 +1380,23 @@ function revokeInvitation(userId) {
   }
 }
 
-function deleteUserRecord(userId) {
+async function deleteUserRecord(userId) {
   const users = getUsersDB();
   const user = users.find(u => u.id === userId);
   if (!user) return;
-  if (confirm(`Delete user ${user.name} completely from tournament registry?`)) {
+
+  const inActiveMatches = state.matches && state.matches.some(m => m.a.toLowerCase() === user.name.toLowerCase() || m.b.toLowerCase() === user.name.toLowerCase());
+  if (inActiveMatches) {
+    showToast(`Cannot delete ${user.name}: athlete has scheduled matches in the current tournament. Forfeit matches or reset tournament first.`, 'error');
+    return;
+  }
+
+  const confirmed = await appConfirm(`Delete athlete '${user.name}' completely from tournament registry?`, 'Delete Athlete Record', 'Delete Athlete', true);
+  if (confirmed) {
     saveUsersDB(users.filter(u => u.id !== userId));
     logAdminAudit(`Deleted user record for ${user.name}`);
     renderAdminDashboard();
-    showToast('User record deleted.');
+    showToast(`Athlete ${user.name} deleted.`);
   }
 }
 
@@ -2202,6 +2430,15 @@ function openBettingModal(matchId) {
   const match = state.matches.find(m => m.id === matchId);
   if (!match) return;
 
+  if (match.winner) {
+    showToast('Predictions are closed: match already completed.', 'warning');
+    return;
+  }
+  if (match.id === state.currentMatchId || (match.sets && match.sets.some(s => (s.score[0] > 0 || s.score[1] > 0)))) {
+    showToast('Predictions are closed: match is currently live on court.', 'warning');
+    return;
+  }
+
   activeBetMatch = match;
   activeBetSide = 'a';
 
@@ -2245,9 +2482,15 @@ function setBetAmount(amount) {
 function placeBet() {
   if (!requireAuthUser('place match predictions')) return;
   if (!activeBetMatch) return;
-  const amount = parseInt(document.getElementById('betModalAmountInput')?.value, 10);
-  if (isNaN(amount) || amount <= 0) {
-    showToast('Please enter a valid coin amount.', 'warning');
+
+  if (activeBetMatch.winner || (activeBetMatch.sets && activeBetMatch.sets.some(s => s.score[0] > 0 || s.score[1] > 0))) {
+    showToast('Predictions are closed for this match.', 'warning');
+    return;
+  }
+
+  const amount = Math.floor(parseInt(document.getElementById('betModalAmountInput')?.value, 10));
+  if (isNaN(amount) || amount < 5) {
+    showToast('Minimum prediction wager is 5 coins.', 'warning');
     return;
   }
 
@@ -3072,20 +3315,36 @@ function computePoolStandings(poolPlayers, poolTag) {
     });
   });
 
+  // Find tied win groups to apply BWF 16.2.4 (2-way H2H) vs 16.2.5 (3-way game/point diff)
+  const winCounts = {};
+  poolPlayers.forEach(p => {
+    const w = stats[p] ? stats[p].W : 0;
+    winCounts[w] = (winCounts[w] || 0) + 1;
+  });
+
   return poolPlayers.map(p => stats[p]).sort((x, y) => {
     if (y.W !== x.W) return y.W - x.W;
-    // BWF General Competition Regulations (GCR 16.2.4):
-    // If two teams are tied, the winner of the head-to-head match between them ranks higher.
-    if (x.h2h[y.name]) return -x.h2h[y.name];
+    
+    // If exactly two athletes are tied with same wins, BWF H2H decides:
+    if (winCounts[x.W] === 2 && x.h2h && x.h2h[y.name]) {
+      return -x.h2h[y.name];
+    }
+
+    // If 3 or more tied (or H2H unplayed), decide by net game/set difference:
     const gDiffX = x.gamesWon - x.gamesLost;
     const gDiffY = y.gamesWon - y.gamesLost;
     if (gDiffY !== gDiffX) return gDiffY - gDiffX;
+
+    // Then decide by net point difference:
     const ptDiffX = x.ptsWon - x.ptsLost;
     const ptDiffY = y.ptsWon - y.ptsLost;
     if (ptDiffY !== ptDiffX) return ptDiffY - ptDiffX;
+
+    // Then by point ratio:
     const ratioX = x.ptsWon / Math.max(1, x.ptsLost);
     const ratioY = y.ptsWon / Math.max(1, y.ptsLost);
     if (Math.abs(ratioY - ratioX) > 0.001) return ratioY - ratioX;
+
     return 0;
   });
 }
@@ -3172,14 +3431,14 @@ function renderGroupMatches() {
 
         <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-bottom:14px;">
           <div style="text-align:left;">
-            <div style="font-weight:800;font-size:1.05rem;color:${m.winner === 'a' ? 'var(--clr-green)' : 'var(--clr-text)'};">${m.a}</div>
+            <div style="font-weight:800;font-size:1.05rem;color:${m.winner === 'a' ? 'var(--clr-green)' : 'var(--clr-text)'};">${escapeHtml(m.a)}</div>
             <div style="font-size:0.72rem;color:var(--clr-text-muted);">Team A</div>
           </div>
           <div style="text-align:center;padding:0 8px;">
             <div style="font-family:monospace;font-size:1.1rem;font-weight:800;color:var(--clr-gold);">${m.winner ? scoreStr : 'VS'}</div>
           </div>
           <div style="text-align:right;">
-            <div style="font-weight:800;font-size:1.05rem;color:${m.winner === 'b' ? 'var(--clr-green)' : 'var(--clr-text)'};">${m.b}</div>
+            <div style="font-weight:800;font-size:1.05rem;color:${m.winner === 'b' ? 'var(--clr-green)' : 'var(--clr-text)'};">${escapeHtml(m.b)}</div>
             <div style="font-size:0.72rem;color:var(--clr-text-muted);">Team B</div>
           </div>
         </div>
@@ -3693,12 +3952,16 @@ function scorePoint(side) {
 }
 
 function undoPoint() {
-  if (!state.undoStack.length) {
-    showToast('Nothing to undo.');
+  if (!state.undoStack || !state.undoStack.length) {
+    showToast('Nothing to undo.', 'info');
+    return;
+  }
+  const match = state.matches.find(m => m.id === state.currentMatchId);
+  if (!match) {
+    showToast('No active match loaded to undo.', 'warning');
     return;
   }
   const prev = state.undoStack.pop();
-  const match = state.matches.find(m => m.id === state.currentMatchId);
   match.sets = prev.sets;
   match.winner = prev.winner;
   state.currentSetIdx = prev.setIdx;
@@ -4455,12 +4718,14 @@ function refreshCurrentViews() {
   updateBettingUI();
 }
 
-function resetTournamentState() {
+async function resetTournamentState() {
   if (!isAdminUser()) {
     showToast('Only Admin (Rashed) can reset tournament data.', 'error');
     return;
   }
-  if (confirm('Clear current tournament data? Active pending bets will be refunded.')) {
+  const confirmed = await appConfirm('Clear current tournament data? Active pending predictions will be refunded.', 'Clear Tournament Data', 'Confirm Reset', true);
+  if (!confirmed) return;
+  if (true) {
     const bets = getBetsDB();
     const wallets = getWalletsDB();
     bets.filter(b => b.status === 'pending').forEach(b => {
@@ -4927,5 +5192,25 @@ function sendAppNotification(title, body, tag = 'badminton-alert') {
   }
 }
 
+
+// Modal Body Scroll Lock Observer
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('dialog').forEach(d => {
+    d.addEventListener('close', () => {
+      const anyOpen = Array.from(document.querySelectorAll('dialog')).some(x => x.open);
+      if (!anyOpen) document.body.classList.remove('modal-open');
+    });
+  });
+  updateSoundIconUI();
+  updateNetworkStatus();
+});
+
+if (typeof HTMLDialogElement !== 'undefined') {
+  const originalShowModal = HTMLDialogElement.prototype.showModal;
+  HTMLDialogElement.prototype.showModal = function() {
+    document.body.classList.add('modal-open');
+    originalShowModal.call(this);
+  };
+}
 </script>
 """

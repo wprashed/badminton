@@ -14,6 +14,18 @@ SCREENS_CONTENT = """
   <div id="ariaLiveAnnouncer" class="sr-only" aria-live="polite" aria-atomic="true" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"></div>
 
   <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
+    <!-- Offline status badge -->
+    <span id="offlineStatusPill" class="badge-offline" style="display:none;" title="Operating offline from local cache">
+      <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#ef4444;"></span>
+      <span>Offline</span>
+    </span>
+
+    <!-- Audio Mute Toggle Button -->
+    <button class="notify-btn" id="headerSoundBtn" onclick="toggleMuteAudio()" title="Toggle Audio Chimes (Mute/Unmute)" aria-label="Toggle Audio">
+      <svg class="icon icon-xs" id="soundIconOn" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+      <svg class="icon icon-xs" id="soundIconOff" viewBox="0 0 24 24" style="display:none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+    </button>
+
     <!-- Push Notification Bell -->
     <button class="notify-btn" id="notifyBtn" onclick="openNotificationModal()" title="Push Notifications">
       <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -544,7 +556,8 @@ SCREENS_CONTENT = """
         <h2 style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM7 21h10M12 3v18M3 7h18"/></svg> Head-to-Head & Player Analytics</h2>
         <p style="color:var(--clr-text-muted);font-size:0.85rem;">Compare athlete records, Elo ratings, point differential, and historical matchups.</p>
       </div>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" onclick="exportStandingsCSV()" title="Download pool standings as CSV"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV</button>
         <button class="btn btn-ghost btn-sm" onclick="showScreen('leaderboardScreen')"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg> View Hall of Fame</button>
       </div>
     </div>
@@ -869,7 +882,9 @@ SCREENS_CONTENT = """
         <h2 style="font-family:var(--font-display);font-size:1.6rem;text-transform:uppercase;"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Signable BWF Match Scorecards</h2>
         <p style="color:var(--clr-text-muted);font-size:0.85rem;">Official printable match sheets with umpire signature blocks and rally records.</p>
       </div>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" onclick="exportMatchesCSV()" title="Download match database as CSV"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV</button>
+        <button class="btn btn-ghost btn-sm" onclick="window.print()" title="Print physical scorecards"><svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Print Sheets</button>
         <button class="btn btn-ghost btn-sm" onclick="showScreen('groupsScreen')">&larr; Back to Groups</button>
       </div>
     </div>

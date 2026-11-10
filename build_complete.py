@@ -11,6 +11,8 @@ HTML_TEMPLATE = f"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data: blob: 'unsafe-inline' 'unsafe-eval';">
 <title>Badminton Cup — Pro Tournament Suite & Admin Platform</title>
 <meta name="description" content="Pro Badminton Tournament Suite with live umpire scoring, BWF rules, draft machine, group & knockout brackets, stats, authentication, and global admin dashboard.">
 <meta name="theme-color" content="#0d1f2d">
