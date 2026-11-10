@@ -108,7 +108,7 @@ SCREENS_CONTENT = """
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));gap:16px;margin-bottom:20px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 240px), 1fr));gap:16px;margin-bottom:20px;">
         <div>
           <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Tournament Name</label>
           <input type="text" id="tournamentTitleInput" class="modal-input" value="The Badminton Cup 2026" oninput="updateTournamentTitle(this.value)">
@@ -126,7 +126,7 @@ SCREENS_CONTENT = """
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px;margin-bottom:20px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr));gap:16px;margin-bottom:20px;">
         <div>
           <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Points to Win Set</label>
           <div style="display:flex;gap:6px;">
@@ -278,7 +278,7 @@ SCREENS_CONTENT = """
     </div>
 
     <!-- Pools Grid -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(360px, 1fr));gap:20px;margin-bottom:24px;">
+    <div class="pools-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 320px), 1fr));gap:16px;margin-bottom:24px;">
       <!-- Pool A -->
       <div class="card">
         <h3 style="color:#60a5fa;font-family:var(--font-display);font-size:1.2rem;margin-bottom:12px;">POOL A STANDINGS (BWF TIEBREAKER)</h3>
@@ -326,7 +326,7 @@ SCREENS_CONTENT = """
         <h3 class="card-title"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg> Group Stage Fixtures & Live Matches</h3>
         <span style="font-size:0.8rem;color:var(--clr-text-muted);">Click "Start Umpire Match" to open live official scoring</span>
       </div>
-      <div id="groupMatchesContainer" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(300px, 1fr));gap:14px;"></div>
+      <div id="groupMatchesContainer" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 300px), 1fr));gap:14px;"></div>
     </div>
   </section>
 
@@ -605,7 +605,7 @@ SCREENS_CONTENT = """
       </div>
 
       <!-- Step-by-Step Grid -->
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px;margin-bottom:24px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 280px), 1fr));gap:16px;margin-bottom:24px;">
         <!-- Step 1 -->
         <div class="card" style="padding:18px;">
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
@@ -662,7 +662,7 @@ SCREENS_CONTENT = """
 
     <!-- ── TAB 2: OFFICIAL BWF RULES & LAWS ── -->
     <div id="guideSectionRules" class="guide-content-section" style="display:none;">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:18px;margin-bottom:24px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 300px), 1fr));gap:18px;margin-bottom:24px;">
         <div class="rules-card">
           <h3>21-Point Rally Scoring System</h3>
           <p style="font-size:0.85rem;color:var(--clr-text-muted);">
@@ -862,7 +862,7 @@ SCREENS_CONTENT = """
       </div>
     </div>
 
-    <div id="scorecardsGalleryContainer" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(320px, 1fr));gap:16px;"></div>
+    <div id="scorecardsGalleryContainer" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 320px), 1fr));gap:16px;"></div>
   </section>
 
   <!-- ═══════════════════════════════════════════════════
@@ -939,7 +939,7 @@ SCREENS_CONTENT = """
         <button class="btn btn-primary btn-sm" onclick="exportStandingsCSV()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV</button>
       </div>
     <!-- Special Awards & Records -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:14px;margin-bottom:20px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 260px), 1fr));gap:14px;margin-bottom:20px;">
       <div class="card" style="display:flex;align-items:center;gap:14px;padding:14px;border-left:3px solid var(--clr-gold);">
         <div style="color:var(--clr-gold);flex-shrink:0;">
           <svg class="icon icon-2xl" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>
@@ -1008,7 +1008,7 @@ SCREENS_CONTENT = """
     <div id="playerNextFixtureCard" class="card" style="background:linear-gradient(135deg, rgba(34,197,94,0.15), rgba(13,31,45,0.8));border-color:var(--clr-green);margin-bottom:24px;"></div>
 
     <!-- Career Dossier Stats -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px;margin-bottom:24px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr));gap:16px;margin-bottom:24px;">
       <div class="card" style="padding:16px;text-align:center;">
         <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:700;">PLAYER SKILL RATING</div>
         <div id="playerHubElo" style="font-family:var(--font-display);font-size:2.2rem;color:var(--clr-gold);">1200</div>
@@ -1094,11 +1094,11 @@ SCREENS_CONTENT = """
         <h3 class="card-title"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> Automated Court Queue & Athlete Dispatcher</h3>
         <span style="font-size:0.8rem;color:var(--clr-text-muted);">Real-time court occupation & call-to-court audio dispatch</span>
       </div>
-      <div id="adminCourtQueueGrid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:14px;"></div>
+      <div id="adminCourtQueueGrid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 260px), 1fr));gap:14px;"></div>
     </div>
 
     <!-- Financial Fees & Payment Tracker (Item 26) -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;margin-bottom:24px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 220px), 1fr));gap:16px;margin-bottom:24px;">
       <div class="card" style="padding:16px;">
         <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:700;">TOTAL ATHLETES</div>
         <div id="adminTotalAthletes" style="font-family:var(--font-display);font-size:2rem;color:#60a5fa;">0</div>

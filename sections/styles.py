@@ -1257,73 +1257,99 @@ body.theme-light .schedule-filter-bar {
 }
 
 /* ═══════════════════════════════════════════════════
-   RESPONSIVE LAYOUT & TOUCH ERGONOMICS
+   CORE CARDS & INTERACTION BUTTONS (Clean Modern Style)
 ═══════════════════════════════════════════════════ */
-@media (max-width: 768px) {
-  .top-bar {
-    padding: 10px 14px;
-    gap: 8px;
-  }
-  .brand-heading {
-    font-size: 1.05rem;
-  }
-  .app-stage-nav {
-    top: 52px;
-    padding: 6px 10px;
-  }
-  .stage-tab {
-    padding: 5px 10px;
-    font-size: 0.76rem;
-  }
-  .score-board-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .score-digit {
-    font-size: 3.8rem;
-  }
-  .main-content {
-    padding: 16px 12px 60px;
-  }
-  .card {
-    padding: 16px;
-  }
-  .card-title {
-    font-size: 0.95rem;
-  }
-  .user-panel {
-    padding: 2px 6px;
-  }
+.card {
+  background: var(--clr-surface-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-fast);
+  box-sizing: border-box;
+}
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--clr-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.01em;
 }
 
-/* ═══════════════════════════════════════════════════
-   BANGLA / BILINGUAL & CHALLENGE BOARD (Foosball Style)
-═══════════════════════════════════════════════════ */
-
-
-
-
-/* Quick Score / Quick Win Action Buttons */
+/* Quick Action Match Buttons on Cards */
+.quick-match-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--clr-border);
+  flex-wrap: wrap;
+  width: 100%;
+  box-sizing: border-box;
+}
 .quick-win-btn {
-  padding: 3px 7px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  border-radius: 4px;
+  flex: 1;
+  min-width: 85px;
+  padding: 6px 10px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  border-radius: var(--radius-xs);
   background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  border: 1px solid rgba(16, 185, 129, 0.35);
   color: #34d399;
   cursor: pointer;
-  transition: all 120ms ease;
+  transition: all 140ms ease;
+  text-align: center;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 .quick-win-btn:hover {
   background: #10b981;
   color: #ffffff;
 }
+.quick-score-btn {
+  padding: 6px 12px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  border-radius: var(--radius-xs);
+  background: var(--clr-surface-hi);
+  border: 1px solid var(--clr-border);
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  transition: all 140ms ease;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.quick-score-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--clr-text);
+}
 
 /* Open Challenge Board */
 .challenge-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
   gap: 14px;
   margin-top: 14px;
 }
@@ -1338,6 +1364,7 @@ body.theme-light .schedule-filter-bar {
   gap: 12px;
   position: relative;
   transition: all 140ms ease;
+  box-sizing: border-box;
 }
 .challenge-card:hover {
   border-color: var(--clr-green);
@@ -1380,10 +1407,7 @@ body.theme-light .schedule-filter-bar {
   color: #ffffff;
 }
 
-
-/* ═══════════════════════════════════════════════════
-   STREAMLINED MOBILE & PWA NAVIGATION (SupportHub Minimalist)
-═══════════════════════════════════════════════════ */
+/* Streamlined Mobile & PWA Navigation Buttons */
 .notify-btn {
   position: relative;
   display: inline-flex;
@@ -1398,6 +1422,8 @@ body.theme-light .schedule-filter-bar {
   transition: all 150ms ease;
   font-family: inherit;
   font-size: 0.8rem;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 .notify-btn:hover {
   background: rgba(255, 255, 255, 0.1);
@@ -1437,6 +1463,8 @@ body.theme-light .schedule-filter-bar {
   cursor: pointer;
   transition: all 150ms ease;
   font-family: inherit;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 .install-app-pill:hover {
   background: #10b981;
@@ -1446,7 +1474,7 @@ body.theme-light .schedule-filter-bar {
 /* More Menu Drawer / Grid */
 .more-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 210px), 1fr));
   gap: 12px;
   margin-top: 14px;
   margin-bottom: 20px;
@@ -1465,6 +1493,7 @@ body.theme-light .schedule-filter-bar {
   width: 100%;
   color: var(--clr-text);
   font-family: inherit;
+  box-sizing: border-box;
 }
 .more-card-item:hover {
   border-color: var(--clr-green);
@@ -1551,6 +1580,7 @@ body.theme-contrast .mobile-bottom-nav {
   font-weight: 600;
   transition: color 150ms ease;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 .mobile-nav-btn .icon {
   width: 20px;
@@ -1569,17 +1599,38 @@ body.theme-contrast .mobile-bottom-nav {
   color: var(--clr-green);
 }
 
+/* ═══════════════════════════════════════════════════
+   100% MOBILE RESPONSIVE ENGINE (Tablets, Mobiles, Foldables)
+═══════════════════════════════════════════════════ */
+
+/* ── Tablet & Small Laptops (<= 1024px) ── */
+@media (max-width: 1024px) {
+  .top-bar {
+    padding: 10px 16px;
+  }
+  .bracket-container {
+    gap: 20px;
+  }
+}
+
+/* ── Tablet Portrait & Large Mobiles (<= 768px) ── */
 @media (max-width: 768px) {
+  /* Layout & Navigation */
   .top-bar {
     padding: 8px 12px;
     gap: 6px;
     flex-wrap: nowrap !important;
+    min-height: 50px;
+  }
+  .brand-heading {
+    font-size: 1rem;
+    white-space: nowrap;
   }
   .brand-badge {
     display: none !important;
   }
-  .brand-heading {
-    font-size: 1.05rem;
+  #headerMoreBtn {
+    display: none !important; /* Managed by 5th tab on bottom nav */
   }
   .app-stage-nav {
     display: none !important;
@@ -1588,88 +1639,254 @@ body.theme-contrast .mobile-bottom-nav {
     display: block !important;
   }
   .main-content {
-    padding: 14px 10px calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 12px 10px calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+    max-width: 100vw;
+    overflow-x: hidden;
+    box-sizing: border-box;
   }
+
+  /* Cards & Containers */
+  .card {
+    padding: 14px 12px;
+    border-radius: var(--radius-sm);
+  }
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-size: 0.95rem;
+  }
+
+  /* Grids */
   .more-grid {
     grid-template-columns: 1fr;
   }
+  .pools-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+  #groupMatchesContainer {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Live Scoreboard */
+  .score-board-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .score-digit {
+    font-size: 3.8rem;
+  }
+
+  /* Modals */
+  dialog {
+    width: 94vw !important;
+    max-width: 94vw !important;
+    max-height: 86dvh !important;
+    max-height: 86vh !important;
+    margin: auto !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    box-sizing: border-box !important;
+  }
+  .modal-card, .modal-box {
+    padding: 16px 12px !important;
+  }
+
+  /* Tournament Bracket Touch-Swiping */
+  .bracket-container {
+    padding: 12px 6px 18px;
+    gap: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+  }
+  .bracket-round {
+    min-width: 240px;
+    max-width: 84vw;
+    scroll-snap-align: center;
+    flex-shrink: 0;
+  }
+
+  /* Tables Containment */
+  .data-table-container {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+  .data-table th, .data-table td {
+    padding: 8px 10px;
+    font-size: 0.76rem;
+    white-space: nowrap;
+  }
 }
 
+/* ── Standard Phones (<= 600px, e.g. iPhone 13/14/15/16, Pixel, Galaxy) ── */
+@media (max-width: 600px) {
+  .top-bar {
+    padding: 6px 8px;
+    gap: 4px;
+  }
+  .brand-heading {
+    font-size: 0.92rem;
+  }
+  #networkSyncPill #syncStatusLabel {
+    display: none !important;
+  }
+  #networkSyncPill {
+    padding: 3px 6px;
+  }
+  #headerCoinBtn {
+    padding: 3px 6px;
+    font-size: 0.72rem;
+    gap: 3px;
+  }
+  #userStatusPanel {
+    padding: 2px 4px;
+    gap: 4px;
+  }
+  #userStatusPanel .user-avatar {
+    width: 26px;
+    height: 26px;
+    font-size: 0.72rem;
+  }
+  #headerUsername {
+    display: none !important;
+  }
+  #authBtn {
+    padding: 3px 7px;
+    font-size: 0.7rem;
+  }
+  #installAppBtn span {
+    display: none !important;
+  }
+  #installAppBtn {
+    padding: 4px 6px;
+  }
 
+  /* Match Card 2-Tier Responsive Quick Actions (50/50 Win, 33/33/33 Tools) */
+  .quick-match-row {
+    display: grid !important;
+    grid-template-columns: repeat(6, 1fr) !important;
+    gap: 6px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .quick-match-row > .quick-win-btn:first-of-type {
+    grid-column: 1 / span 3 !important;
+    grid-row: 1 !important;
+    min-height: 42px !important;
+    font-size: 0.76rem !important;
+  }
+  .quick-match-row > .quick-win-btn:last-of-type {
+    grid-column: 4 / span 3 !important;
+    grid-row: 1 !important;
+    min-height: 42px !important;
+    font-size: 0.76rem !important;
+  }
+  .quick-match-row > .quick-score-btn {
+    grid-column: 1 / span 2 !important;
+    grid-row: 2 !important;
+    min-height: 38px !important;
+    font-size: 0.72rem !important;
+  }
+  .quick-match-row > button[onclick*="openBettingModal"] {
+    grid-column: 3 / span 2 !important;
+    grid-row: 2 !important;
+    min-height: 38px !important;
+    font-size: 0.72rem !important;
+  }
+  .quick-match-row > button[onclick*="startUmpireMatch"] {
+    grid-column: 5 / span 2 !important;
+    grid-row: 2 !important;
+    min-height: 38px !important;
+    font-size: 0.72rem !important;
+  }
 
-/* Modern Card Style */
-.card {
-  background: var(--clr-surface-card);
-  border: 1px solid var(--clr-border);
-  border-radius: var(--radius-md);
-  padding: 18px;
-  box-shadow: var(--shadow-card);
-  transition: all var(--transition-fast);
-}
-.card:hover {
-  border-color: rgba(255, 255, 255, 0.14);
-}
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 14px;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.card-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--clr-text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  letter-spacing: -0.01em;
+  /* Completed Match Card Actions */
+  .quick-match-row > div[style*="display:flex"] {
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+  .quick-match-row > div[style*="display:flex"] > div {
+    display: flex !important;
+    width: 100% !important;
+    gap: 6px !important;
+  }
+  .quick-match-row > div[style*="display:flex"] > div > button {
+    flex: 1 !important;
+    min-height: 38px !important;
+  }
+
+  /* Grids & Cards */
+  .challenge-grid {
+    grid-template-columns: 1fr !important;
+  }
+  #scorecardsGalleryContainer {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Form Inputs (16px to prevent iOS Safari auto-zoom on focus) */
+  input, select, textarea, .modal-input {
+    font-size: 16px !important;
+  }
+  .btn {
+    min-height: 36px;
+  }
 }
 
-/* Quick Action Match Buttons */
-.quick-match-row {
-  display: flex;
-  gap: 6px;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--clr-border);
-  flex-wrap: wrap;
+/* ── Ultra-Compact / Foldable Outer Screens (<= 380px, e.g. iPhone SE, Galaxy Z Fold) ── */
+@media (max-width: 380px) {
+  .top-bar {
+    padding: 5px 6px;
+    gap: 3px;
+  }
+  .brand-heading {
+    font-size: 0.85rem;
+  }
+  #networkSyncPill {
+    display: none !important; /* Hide completely on ultra-narrow viewports */
+  }
+  #headerCoinBtn {
+    padding: 2px 4px;
+    font-size: 0.68rem;
+  }
+  #notifyBtn {
+    padding: 4px 6px;
+  }
+  .quick-win-btn, .quick-score-btn {
+    font-size: 0.68rem !important;
+    padding: 4px 4px !important;
+  }
+  .mobile-nav-btn {
+    font-size: 0.65rem;
+  }
+  .mobile-nav-btn .icon {
+    width: 18px;
+    height: 18px;
+  }
+  .card {
+    padding: 12px 10px;
+  }
 }
-.quick-win-btn {
-  flex: 1;
-  min-width: 90px;
-  padding: 6px 10px;
-  font-size: 0.74rem;
-  font-weight: 700;
-  border-radius: var(--radius-xs);
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  color: #34d399;
-  cursor: pointer;
-  transition: all 140ms ease;
-  text-align: center;
-  font-family: inherit;
-}
-.quick-win-btn:hover {
-  background: #10b981;
-  color: #ffffff;
-}
-.quick-score-btn {
-  padding: 6px 12px;
-  font-size: 0.74rem;
-  font-weight: 600;
-  border-radius: var(--radius-xs);
-  background: var(--clr-surface-hi);
-  border: 1px solid var(--clr-border);
-  color: var(--clr-text-muted);
-  cursor: pointer;
-  transition: all 140ms ease;
-  font-family: inherit;
-}
-.quick-score-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: var(--clr-text);
+
+/* ── Touch Ergonomics (Mobile Browsers) ── */
+@media (hover: none) and (pointer: coarse) {
+  button, a, input, select {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .card:hover, .more-card-item:hover, .challenge-card:hover {
+    transform: none !important;
+  }
 }
 
 </style>
