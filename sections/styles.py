@@ -1926,5 +1926,274 @@ body.theme-contrast .mobile-bottom-nav {
   }
 }
 
+
+/* ═══════════════════════════════════════════════════
+   LIGHT MODE COMPONENT SYSTEM (Clean Gymnasium Theme)
+═══════════════════════════════════════════════════ */
+body.theme-light {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .top-bar {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+body.theme-light .brand-heading {
+  color: #0f172a !important;
+}
+
+body.theme-light .card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .card:hover {
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07) !important;
+}
+
+body.theme-light .card-title {
+  color: #0f172a !important;
+}
+
+body.theme-light .btn-primary {
+  background: #059669 !important;
+  color: #ffffff !important;
+  border-color: #059669 !important;
+}
+
+body.theme-light .btn-primary:hover {
+  background: #047857 !important;
+  border-color: #047857 !important;
+  color: #ffffff !important;
+}
+
+body.theme-light .btn-ghost {
+  background: transparent !important;
+  color: #475569 !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.theme-light .btn-ghost:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
+}
+
+body.theme-light .btn-secondary {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.theme-light .btn-secondary:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .quick-win-btn {
+  background: rgba(5, 150, 105, 0.1) !important;
+  border: 1px solid rgba(5, 150, 105, 0.3) !important;
+  color: #047857 !important;
+}
+
+body.theme-light .quick-win-btn:hover {
+  background: #059669 !important;
+  color: #ffffff !important;
+}
+
+body.theme-light .quick-score-btn {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #334155 !important;
+}
+
+body.theme-light .quick-score-btn:hover {
+  background: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .sync-pill {
+  background: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+body.theme-light .notify-btn {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+body.theme-light .notify-btn:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .data-table-container {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .data-table th {
+  background: #f8fafc !important;
+  border-bottom: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+body.theme-light .data-table td {
+  border-bottom: 1px solid #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .data-table tr:hover td {
+  background: #f8fafc !important;
+}
+
+body.theme-light .bracket-match-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.theme-light .bracket-match-card.completed {
+  border-color: rgba(5, 150, 105, 0.4) !important;
+}
+
+body.theme-light .bracket-team-row {
+  color: #0f172a !important;
+}
+
+body.theme-light .bracket-team-row.winner {
+  background: rgba(5, 150, 105, 0.1) !important;
+  color: #047857 !important;
+}
+
+body.theme-light .challenge-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.theme-light .challenge-card:hover {
+  border-color: #059669 !important;
+}
+
+body.theme-light .challenge-badge.open {
+  background: rgba(5, 150, 105, 0.12) !important;
+  color: #047857 !important;
+  border: 1px solid rgba(5, 150, 105, 0.25) !important;
+}
+
+body.theme-light .challenge-badge.accepted {
+  background: rgba(37, 99, 235, 0.12) !important;
+  color: #1d4ed8 !important;
+  border: 1px solid rgba(37, 99, 235, 0.25) !important;
+}
+
+body.theme-light .more-card-item {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .more-card-item:hover {
+  background: #f8fafc !important;
+  border-color: #059669 !important;
+}
+
+body.theme-light .more-card-icon {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #059669 !important;
+}
+
+body.theme-light .more-card-title {
+  color: #0f172a !important;
+}
+
+body.theme-light .more-card-desc {
+  color: #64748b !important;
+}
+
+body.theme-light dialog {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.18) !important;
+}
+
+body.theme-light .modal-box,
+body.theme-light .modal-card {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+body.theme-light .modal-close {
+  color: #64748b !important;
+}
+
+body.theme-light .modal-close:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.theme-light input,
+body.theme-light select,
+body.theme-light textarea,
+body.theme-light .modal-input {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+body.theme-light input:focus,
+body.theme-light select:focus,
+body.theme-light textarea:focus {
+  border-color: #059669 !important;
+  box-shadow: 0 0 0 1px #059669 !important;
+}
+
+body.theme-light .mobile-bottom-nav {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-top: 1px solid #e2e8f0 !important;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.theme-light .mobile-nav-btn {
+  color: #64748b !important;
+}
+
+body.theme-light .mobile-nav-btn:hover {
+  color: #0f172a !important;
+}
+
+body.theme-light .mobile-nav-btn.active {
+  color: #059669 !important;
+}
+
+body.theme-light .user-panel {
+  background: #f1f5f9 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+body.theme-light .user-avatar {
+  background: #e2e8f0 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+body.theme-light #matchDurationClock {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
 </style>
 """

@@ -4400,6 +4400,36 @@ function resetTournamentState() {
 /* ═══════════════════════════════════════════════════
    THEME & FULLSCREEN
 ═══════════════════════════════════════════════════ */
+function toggleThemeMode() {
+  const body = document.body;
+  const isLight = body.classList.contains('theme-light');
+  if (isLight) {
+    body.className = '';
+    localStorage.setItem(STORAGE_KEY_THEME, '');
+    showToast('Stadium Dark Theme Activated', 'info');
+  } else {
+    body.className = 'theme-light';
+    localStorage.setItem(STORAGE_KEY_THEME, 'theme-light');
+    showToast('Light Gymnasium Theme Activated', 'success');
+  }
+  updateThemeIcons();
+}
+
+function updateThemeIcons() {
+  const isLight = document.body.classList.contains('theme-light');
+  const sun = document.getElementById('themeIconSun');
+  const moon = document.getElementById('themeIconMoon');
+  if (sun && moon) {
+    if (isLight) {
+      sun.style.display = 'none';
+      moon.style.display = 'block';
+    } else {
+      sun.style.display = 'block';
+      moon.style.display = 'none';
+    }
+  }
+}
+
 function cycleTheme() {
   const body = document.body;
   if (!body.classList.contains('theme-light') && !body.classList.contains('theme-contrast')) {
@@ -4415,6 +4445,7 @@ function cycleTheme() {
     localStorage.setItem(STORAGE_KEY_THEME, '');
     showToast('Stadium Dark Theme');
   }
+  updateThemeIcons();
 }
 
 function toggleFullScreen() {
@@ -4541,6 +4572,7 @@ function renderObsOverlay(param) {
 window.addEventListener('DOMContentLoaded', async () => {
   const savedTheme = localStorage.getItem(STORAGE_KEY_THEME);
   if (savedTheme) document.body.className = savedTheme;
+  updateThemeIcons();
 
   // Pre-seed admin and verified demo athletes
   try {
