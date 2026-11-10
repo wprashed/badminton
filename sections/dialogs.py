@@ -599,7 +599,7 @@ DIALOGS_CONTENT = """
         </select>
       </div>
       <button class="btn btn-primary btn-xs" onclick="document.getElementById('moreMenuModal').close();handleSetupNav();">
-        + New Tournament
+        <span>+ New Tournament</span> <span style="font-size:0.65rem;background:rgba(0,0,0,0.25);padding:1px 4px;border-radius:3px;">🛡️ Admin</span>
       </button>
     </div>
 
@@ -607,22 +607,28 @@ DIALOGS_CONTENT = """
     <div class="more-grid">
       <!-- 1. Tournament Setup -->
       <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();handleSetupNav();">
-        <div class="more-card-icon">
+        <div class="more-card-icon" style="color:#f87171;">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>
         </div>
-        <div class="more-card-text">
-          <span class="more-card-title">Setup & Roster</span>
+        <div class="more-card-text" style="flex:1;">
+          <div style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:6px;">
+            <span class="more-card-title">Setup & Roster</span>
+            <span style="font-size:0.65rem;font-weight:700;color:#f87171;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);padding:1px 6px;border-radius:3px;">🛡️ Admin Only</span>
+          </div>
           <span class="more-card-desc">Configure players, categories & courts</span>
         </div>
       </button>
 
       <!-- 2. Pool Draw -->
       <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();handleDraftNav();">
-        <div class="more-card-icon">
+        <div class="more-card-icon" style="color:#f87171;">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83M16.62 12l-5.74 9.94"/></svg>
         </div>
-        <div class="more-card-text">
-          <span class="more-card-title">Pool Draw</span>
+        <div class="more-card-text" style="flex:1;">
+          <div style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:6px;">
+            <span class="more-card-title">Pool Draw</span>
+            <span style="font-size:0.65rem;font-weight:700;color:#f87171;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);padding:1px 6px;border-radius:3px;">🛡️ Admin Only</span>
+          </div>
           <span class="more-card-desc">Interactive live group seed machine</span>
         </div>
       </button>
@@ -750,12 +756,29 @@ DIALOGS_CONTENT = """
 
       <!-- 12. Admin Dashboard -->
       <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();openAdminDashboardWithGuard();">
-        <div class="more-card-icon">
+        <div class="more-card-icon" style="color:#f87171;">
           <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </div>
-        <div class="more-card-text">
-          <span class="more-card-title">Admin Dashboard</span>
+        <div class="more-card-text" style="flex:1;">
+          <div style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:6px;">
+            <span class="more-card-title">Admin Dashboard</span>
+            <span style="font-size:0.65rem;font-weight:700;color:#f87171;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);padding:1px 6px;border-radius:3px;">🛡️ Admin Only</span>
+          </div>
           <span class="more-card-desc">Director oversight & security audit</span>
+        </div>
+      </button>
+
+      <!-- 13. Reset Tournament Data -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();handleResetNav();" style="border-color:rgba(239,68,68,0.25);">
+        <div class="more-card-icon" style="color:#f87171;background:rgba(239,68,68,0.1);">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+        </div>
+        <div class="more-card-text" style="flex:1;">
+          <div style="display:flex;align-items:center;justify-content:space-between;width:100%;gap:6px;">
+            <span class="more-card-title" style="color:#f87171;">Reset Tournament Data</span>
+            <span style="font-size:0.65rem;font-weight:700;color:#f87171;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);padding:1px 6px;border-radius:3px;">🛡️ Admin Only</span>
+          </div>
+          <span class="more-card-desc">Factory reset & purge scores/roster</span>
         </div>
       </button>
 
