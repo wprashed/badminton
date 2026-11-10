@@ -1076,6 +1076,43 @@ dialog::backdrop {
   background: rgba(0, 0, 0, 0.65);
   backdrop-filter: blur(4px);
 }
+.modal-card, .modal-box {
+  padding: 22px 24px 30px;
+  background: var(--clr-surface-card);
+  color: var(--clr-text);
+  box-sizing: border-box;
+  position: relative;
+}
+.modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  padding: 0;
+  transition: all 140ms ease;
+  font-family: inherit;
+  font-size: 1.15rem;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.modal-close .icon {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+}
 .modal-card {
   padding: 22px;
 }
@@ -2169,9 +2206,9 @@ body.theme-contrast .mobile-bottom-nav {
 
     <!-- Navigation & Action bar -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-        <h2 style="font-family:var(--font-display);font-size:1.6rem;text-transform:uppercase;">Group Stage & Standings</h2>
-        <select id="groupCourtFilter" class="modal-input" style="width:auto;padding:4px 10px;font-size:0.8rem;" onchange="renderGroupMatches()">
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <h2 style="font-family:var(--font-display);font-size:1.45rem;font-weight:800;color:var(--clr-text);letter-spacing:-0.01em;margin:0;">Group Stage & Standings</h2>
+        <select id="groupCourtFilter" style="padding:6px 14px;font-size:0.82rem;font-weight:600;background:rgba(255,255,255,0.05);border:1px solid var(--clr-border);border-radius:var(--radius-sm);color:var(--clr-text);font-family:inherit;cursor:pointer;" onchange="renderGroupMatches()">
           <option value="all">Court: All Courts</option>
           <option value="1">Court 1</option>
           <option value="2">Court 2</option>
@@ -2192,7 +2229,10 @@ body.theme-contrast .mobile-bottom-nav {
     <div class="pools-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 320px), 1fr));gap:16px;margin-bottom:24px;">
       <!-- Pool A -->
       <div class="card">
-        <h3 style="color:#60a5fa;font-family:var(--font-display);font-size:1.2rem;margin-bottom:12px;">POOL A STANDINGS (BWF TIEBREAKER)</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h3 style="font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:var(--clr-text);margin:0;">Pool A Standings</h3>
+          <span style="background:rgba(96,165,250,0.15);color:#60a5fa;border:1px solid rgba(96,165,250,0.3);font-size:0.68rem;padding:2px 8px;border-radius:4px;font-weight:700;">Group A · BWF Rules</span>
+        </div>
         <div class="data-table-container">
           <table class="data-table">
             <thead>
@@ -2212,7 +2252,10 @@ body.theme-contrast .mobile-bottom-nav {
 
       <!-- Pool B -->
       <div class="card">
-        <h3 style="color:#f87171;font-family:var(--font-display);font-size:1.2rem;margin-bottom:12px;">POOL B STANDINGS (BWF TIEBREAKER)</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h3 style="font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:var(--clr-text);margin:0;">Pool B Standings</h3>
+          <span style="background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3);font-size:0.68rem;padding:2px 8px;border-radius:4px;font-weight:700;">Group B · BWF Rules</span>
+        </div>
         <div class="data-table-container">
           <table class="data-table">
             <thead>
@@ -2235,7 +2278,7 @@ body.theme-contrast .mobile-bottom-nav {
     <div class="card">
       <div class="card-header">
         <h3 class="card-title"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg> Group Stage Fixtures & Live Matches</h3>
-        <span style="font-size:0.8rem;color:var(--clr-text-muted);">Click "Start Umpire Match" to open live official scoring</span>
+        <span style="font-size:0.78rem;color:var(--clr-text-muted);">Tap "Referee" on any match for live court scoring</span>
       </div>
       <div id="groupMatchesContainer" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 300px), 1fr));gap:14px;"></div>
     </div>
@@ -3781,19 +3824,22 @@ body.theme-contrast .mobile-bottom-nav {
         <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
         <span data-i18n="moreMenuTitle">All Features & Tools</span>
       </h3>
-      <button class="modal-close" onclick="document.getElementById('moreMenuModal').close()" aria-label="Close">&times;</button>
+      <button class="modal-close" onclick="document.getElementById('moreMenuModal').close()" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
     <!-- Active Tournament Quick Selection -->
-    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
       <div style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:0.8rem;font-weight:700;color:var(--clr-gold);text-transform:uppercase;">Tournament:</span>
-        <select id="tournamentSelectMore" class="modal-input" style="width:auto;padding:4px 10px;font-size:0.85rem;" onchange="switchActiveTournament(this.value)">
+        <span style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;letter-spacing:0.04em;">Active Tournament:</span>
+        <select id="tournamentSelectMore" class="modal-input" style="width:auto;padding:5px 12px;font-size:0.84rem;background:rgba(0,0,0,0.25);border-color:var(--clr-border);border-radius:var(--radius-xs);" onchange="switchActiveTournament(this.value)">
           <option value="main">The Badminton Cup 2026</option>
         </select>
       </div>
-      <button class="btn btn-primary btn-xs" onclick="document.getElementById('moreMenuModal').close();handleSetupNav();">
-        <span>+ New Tournament</span> <span style="font-size:0.65rem;background:rgba(0,0,0,0.25);padding:1px 4px;border-radius:3px;">🛡️ Admin</span>
+      <button class="btn btn-primary btn-xs" onclick="document.getElementById('moreMenuModal').close();handleSetupNav();" style="display:inline-flex;align-items:center;gap:6px;">
+        <span>+ New Tournament</span>
+        <span style="font-size:0.65rem;background:rgba(0,0,0,0.25);padding:1px 5px;border-radius:3px;">🛡️ Admin</span>
       </button>
     </div>
 
@@ -3999,38 +4045,40 @@ body.theme-contrast .mobile-bottom-nav {
 ═══════════════════════════════════════════════════ -->
 <dialog id="notificationSettingsModal" class="modal" aria-labelledby="notifyModalTitle">
   <div class="modal-box" style="max-width:480px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:16px;">
       <h3 id="notifyModalTitle" style="font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:8px;margin:0;">
-        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <svg class="icon icon-sm" viewBox="0 0 24 24" style="color:var(--clr-green);"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span data-i18n="notifyModalTitle">Push Notifications</span>
       </h3>
-      <button class="modal-close" onclick="document.getElementById('notificationSettingsModal').close()" aria-label="Close">&times;</button>
+      <button class="modal-close" onclick="document.getElementById('notificationSettingsModal').close()" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
-    <div style="text-align:center;padding:16px 0;">
-      <div id="notifyStatusIcon" style="display:inline-flex;padding:16px;border-radius:50%;background:rgba(16,185,129,0.1);color:var(--clr-green);margin-bottom:12px;">
-        <svg class="icon icon-2xl" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    <div style="text-align:center;padding:12px 0 18px;">
+      <div id="notifyStatusIcon" style="display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;background:rgba(16,185,129,0.12);color:var(--clr-green);margin-bottom:14px;border:1px solid rgba(16,185,129,0.25);">
+        <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       </div>
-      <h4 id="notifyStatusHeading" style="font-size:1.05rem;font-weight:700;margin:0 0 6px;">Notification Status</h4>
-      <p id="notifyStatusDesc" style="font-size:0.85rem;color:var(--clr-text-muted);line-height:1.4;margin:0 0 18px;">
+      <h4 id="notifyStatusHeading" style="font-size:1.1rem;font-weight:700;margin:0 0 6px;color:var(--clr-text);">Notification Alerts</h4>
+      <p id="notifyStatusDesc" style="font-size:0.84rem;color:var(--clr-text-muted);line-height:1.45;margin:0 auto 20px;max-width:380px;">
         Get instant alerts on your phone or computer whenever a new open challenge is posted, a match completes, or a tournament champion is crowned.
       </p>
 
       <div style="display:flex;flex-direction:column;gap:10px;">
-        <button class="btn btn-primary" id="btnRequestNotification" onclick="requestNotificationPermission()" style="padding:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <button class="btn btn-primary btn-md" id="btnRequestNotification" onclick="requestNotificationPermission()" style="width:100%;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;min-height:42px;">
           <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <span data-i18n="enableNotifyBtn">Turn On Push Notifications</span>
         </button>
 
-        <button class="btn btn-ghost" id="btnTestNotification" onclick="testPushNotification()" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+        <button class="btn btn-ghost btn-sm" id="btnTestNotification" onclick="testPushNotification()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;min-height:38px;">
           <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           <span data-i18n="testNotifyBtn">⚡ Send Test Notification</span>
         </button>
       </div>
     </div>
 
-    <div style="text-align:right;border-top:1px solid var(--clr-border);padding-top:12px;margin-top:14px;">
-      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('notificationSettingsModal').close()" data-i18n="cancelBtn">Close</button>
+    <div style="display:flex;justify-content:center;border-top:1px solid var(--clr-border);padding-top:14px;margin-top:6px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('notificationSettingsModal').close()" style="min-width:140px;">Done</button>
     </div>
   </div>
 </dialog>
@@ -4044,7 +4092,9 @@ body.theme-contrast .mobile-bottom-nav {
         <span style="font-size:1.2rem;">🎲</span>
         <span>Match Prediction & Wager</span>
       </h3>
-      <button class="modal-close" onclick="document.getElementById('matchBettingModal').close()" aria-label="Close">&times;</button>
+      <button class="modal-close" onclick="document.getElementById('matchBettingModal').close()" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
     <input type="hidden" id="betModalMatchId">
@@ -4097,35 +4147,40 @@ body.theme-contrast .mobile-bottom-nav {
 ═══════════════════════════════════════════════════ -->
 <dialog id="adminAuthGuardModal" class="modal" aria-labelledby="guardModalTitle">
   <div class="modal-box" style="max-width:460px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
-      <h3 id="guardModalTitle" style="font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:8px;margin:0;color:var(--clr-gold);">
-        <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span>Admin Permission Required</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:16px;">
+      <h3 id="guardModalTitle" style="font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:8px;margin:0;color:var(--clr-text);">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" style="color:var(--clr-gold);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Admin Access Required</span>
       </h3>
-      <button class="modal-close" onclick="document.getElementById('adminAuthGuardModal').close()" aria-label="Close">&times;</button>
+      <button class="modal-close" onclick="document.getElementById('adminAuthGuardModal').close()" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
-    <div style="padding:10px 0 16px;">
-      <div style="font-size:0.92rem;color:var(--clr-text);line-height:1.5;margin-bottom:12px;">
-        <strong id="guardActionName" style="color:var(--clr-gold);">This action</strong> is restricted to Tournament Directors & Admins.
+    <div style="padding:4px 0 16px;">
+      <div style="font-size:0.9rem;color:var(--clr-text);line-height:1.5;margin-bottom:14px;">
+        The section <strong id="guardActionName" style="color:var(--clr-gold);">Tournament Setup & Roster</strong> is restricted to Tournament Directors & Admins.
       </div>
-      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:12px;font-size:0.8rem;color:var(--clr-text-muted);line-height:1.4;margin-bottom:16px;">
-        <div style="font-weight:700;color:var(--clr-green);margin-bottom:4px;">✓ General User Capabilities:</div>
+
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-left:3px solid var(--clr-green);border-radius:var(--radius-sm);padding:14px;font-size:0.82rem;color:var(--clr-text-muted);line-height:1.45;margin-bottom:18px;">
+        <div style="font-weight:700;color:var(--clr-green);margin-bottom:4px;display:flex;align-items:center;gap:6px;">
+          <span>✓</span> <span>General User Capabilities:</span>
+        </div>
         Open challenges, accept & play matches, referee casual games, and place prediction bets with virtual coins.
       </div>
 
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <button class="btn btn-primary" onclick="quickSwitchToAdmin()" style="padding:10px;font-weight:700;">
-          ⚡ Switch to Admin Mode (Instant Access)
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="btn btn-primary" onclick="quickSwitchToAdmin()" style="width:100%;min-height:44px;font-weight:700;font-size:0.92rem;display:flex;align-items:center;justify-content:center;gap:8px;">
+          <span>⚡ Switch to Admin Mode (Instant Access)</span>
         </button>
-        <button class="btn btn-ghost" onclick="document.getElementById('adminAuthGuardModal').close();openAuthModal();">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('adminAuthGuardModal').close();openAuthModal();" style="width:100%;min-height:38px;">
           Sign In with Director Credentials
         </button>
       </div>
     </div>
 
-    <div style="text-align:right;border-top:1px solid var(--clr-border);padding-top:10px;">
-      <button class="btn btn-ghost btn-xs" onclick="document.getElementById('adminAuthGuardModal').close()">Cancel</button>
+    <div style="display:flex;justify-content:center;border-top:1px solid var(--clr-border);padding-top:12px;margin-top:6px;">
+      <button class="btn btn-ghost btn-xs" onclick="document.getElementById('adminAuthGuardModal').close()" style="color:var(--clr-text-muted);">Cancel</button>
     </div>
   </div>
 </dialog>
@@ -4140,7 +4195,9 @@ body.theme-contrast .mobile-bottom-nav {
         <span style="font-size:1.3rem;">🪙</span>
         <span>Virtual Coin Wallet</span>
       </h3>
-      <button class="modal-close" onclick="document.getElementById('coinBalanceModal').close()" aria-label="Close">&times;</button>
+      <button class="modal-close" onclick="document.getElementById('coinBalanceModal').close()" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
     <div style="text-align:center;padding:16px 0;">
@@ -7219,10 +7276,22 @@ function renderGroupMatches() {
 
   if (!matches.length) {
     container.innerHTML = `
-      <div style="grid-column:1/-1;text-align:center;padding:32px 20px;background:var(--clr-surface-card);border:1px dashed var(--clr-border);border-radius:var(--radius-md);">
-        <div style="font-size:1.05rem;font-weight:700;margin-bottom:6px;color:var(--clr-text);">No Matches Found</div>
-        <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:14px;">No fixtures match the selected filter, or tournament has not started yet.</p>
-        <button class="btn btn-primary btn-sm" onclick="showScreen('setupScreen')">🚀 Setup Tournament</button>
+      <div class="card" style="grid-column:1/-1;text-align:center;padding:36px 20px;border:1px solid var(--clr-border);border-radius:var(--radius-md);">
+        <div style="width:48px;height:48px;border-radius:50%;background:rgba(16,185,129,0.1);color:var(--clr-green);display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;border:1px solid rgba(16,185,129,0.25);">
+          <svg class="icon icon-md" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>
+        </div>
+        <div style="font-size:1.05rem;font-weight:700;margin-bottom:6px;color:var(--clr-text);">No Tournament Matches Found</div>
+        <p style="color:var(--clr-text-muted);font-size:0.84rem;margin-bottom:18px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.45;">
+          No fixtures match the selected court filter, or the tournament has not been generated yet.
+        </p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" onclick="quickInitializeDemoTournament()" style="display:inline-flex;align-items:center;gap:6px;">
+            <span>🚀 Load Tournament (Rashed + 15 Players)</span>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="handleSetupNav()">
+            <span>⚙ Tournament Setup</span>
+          </button>
+        </div>
       </div>`;
     return;
   }
@@ -8477,6 +8546,22 @@ function saveState() {
   }
 }
 
+function quickInitializeDemoTournament() {
+  const poolA = ['Parag Das', 'Rifat Haque', 'Rifat Tariq', 'Jobayer', 'Shewa', 'Sazedul', 'Nur', 'Ofi'];
+  const poolB = ['Sifat', 'Sajeeb', 'Jakir', 'Saiful', 'Al Emran', 'Toufiq', 'Abir', 'Rashed'];
+  state.poolA = poolA;
+  state.poolB = poolB;
+  const matchesA = generateRoundRobinMatches(state.poolA, 'A');
+  const matchesB = generateRoundRobinMatches(state.poolB, 'B');
+  state.matches = [...matchesA, ...matchesB];
+  saveState();
+  renderGroups();
+  renderBracket();
+  updateGoldenAwards();
+  refreshCurrentViews();
+  showToast('Tournament loaded with Rashed (Admin) & 15 athletes!');
+}
+
 function loadSavedState(autoRender = true) {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_STATE);
@@ -8485,6 +8570,17 @@ function loadSavedState(autoRender = true) {
       Object.assign(state, parsed);
     }
   } catch (e) {}
+
+  if (!state.matches || state.matches.length === 0) {
+    const poolA = ['Parag Das', 'Rifat Haque', 'Rifat Tariq', 'Jobayer', 'Shewa', 'Sazedul', 'Nur', 'Ofi'];
+    const poolB = ['Sifat', 'Sajeeb', 'Jakir', 'Saiful', 'Al Emran', 'Toufiq', 'Abir', 'Rashed'];
+    state.poolA = poolA;
+    state.poolB = poolB;
+    const matchesA = generateRoundRobinMatches(state.poolA, 'A');
+    const matchesB = generateRoundRobinMatches(state.poolB, 'B');
+    state.matches = [...matchesA, ...matchesB];
+    saveState();
+  }
 
   renderTournamentSwitcher();
   if (autoRender) refreshCurrentViews();

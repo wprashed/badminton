@@ -259,9 +259,9 @@ SCREENS_CONTENT = """
 
     <!-- Navigation & Action bar -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-        <h2 style="font-family:var(--font-display);font-size:1.6rem;text-transform:uppercase;">Group Stage & Standings</h2>
-        <select id="groupCourtFilter" class="modal-input" style="width:auto;padding:4px 10px;font-size:0.8rem;" onchange="renderGroupMatches()">
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <h2 style="font-family:var(--font-display);font-size:1.45rem;font-weight:800;color:var(--clr-text);letter-spacing:-0.01em;margin:0;">Group Stage & Standings</h2>
+        <select id="groupCourtFilter" style="padding:6px 14px;font-size:0.82rem;font-weight:600;background:rgba(255,255,255,0.05);border:1px solid var(--clr-border);border-radius:var(--radius-sm);color:var(--clr-text);font-family:inherit;cursor:pointer;" onchange="renderGroupMatches()">
           <option value="all">Court: All Courts</option>
           <option value="1">Court 1</option>
           <option value="2">Court 2</option>
@@ -282,7 +282,10 @@ SCREENS_CONTENT = """
     <div class="pools-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 320px), 1fr));gap:16px;margin-bottom:24px;">
       <!-- Pool A -->
       <div class="card">
-        <h3 style="color:#60a5fa;font-family:var(--font-display);font-size:1.2rem;margin-bottom:12px;">POOL A STANDINGS (BWF TIEBREAKER)</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h3 style="font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:var(--clr-text);margin:0;">Pool A Standings</h3>
+          <span style="background:rgba(96,165,250,0.15);color:#60a5fa;border:1px solid rgba(96,165,250,0.3);font-size:0.68rem;padding:2px 8px;border-radius:4px;font-weight:700;">Group A · BWF Rules</span>
+        </div>
         <div class="data-table-container">
           <table class="data-table">
             <thead>
@@ -302,7 +305,10 @@ SCREENS_CONTENT = """
 
       <!-- Pool B -->
       <div class="card">
-        <h3 style="color:#f87171;font-family:var(--font-display);font-size:1.2rem;margin-bottom:12px;">POOL B STANDINGS (BWF TIEBREAKER)</h3>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h3 style="font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:var(--clr-text);margin:0;">Pool B Standings</h3>
+          <span style="background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3);font-size:0.68rem;padding:2px 8px;border-radius:4px;font-weight:700;">Group B · BWF Rules</span>
+        </div>
         <div class="data-table-container">
           <table class="data-table">
             <thead>
@@ -325,7 +331,7 @@ SCREENS_CONTENT = """
     <div class="card">
       <div class="card-header">
         <h3 class="card-title"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg> Group Stage Fixtures & Live Matches</h3>
-        <span style="font-size:0.8rem;color:var(--clr-text-muted);">Click "Start Umpire Match" to open live official scoring</span>
+        <span style="font-size:0.78rem;color:var(--clr-text-muted);">Tap "Referee" on any match for live court scoring</span>
       </div>
       <div id="groupMatchesContainer" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 300px), 1fr));gap:14px;"></div>
     </div>

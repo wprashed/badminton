@@ -587,19 +587,22 @@ DIALOGS_CONTENT = """
         <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
         <span data-i18n="moreMenuTitle">All Features & Tools</span>
       </h3>
-      <button class="modal-close" onclick="document.getElementById('moreMenuModal').close()" aria-label="Close">&times;</button>
+      <button class="modal-close" onclick="document.getElementById('moreMenuModal').close()" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
     <!-- Active Tournament Quick Selection -->
-    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
       <div style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:0.8rem;font-weight:700;color:var(--clr-gold);text-transform:uppercase;">Tournament:</span>
-        <select id="tournamentSelectMore" class="modal-input" style="width:auto;padding:4px 10px;font-size:0.85rem;" onchange="switchActiveTournament(this.value)">
+        <span style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;letter-spacing:0.04em;">Active Tournament:</span>
+        <select id="tournamentSelectMore" class="modal-input" style="width:auto;padding:5px 12px;font-size:0.84rem;background:rgba(0,0,0,0.25);border-color:var(--clr-border);border-radius:var(--radius-xs);" onchange="switchActiveTournament(this.value)">
           <option value="main">The Badminton Cup 2026</option>
         </select>
       </div>
-      <button class="btn btn-primary btn-xs" onclick="document.getElementById('moreMenuModal').close();handleSetupNav();">
-        <span>+ New Tournament</span> <span style="font-size:0.65rem;background:rgba(0,0,0,0.25);padding:1px 4px;border-radius:3px;">🛡️ Admin</span>
+      <button class="btn btn-primary btn-xs" onclick="document.getElementById('moreMenuModal').close();handleSetupNav();" style="display:inline-flex;align-items:center;gap:6px;">
+        <span>+ New Tournament</span>
+        <span style="font-size:0.65rem;background:rgba(0,0,0,0.25);padding:1px 5px;border-radius:3px;">🛡️ Admin</span>
       </button>
     </div>
 
@@ -805,38 +808,40 @@ DIALOGS_CONTENT = """
 ═══════════════════════════════════════════════════ -->
 <dialog id="notificationSettingsModal" class="modal" aria-labelledby="notifyModalTitle">
   <div class="modal-box" style="max-width:480px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:16px;">
       <h3 id="notifyModalTitle" style="font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:8px;margin:0;">
-        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <svg class="icon icon-sm" viewBox="0 0 24 24" style="color:var(--clr-green);"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
         <span data-i18n="notifyModalTitle">Push Notifications</span>
       </h3>
-      <button class="modal-close" onclick="document.getElementById('notificationSettingsModal').close()" aria-label="Close">&times;</button>
+      <button class="modal-close" onclick="document.getElementById('notificationSettingsModal').close()" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
-    <div style="text-align:center;padding:16px 0;">
-      <div id="notifyStatusIcon" style="display:inline-flex;padding:16px;border-radius:50%;background:rgba(16,185,129,0.1);color:var(--clr-green);margin-bottom:12px;">
-        <svg class="icon icon-2xl" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    <div style="text-align:center;padding:12px 0 18px;">
+      <div id="notifyStatusIcon" style="display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;background:rgba(16,185,129,0.12);color:var(--clr-green);margin-bottom:14px;border:1px solid rgba(16,185,129,0.25);">
+        <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       </div>
-      <h4 id="notifyStatusHeading" style="font-size:1.05rem;font-weight:700;margin:0 0 6px;">Notification Status</h4>
-      <p id="notifyStatusDesc" style="font-size:0.85rem;color:var(--clr-text-muted);line-height:1.4;margin:0 0 18px;">
+      <h4 id="notifyStatusHeading" style="font-size:1.1rem;font-weight:700;margin:0 0 6px;color:var(--clr-text);">Notification Alerts</h4>
+      <p id="notifyStatusDesc" style="font-size:0.84rem;color:var(--clr-text-muted);line-height:1.45;margin:0 auto 20px;max-width:380px;">
         Get instant alerts on your phone or computer whenever a new open challenge is posted, a match completes, or a tournament champion is crowned.
       </p>
 
       <div style="display:flex;flex-direction:column;gap:10px;">
-        <button class="btn btn-primary" id="btnRequestNotification" onclick="requestNotificationPermission()" style="padding:12px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;">
+        <button class="btn btn-primary btn-md" id="btnRequestNotification" onclick="requestNotificationPermission()" style="width:100%;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;min-height:42px;">
           <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           <span data-i18n="enableNotifyBtn">Turn On Push Notifications</span>
         </button>
 
-        <button class="btn btn-ghost" id="btnTestNotification" onclick="testPushNotification()" style="display:flex;align-items:center;justify-content:center;gap:8px;">
+        <button class="btn btn-ghost btn-sm" id="btnTestNotification" onclick="testPushNotification()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;min-height:38px;">
           <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           <span data-i18n="testNotifyBtn">⚡ Send Test Notification</span>
         </button>
       </div>
     </div>
 
-    <div style="text-align:right;border-top:1px solid var(--clr-border);padding-top:12px;margin-top:14px;">
-      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('notificationSettingsModal').close()" data-i18n="cancelBtn">Close</button>
+    <div style="display:flex;justify-content:center;border-top:1px solid var(--clr-border);padding-top:14px;margin-top:6px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('notificationSettingsModal').close()" style="min-width:140px;">Done</button>
     </div>
   </div>
 </dialog>
@@ -850,7 +855,9 @@ DIALOGS_CONTENT = """
         <span style="font-size:1.2rem;">🎲</span>
         <span>Match Prediction & Wager</span>
       </h3>
-      <button class="modal-close" onclick="document.getElementById('matchBettingModal').close()" aria-label="Close">&times;</button>
+      <button class="modal-close" onclick="document.getElementById('matchBettingModal').close()" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
     <input type="hidden" id="betModalMatchId">
@@ -903,35 +910,40 @@ DIALOGS_CONTENT = """
 ═══════════════════════════════════════════════════ -->
 <dialog id="adminAuthGuardModal" class="modal" aria-labelledby="guardModalTitle">
   <div class="modal-box" style="max-width:460px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
-      <h3 id="guardModalTitle" style="font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:8px;margin:0;color:var(--clr-gold);">
-        <svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span>Admin Permission Required</span>
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:16px;">
+      <h3 id="guardModalTitle" style="font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:8px;margin:0;color:var(--clr-text);">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" style="color:var(--clr-gold);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Admin Access Required</span>
       </h3>
-      <button class="modal-close" onclick="document.getElementById('adminAuthGuardModal').close()" aria-label="Close">&times;</button>
+      <button class="modal-close" onclick="document.getElementById('adminAuthGuardModal').close()" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
-    <div style="padding:10px 0 16px;">
-      <div style="font-size:0.92rem;color:var(--clr-text);line-height:1.5;margin-bottom:12px;">
-        <strong id="guardActionName" style="color:var(--clr-gold);">This action</strong> is restricted to Tournament Directors & Admins.
+    <div style="padding:4px 0 16px;">
+      <div style="font-size:0.9rem;color:var(--clr-text);line-height:1.5;margin-bottom:14px;">
+        The section <strong id="guardActionName" style="color:var(--clr-gold);">Tournament Setup & Roster</strong> is restricted to Tournament Directors & Admins.
       </div>
-      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:12px;font-size:0.8rem;color:var(--clr-text-muted);line-height:1.4;margin-bottom:16px;">
-        <div style="font-weight:700;color:var(--clr-green);margin-bottom:4px;">✓ General User Capabilities:</div>
+
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-left:3px solid var(--clr-green);border-radius:var(--radius-sm);padding:14px;font-size:0.82rem;color:var(--clr-text-muted);line-height:1.45;margin-bottom:18px;">
+        <div style="font-weight:700;color:var(--clr-green);margin-bottom:4px;display:flex;align-items:center;gap:6px;">
+          <span>✓</span> <span>General User Capabilities:</span>
+        </div>
         Open challenges, accept & play matches, referee casual games, and place prediction bets with virtual coins.
       </div>
 
-      <div style="display:flex;flex-direction:column;gap:8px;">
-        <button class="btn btn-primary" onclick="quickSwitchToAdmin()" style="padding:10px;font-weight:700;">
-          ⚡ Switch to Admin Mode (Instant Access)
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="btn btn-primary" onclick="quickSwitchToAdmin()" style="width:100%;min-height:44px;font-weight:700;font-size:0.92rem;display:flex;align-items:center;justify-content:center;gap:8px;">
+          <span>⚡ Switch to Admin Mode (Instant Access)</span>
         </button>
-        <button class="btn btn-ghost" onclick="document.getElementById('adminAuthGuardModal').close();openAuthModal();">
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('adminAuthGuardModal').close();openAuthModal();" style="width:100%;min-height:38px;">
           Sign In with Director Credentials
         </button>
       </div>
     </div>
 
-    <div style="text-align:right;border-top:1px solid var(--clr-border);padding-top:10px;">
-      <button class="btn btn-ghost btn-xs" onclick="document.getElementById('adminAuthGuardModal').close()">Cancel</button>
+    <div style="display:flex;justify-content:center;border-top:1px solid var(--clr-border);padding-top:12px;margin-top:6px;">
+      <button class="btn btn-ghost btn-xs" onclick="document.getElementById('adminAuthGuardModal').close()" style="color:var(--clr-text-muted);">Cancel</button>
     </div>
   </div>
 </dialog>
@@ -946,7 +958,9 @@ DIALOGS_CONTENT = """
         <span style="font-size:1.3rem;">🪙</span>
         <span>Virtual Coin Wallet</span>
       </h3>
-      <button class="modal-close" onclick="document.getElementById('coinBalanceModal').close()" aria-label="Close">&times;</button>
+      <button class="modal-close" onclick="document.getElementById('coinBalanceModal').close()" aria-label="Close">
+        <svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
     </div>
 
     <div style="text-align:center;padding:16px 0;">

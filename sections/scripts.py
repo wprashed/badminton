@@ -3058,10 +3058,22 @@ function renderGroupMatches() {
 
   if (!matches.length) {
     container.innerHTML = `
-      <div style="grid-column:1/-1;text-align:center;padding:32px 20px;background:var(--clr-surface-card);border:1px dashed var(--clr-border);border-radius:var(--radius-md);">
-        <div style="font-size:1.05rem;font-weight:700;margin-bottom:6px;color:var(--clr-text);">No Matches Found</div>
-        <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:14px;">No fixtures match the selected filter, or tournament has not started yet.</p>
-        <button class="btn btn-primary btn-sm" onclick="showScreen('setupScreen')">🚀 Setup Tournament</button>
+      <div class="card" style="grid-column:1/-1;text-align:center;padding:36px 20px;border:1px solid var(--clr-border);border-radius:var(--radius-md);">
+        <div style="width:48px;height:48px;border-radius:50%;background:rgba(16,185,129,0.1);color:var(--clr-green);display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;border:1px solid rgba(16,185,129,0.25);">
+          <svg class="icon icon-md" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>
+        </div>
+        <div style="font-size:1.05rem;font-weight:700;margin-bottom:6px;color:var(--clr-text);">No Tournament Matches Found</div>
+        <p style="color:var(--clr-text-muted);font-size:0.84rem;margin-bottom:18px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.45;">
+          No fixtures match the selected court filter, or the tournament has not been generated yet.
+        </p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" onclick="quickInitializeDemoTournament()" style="display:inline-flex;align-items:center;gap:6px;">
+            <span>🚀 Load Tournament (Rashed + 15 Players)</span>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="handleSetupNav()">
+            <span>⚙ Tournament Setup</span>
+          </button>
+        </div>
       </div>`;
     return;
   }
@@ -4316,6 +4328,22 @@ function saveState() {
   }
 }
 
+function quickInitializeDemoTournament() {
+  const poolA = ['Parag Das', 'Rifat Haque', 'Rifat Tariq', 'Jobayer', 'Shewa', 'Sazedul', 'Nur', 'Ofi'];
+  const poolB = ['Sifat', 'Sajeeb', 'Jakir', 'Saiful', 'Al Emran', 'Toufiq', 'Abir', 'Rashed'];
+  state.poolA = poolA;
+  state.poolB = poolB;
+  const matchesA = generateRoundRobinMatches(state.poolA, 'A');
+  const matchesB = generateRoundRobinMatches(state.poolB, 'B');
+  state.matches = [...matchesA, ...matchesB];
+  saveState();
+  renderGroups();
+  renderBracket();
+  updateGoldenAwards();
+  refreshCurrentViews();
+  showToast('Tournament loaded with Rashed (Admin) & 15 athletes!');
+}
+
 function loadSavedState(autoRender = true) {
   try {
     const raw = localStorage.getItem(STORAGE_KEY_STATE);
@@ -4324,6 +4352,17 @@ function loadSavedState(autoRender = true) {
       Object.assign(state, parsed);
     }
   } catch (e) {}
+
+  if (!state.matches || state.matches.length === 0) {
+    const poolA = ['Parag Das', 'Rifat Haque', 'Rifat Tariq', 'Jobayer', 'Shewa', 'Sazedul', 'Nur', 'Ofi'];
+    const poolB = ['Sifat', 'Sajeeb', 'Jakir', 'Saiful', 'Al Emran', 'Toufiq', 'Abir', 'Rashed'];
+    state.poolA = poolA;
+    state.poolB = poolB;
+    const matchesA = generateRoundRobinMatches(state.poolA, 'A');
+    const matchesB = generateRoundRobinMatches(state.poolB, 'B');
+    state.matches = [...matchesA, ...matchesB];
+    saveState();
+  }
 
   renderTournamentSwitcher();
   if (autoRender) refreshCurrentViews();

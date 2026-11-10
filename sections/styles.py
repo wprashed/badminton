@@ -1059,6 +1059,43 @@ dialog::backdrop {
   background: rgba(0, 0, 0, 0.65);
   backdrop-filter: blur(4px);
 }
+.modal-card, .modal-box {
+  padding: 22px 24px 30px;
+  background: var(--clr-surface-card);
+  color: var(--clr-text);
+  box-sizing: border-box;
+  position: relative;
+}
+.modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-xs);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  padding: 0;
+  transition: all 140ms ease;
+  font-family: inherit;
+  font-size: 1.15rem;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.modal-close .icon {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+}
 .modal-card {
   padding: 22px;
 }
