@@ -2202,5 +2202,73 @@ body.theme-light #matchDurationClock {
   border: 1px solid #cbd5e1 !important;
 }
 
+
+/* ═══════════════════════════════════════════════════
+   ROLE-BASED PRIVILEGE CONTROL (STRICT HIDING)
+   Non-admins (guests and players) never see admin sections
+═══════════════════════════════════════════════════ */
+body:not(.role-admin) .admin-only-item {
+  display: none !important;
+}
+
+body.role-admin .admin-only-item {
+  /* Default display when admin is logged in */
+}
+
+/* Modal close button hardening */
+button.modal-close,
+.modal-close,
+dialog .modal-close {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid var(--clr-border) !important;
+  border-radius: var(--radius-xs) !important;
+  color: var(--clr-text-muted) !important;
+  cursor: pointer !important;
+  transition: all 140ms ease !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+button.modal-close:hover,
+.modal-close:hover,
+dialog .modal-close:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  color: var(--clr-text) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+body.theme-light button.modal-close,
+body.theme-light .modal-close,
+body.theme-light dialog .modal-close {
+  background: #f1f5f9 !important;
+  background-color: #f1f5f9 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #475569 !important;
+}
+
+body.theme-light button.modal-close:hover,
+body.theme-light .modal-close:hover,
+body.theme-light dialog .modal-close:hover {
+  background: #e2e8f0 !important;
+  background-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
+}
+
 </style>
 """

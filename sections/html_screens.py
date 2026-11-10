@@ -249,12 +249,11 @@ SCREENS_CONTENT = """
           <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           <span data-i18n="createChalBtn">+ Open Challenge</span>
         </button>
-        <button class="btn btn-ghost btn-xs" onclick="handleSetupNav()">
+        <button class="btn btn-ghost btn-xs admin-only-item" onclick="handleSetupNav()">
           <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
           <span>Tournament Setup</span>
-          <span style="font-size:0.6rem;font-weight:700;color:#f87171;background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);padding:1px 5px;border-radius:3px;">🛡️ Admin</span>
         </button>
-        <button class="btn btn-ghost btn-xs" onclick="loadDemoData()">
+        <button class="btn btn-ghost btn-xs admin-only-item" onclick="loadDemoData()">
           <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           <span>Load Demo</span>
         </button>
@@ -279,8 +278,8 @@ SCREENS_CONTENT = """
         <button class="btn btn-ghost btn-sm" onclick="showScreen('scheduleScreen')"><svg class="icon icon-xs" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Match Schedule</button>
         <button class="btn btn-ghost btn-sm" onclick="showScreen('analyticsScreen')"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM7 21h10M12 3v18M3 7h18"/></svg> H2H Analytics</button>
         <button class="btn btn-ghost btn-sm" onclick="openSuggestScoreModal()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Suggest Score</button>
-        <button class="btn btn-ghost btn-sm" onclick="simulateAllGroupGames()"><svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Auto-Simulate Group</button>
-        <button class="btn btn-primary btn-sm" onclick="generateKnockoutFromGroups()">Proceed to Knockout &rarr;</button>
+        <button class="btn btn-ghost btn-sm admin-only-item" onclick="simulateAllGroupGames()"><svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Auto-Simulate Group</button>
+        <button class="btn btn-primary btn-sm admin-only-item" onclick="generateKnockoutFromGroups()">Proceed to Knockout &rarr;</button>
       </div>
     </div>
 
@@ -596,7 +595,7 @@ SCREENS_CONTENT = """
         🏸 Official BWF Rules
       </button>
       <button class="btn btn-ghost btn-sm" id="guideTabRolesBtn" onclick="switchGuideTab('roles')">
-        🛡️ Roles & Permissions
+        👑 Director vs Player Permissions
       </button>
       <button class="btn btn-ghost btn-sm" id="guideTabFaqBtn" onclick="switchGuideTab('faq')">
         ❓ Frequently Asked Questions
@@ -890,7 +889,7 @@ SCREENS_CONTENT = """
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-ghost btn-sm" onclick="showScreen('groupsScreen')">&larr; Back to Groups</button>
         <button class="btn btn-ghost btn-sm" onclick="window.print()"><svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Print Bracket</button>
-        <button class="btn btn-ghost btn-sm" onclick="simulateAllKnockout()"><svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Auto-Resolve Knockouts</button>
+        <button class="btn btn-ghost btn-sm admin-only-item" onclick="simulateAllKnockout()"><svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Auto-Resolve Knockouts</button>
       </div>
     </div>
 

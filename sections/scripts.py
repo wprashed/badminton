@@ -64,6 +64,7 @@ function openQuickScoreModal(matchId) {
 }
 
 function awardInstantWinner(side, specificMatchId = null) {
+  if (!requireAuthUser('play or record match scores')) return;
   const matchId = specificMatchId || document.getElementById('quickMatchId')?.value;
   const match = state.matches.find(m => m.id === matchId);
   if (!match) return;
@@ -101,6 +102,7 @@ function awardInstantWinner(side, specificMatchId = null) {
 }
 
 function saveQuickCustomScore() {
+  if (!requireAuthUser('record match scores')) return;
   const matchId = document.getElementById('quickMatchId').value;
   const match = state.matches.find(m => m.id === matchId);
   if (!match) return;
@@ -203,11 +205,12 @@ function filterChallenges(type) {
 }
 
 function acceptChallenge(id) {
+  if (!requireAuthUser('accept challenges')) return;
   const list = getChallengesDB();
   const chal = list.find(c => c.id === id);
   if (!chal) return;
 
-  const joinerName = prompt('Enter your name to accept this challenge:');
+  const joinerName = currentUser.name;
   if (!joinerName || !joinerName.trim()) return;
 
   chal.opponent = joinerName.trim();
@@ -288,10 +291,18 @@ function renderChallengesBoard() {
    FULL DATA RESET & START OVER LOGIC
 ═══════════════════════════════════════════════════ */
 function openDataResetModal() {
+  if (!isAdminUser()) {
+    showToast('Only Admin (Rashed) can reset tournament data.', 'error');
+    return;
+  }
   document.getElementById('dataResetModal').showModal();
 }
 
 function resetCurrentTournamentOnly() {
+  if (!isAdminUser()) {
+    showToast('Only Admin (Rashed) can reset tournament data.', 'error');
+    return;
+  }
   if (!confirm('Wipe all fixtures for the current tournament and start over at setup?')) return;
   state.matches = [];
   state.koRounds = [];
@@ -306,6 +317,10 @@ function resetCurrentTournamentOnly() {
 }
 
 function resetEverythingFullFactory() {
+  if (!isAdminUser()) {
+    showToast('Only Admin (Rashed) can reset tournament data.', 'error');
+    return;
+  }
   if (!confirm('WARNING: Complete Factory Reset will wipe all tournaments, challenges, and stats. Are you sure?')) return;
   localStorage.clear();
   showToast('All data successfully reset!');
@@ -984,6 +999,7 @@ function logoutUser() {
 }
 
 function updateUserUI() {
+  updateRoleVisibility();
   const nameLabel = document.getElementById('headerUsername');
   const roleBadge = document.getElementById('headerUserRole');
   const avatar = document.getElementById('headerAvatar');
@@ -2141,6 +2157,7 @@ function setUserCoins(amount) {
 }
 
 function claimDailyBonus() {
+  if (!requireAuthUser('claim daily bonus coins')) return;
   const current = getUserCoins();
   const bonus = 50;
   setUserCoins(current + bonus);
@@ -2152,11 +2169,24 @@ function claimDailyBonus() {
 }
 
 function openCoinBalanceModal() {
+  const modal = document.getElementById('coinBalanceModal');
+  if (!modal) return;
   const coins = getUserCoins();
   const bigCount = document.getElementById('coinModalBigCount');
   if (bigCount) bigCount.textContent = coins.toLocaleString();
-  const modal = document.getElementById('coinBalanceModal');
-  if (modal) modal.showModal();
+
+  const claimBtn = modal.querySelector('button[onclick*="claimDailyBonus"]') || modal.querySelector('button[onclick*="openAuthModal"]');
+  if (claimBtn) {
+    if (!currentUser) {
+      claimBtn.innerHTML = '<span>🔒 Sign In to Claim 50 Free Bonus Coins</span>';
+      claimBtn.setAttribute('onclick', "document.getElementById('coinBalanceModal').close();openAuthModal();");
+    } else {
+      claimBtn.innerHTML = '<span>🎁 Claim Daily Bonus (+50 Free Coins)</span>';
+      claimBtn.setAttribute('onclick', 'claimDailyBonus()');
+    }
+  }
+
+  modal.showModal();
 }
 
 function updateBettingUI() {
@@ -2168,6 +2198,7 @@ function updateBettingUI() {
 }
 
 function openBettingModal(matchId) {
+  if (!requireAuthUser('place match predictions')) return;
   const match = state.matches.find(m => m.id === matchId);
   if (!match) return;
 
@@ -2212,6 +2243,7 @@ function setBetAmount(amount) {
 }
 
 function placeBet() {
+  if (!requireAuthUser('place match predictions')) return;
   if (!activeBetMatch) return;
   const amount = parseInt(document.getElementById('betModalAmountInput')?.value, 10);
   if (isNaN(amount) || amount <= 0) {
@@ -2598,6 +2630,45 @@ function renderScorecardsScreen() {
    - General Users: Open challenges, accept & play matches, referee casual games, coin betting & predictions.
    - Admin Users: Full control over tournament setup, pool draw, score overrides, and data reset.
 ═══════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════
+   AUTHENTICATION & ROLE-BASED ACCESS CONTROL
+═══════════════════════════════════════════════════ */
+function requireAuthUser(actionName, callback) {
+  if (!currentUser) {
+    showToast(`Please sign in to ${actionName}.`, 'warning');
+    openAuthModal();
+    return false;
+  }
+  if (callback && typeof callback === 'function') {
+    callback(currentUser);
+  }
+  return true;
+}
+
+function updateRoleVisibility() {
+  const isAdmin = isAdminUser();
+  const isLogged = !!currentUser;
+
+  document.body.classList.toggle('role-admin', isAdmin);
+  document.body.classList.toggle('role-player', isLogged && !isAdmin);
+  document.body.classList.toggle('role-guest', !isLogged);
+
+  document.querySelectorAll('.admin-only-item').forEach(el => {
+    if (isAdmin) {
+      if (el.tagName === 'BUTTON' && el.classList.contains('more-card-item')) {
+        el.style.display = 'flex';
+      } else if (el.tagName === 'BUTTON' && el.classList.contains('btn')) {
+        el.style.display = 'inline-flex';
+      } else {
+        el.style.display = '';
+      }
+    } else {
+      el.style.setProperty('display', 'none', 'important');
+    }
+  });
+}
+
 function isAdminUser() {
   return !!(currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin'));
 }
@@ -2607,10 +2678,7 @@ function requireAdmin(actionName, onAllowed) {
     onAllowed();
     return;
   }
-  const nameEl = document.getElementById('guardActionName');
-  if (nameEl) nameEl.textContent = actionName;
-  const guardModal = document.getElementById('adminAuthGuardModal');
-  if (guardModal) guardModal.showModal();
+  showToast(`${actionName} is restricted to Admin (Rashed).`, 'error');
 }
 
 function handleSetupNav() {
@@ -2622,7 +2690,11 @@ function handleDraftNav() {
 }
 
 function handleResetNav() {
-  requireAdmin('Reset Tournament Data', () => openDataResetModal());
+  if (!isAdminUser()) {
+    showToast('Only Admin (Rashed) can reset tournament data.', 'error');
+    return;
+  }
+  openDataResetModal();
 }
 
 function quickSwitchToAdmin() {
@@ -3057,6 +3129,7 @@ function renderGroupMatches() {
   }
 
   if (!matches.length) {
+    const isAdmin = isAdminUser();
     container.innerHTML = `
       <div class="card" style="grid-column:1/-1;text-align:center;padding:36px 20px;border:1px solid var(--clr-border);border-radius:var(--radius-md);">
         <div style="width:48px;height:48px;border-radius:50%;background:rgba(16,185,129,0.1);color:var(--clr-green);display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;border:1px solid rgba(16,185,129,0.25);">
@@ -3064,8 +3137,9 @@ function renderGroupMatches() {
         </div>
         <div style="font-size:1.05rem;font-weight:700;margin-bottom:6px;color:var(--clr-text);">No Tournament Matches Found</div>
         <p style="color:var(--clr-text-muted);font-size:0.84rem;margin-bottom:18px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.45;">
-          No fixtures match the selected court filter, or the tournament has not been generated yet.
+          ${isAdmin ? 'No fixtures match the selected court filter, or the tournament has not been generated yet.' : 'Round-robin fixtures will appear here once scheduled by the Tournament Director.'}
         </p>
+        ${isAdmin ? `
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
           <button class="btn btn-primary btn-sm" onclick="quickInitializeDemoTournament()" style="display:inline-flex;align-items:center;gap:6px;">
             <span>🚀 Load Tournament (Rashed + 15 Players)</span>
@@ -3073,7 +3147,7 @@ function renderGroupMatches() {
           <button class="btn btn-ghost btn-sm" onclick="handleSetupNav()">
             <span>⚙ Tournament Setup</span>
           </button>
-        </div>
+        </div>` : ''}
       </div>`;
     return;
   }
@@ -3388,6 +3462,7 @@ function releaseWakeLock() {
    LIVE UMPIRE SCOREBOARD
 ═══════════════════════════════════════════════════ */
 function startUmpireMatch(matchId) {
+  if (!requireAuthUser('referee or score matches')) return;
   const match = state.matches.find(m => m.id === matchId);
   if (!match) return;
 
@@ -4381,6 +4456,10 @@ function refreshCurrentViews() {
 }
 
 function resetTournamentState() {
+  if (!isAdminUser()) {
+    showToast('Only Admin (Rashed) can reset tournament data.', 'error');
+    return;
+  }
   if (confirm('Clear current tournament data? Active pending bets will be refunded.')) {
     const bets = getBetsDB();
     const wallets = getWalletsDB();
