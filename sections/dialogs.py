@@ -990,7 +990,7 @@ DIALOGS_CONTENT = """
 
     <!-- Action Buttons -->
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
-      <button class="btn btn-primary btn-md" onclick="claimDailyBonus()" style="width:100%;min-height:44px;font-size:0.92rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;">
+      <button class="btn btn-primary btn-md" id="btnClaimDailyBonus" onclick="claimDailyBonus()" style="width:100%;min-height:44px;font-size:0.92rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;">
         <span>🎁 Claim Daily Bonus (+50 Free Coins)</span>
       </button>
       <button class="btn btn-ghost btn-sm" onclick="document.getElementById('coinBalanceModal').close();showScreen('groupsScreen');" style="width:100%;min-height:38px;display:flex;align-items:center;justify-content:center;gap:6px;">

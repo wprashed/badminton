@@ -2683,15 +2683,104 @@ function setUserCoins(amount) {
   updateBettingUI();
 }
 
+const STORAGE_KEY_DAILY_CLAIM = 'badminton_cup_daily_claim_v4';
+const DAILY_CLAIM_COOLDOWN_MS = 24 * 60 * 60 * 1000; // 24 hours cooldown
+
+function getDailyClaimsDB() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY_DAILY_CLAIM)) || {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveDailyClaimsDB(db) {
+  try {
+    localStorage.setItem(STORAGE_KEY_DAILY_CLAIM, JSON.stringify(db));
+  } catch (e) {}
+}
+
+function getRemainingDailyClaimTime(username) {
+  if (!username) return 0;
+  const db = getDailyClaimsDB();
+  const lastClaim = db[username];
+  if (!lastClaim) return 0;
+  const elapsed = Date.now() - Number(lastClaim);
+  if (elapsed >= DAILY_CLAIM_COOLDOWN_MS) return 0;
+  return DAILY_CLAIM_COOLDOWN_MS - elapsed;
+}
+
+function formatRemainingTime(ms) {
+  const totalSec = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSec / 3600);
+  const mins = Math.floor((totalSec % 3600) / 60);
+  if (hours > 0) {
+    return `${hours}h ${mins}m`;
+  }
+  return `${Math.max(1, mins)}m`;
+}
+
+function updateClaimButtonUI() {
+  const modal = document.getElementById('coinBalanceModal');
+  if (!modal) return;
+  const claimBtn = document.getElementById('btnClaimDailyBonus') || modal.querySelector('button[onclick*="claimDailyBonus"]') || modal.querySelector('button[onclick*="openAuthModal"]');
+  if (!claimBtn) return;
+
+  if (!currentUser) {
+    claimBtn.disabled = false;
+    claimBtn.className = 'btn btn-primary btn-md';
+    claimBtn.style.opacity = '1';
+    claimBtn.style.cursor = 'pointer';
+    claimBtn.innerHTML = '<span>🔒 Sign In to Claim 50 Free Bonus Coins</span>';
+    claimBtn.setAttribute('onclick', "document.getElementById('coinBalanceModal').close();openAuthModal();");
+    return;
+  }
+
+  const remaining = getRemainingDailyClaimTime(currentUser.name);
+  if (remaining > 0) {
+    const formatted = formatRemainingTime(remaining);
+    claimBtn.disabled = true;
+    claimBtn.className = 'btn btn-ghost btn-md';
+    claimBtn.style.opacity = '0.65';
+    claimBtn.style.cursor = 'not-allowed';
+    claimBtn.innerHTML = `<span>⏳ Claimed Today · Next in ${formatted}</span>`;
+    claimBtn.setAttribute('onclick', `showToast('⏳ Daily bonus already claimed! Next bonus available in ${formatted}.', 'info')`);
+  } else {
+    claimBtn.disabled = false;
+    claimBtn.className = 'btn btn-primary btn-md';
+    claimBtn.style.opacity = '1';
+    claimBtn.style.cursor = 'pointer';
+    claimBtn.innerHTML = '<span>🎁 Claim Daily Bonus (+50 Free Coins)</span>';
+    claimBtn.setAttribute('onclick', 'claimDailyBonus()');
+  }
+}
+
 function claimDailyBonus() {
   if (!requireAuthUser('claim daily bonus coins')) return;
+  const username = currentUser.name;
+  const remaining = getRemainingDailyClaimTime(username);
+  if (remaining > 0) {
+    const formatted = formatRemainingTime(remaining);
+    showToast(`⏳ Daily bonus already claimed! Next bonus in ${formatted}.`, 'warning');
+    updateClaimButtonUI();
+    return;
+  }
+
   const current = getUserCoins();
   const bonus = 50;
   setUserCoins(current + bonus);
-  recordTransaction(currentUser ? currentUser.name : 'Guest', 'bonus', bonus, current + bonus, 'Daily reward bonus');
+
+  // Record claim timestamp in database
+  const claims = getDailyClaimsDB();
+  claims[username] = Date.now();
+  saveDailyClaimsDB(claims);
+
+  recordTransaction(username, 'bonus', bonus, current + bonus, 'Daily reward bonus (+50 coins)');
   const bigCount = document.getElementById('coinModalBigCount');
   if (bigCount) bigCount.textContent = (current + bonus).toLocaleString();
-  showToast('🎁 Claimed 50 Free Bonus Coins!', 'success');
+
+  updateClaimButtonUI();
+  showToast('🎁 Claimed 50 Free Bonus Coins! Next bonus in 24 hours.', 'success');
   playChimeSound('win');
 }
 
@@ -2702,17 +2791,7 @@ function openCoinBalanceModal() {
   const bigCount = document.getElementById('coinModalBigCount');
   if (bigCount) bigCount.textContent = coins.toLocaleString();
 
-  const claimBtn = modal.querySelector('button[onclick*="claimDailyBonus"]') || modal.querySelector('button[onclick*="openAuthModal"]');
-  if (claimBtn) {
-    if (!currentUser) {
-      claimBtn.innerHTML = '<span>🔒 Sign In to Claim 50 Free Bonus Coins</span>';
-      claimBtn.setAttribute('onclick', "document.getElementById('coinBalanceModal').close();openAuthModal();");
-    } else {
-      claimBtn.innerHTML = '<span>🎁 Claim Daily Bonus (+50 Free Coins)</span>';
-      claimBtn.setAttribute('onclick', 'claimDailyBonus()');
-    }
-  }
-
+  updateClaimButtonUI();
   modal.showModal();
 }
 
