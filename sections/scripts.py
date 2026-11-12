@@ -1,4 +1,4 @@
-SCRIPTS_CONTENT = r"""
+SCRIPTS_CONTENT = r"""<script>
 /* ═══════════════════════════════════════════════════
    GLOBAL UTILITIES & RESILIENCE HELPERS
 ═══════════════════════════════════════════════════ */
@@ -214,10 +214,6 @@ function updateMatchELO(match) {
   saveUsersDB(users);
   renderLeaderboardScreen();
 }
-
-# Scripts module for Badminton Cup
-
-<script>
 
 /* ═══════════════════════════════════════════════════
    VECTOR SINGLE-COLOR FLAT ICONS HELPER
