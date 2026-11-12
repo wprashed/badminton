@@ -5890,6 +5890,111 @@ function filterChallenges(type) {
   renderChallengesBoard();
 }
 
+function getOrCreateChallengeMatch(chal) {
+  if (!chal || !chal.opponent) return null;
+  let match = null;
+  if (chal.matchId) {
+    match = state.matches.find(m => m.id === chal.matchId);
+  }
+  if (!match) {
+    match = state.matches.find(m =>
+      (m.pool === 'CHALLENGE' || !m.pool || m.pool === 'A' || m.pool === 'B') &&
+      ((m.a.toLowerCase() === chal.creator.toLowerCase() && m.b.toLowerCase() === chal.opponent.toLowerCase()) ||
+       (m.b.toLowerCase() === chal.creator.toLowerCase() && m.a.toLowerCase() === chal.opponent.toLowerCase()))
+    );
+  }
+  if (!match) {
+    match = createMatchObj(chal.creator, chal.opponent, 'CHALLENGE');
+    match.court = 1;
+    state.matches.push(match);
+    chal.matchId = match.id;
+    saveState();
+    const list = getChallengesDB();
+    const target = list.find(x => x.id === chal.id);
+    if (target) {
+      target.matchId = match.id;
+      saveChallengesDB(list);
+    }
+  } else if (!chal.matchId) {
+    chal.matchId = match.id;
+    const list = getChallengesDB();
+    const target = list.find(x => x.id === chal.id);
+    if (target) {
+      target.matchId = match.id;
+      saveChallengesDB(list);
+    }
+  }
+  return match;
+}
+
+function launchChallengeUmpire(chalId) {
+  if (!requireAuthUser('referee or score matches')) return;
+  const list = getChallengesDB();
+  const chal = list.find(c => c.id === chalId);
+  if (!chal) return;
+
+  const match = getOrCreateChallengeMatch(chal);
+  if (!match) return;
+
+  startUmpireMatch(match.id);
+}
+
+function enterChallengeQuickScore(chalId) {
+  if (!requireAuthUser('enter scores')) return;
+  const list = getChallengesDB();
+  const chal = list.find(c => c.id === chalId);
+  if (!chal) return;
+
+  const match = getOrCreateChallengeMatch(chal);
+  if (!match) return;
+
+  openQuickScoreModal(match.id);
+}
+
+async function cancelChallenge(chalId) {
+  const list = getChallengesDB();
+  const chal = list.find(c => c.id === chalId);
+  if (!chal) return;
+
+  const canManage = !currentUser || (
+    currentUser.name.toLowerCase() === chal.creator.toLowerCase() ||
+    (chal.opponent && currentUser.name.toLowerCase() === chal.opponent.toLowerCase()) ||
+    currentUser.role === 'admin' || currentUser.role === 'super_admin'
+  );
+
+  if (!canManage) {
+    showToast('Only challenge participants or an Admin can cancel this challenge.', 'warning');
+    return;
+  }
+
+  const confirmed = await appConfirm(`Cancel challenge between ${chal.creator}${chal.opponent ? ' and ' + chal.opponent : ''}?`, 'Cancel Challenge', 'Cancel Match', true);
+  if (!confirmed) return;
+
+  const updatedList = list.filter(c => c.id !== chalId);
+  saveChallengesDB(updatedList);
+
+  if (chal.matchId) {
+    state.matches = state.matches.filter(m => m.id !== chal.matchId || m.winner);
+    saveState();
+  }
+
+  renderChallengesBoard();
+  showToast('Challenge cancelled successfully.', 'info');
+}
+
+function copyChallengeInviteLink(chalId) {
+  const url = window.location.origin + window.location.pathname + '#challenge=' + chalId;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('Challenge link copied to clipboard! Share with your opponent.', 'success');
+    }).catch(() => {
+      prompt('Copy this challenge link:', url);
+    });
+  } else {
+    prompt('Copy this challenge link:', url);
+  }
+}
+
 function acceptChallenge(id) {
   if (!requireAuthUser('accept challenges')) return;
   const list = getChallengesDB();
@@ -5901,11 +6006,13 @@ function acceptChallenge(id) {
 
   chal.opponent = joinerName.trim();
   chal.status = 'accepted';
-  saveChallengesDB(list);
 
-  // Automatically create match and start live umpire session!
+  // Automatically create match and link
   const newMatch = createMatchObj(chal.creator, chal.opponent, 'CHALLENGE');
+  chal.matchId = newMatch.id;
   state.matches.push(newMatch);
+
+  saveChallengesDB(list);
   saveState();
   renderChallengesBoard();
   showToast(`${joinerName} accepted the challenge! Launching match...`);
@@ -5940,37 +6047,103 @@ function renderChallengesBoard() {
     return;
   }
 
-  container.innerHTML = filtered.map(c => `
-    <div class="challenge-card ${c.status === 'open' ? 'open-status' : 'accepted-status'}">
-      <div>
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <span class="challenge-badge ${c.status === 'open' ? 'open' : 'accepted'}">${c.status.toUpperCase()}</span>
-          <span style="font-size:0.75rem;color:var(--clr-text-muted);">${c.createdAt}</span>
-        </div>
-        <div style="font-weight:700;font-size:1.05rem;color:var(--clr-text);margin-bottom:4px;">
-          ${escapeHtml(c.creator)} ${c.opponent ? `<span style="color:var(--clr-green);">vs</span> ${escapeHtml(c.opponent)}` : ''}
-        </div>
-        <div style="font-size:0.8rem;color:var(--clr-text-muted);display:flex;gap:8px;margin-top:6px;">
-          <span>${c.category === 'doubles' ? 'Doubles (2v2)' : 'Singles (1v1)'}</span>
-          <span>·</span>
-          <span>${c.points} Points</span>
-          <span>·</span>
-          <span>${escapeHtml(c.note)}</span>
-        </div>
-      </div>
-      <div>
-        ${c.status === 'open' ? `
-          <button class="btn btn-primary btn-sm" style="width:100%;" onclick="acceptChallenge('${c.id}')">
-            ${'Accept Challenge &rarr;'}
-          </button>
-        ` : `
-          <div style="font-size:0.78rem;color:var(--clr-green);font-weight:600;text-align:center;">
-            ${'Match In Progress / Accepted'}
+  container.innerHTML = filtered.map(c => {
+    let match = null;
+    if (c.status === 'accepted' || c.status === 'completed') {
+      match = getOrCreateChallengeMatch(c);
+      if (match && match.winner && c.status !== 'completed') {
+        c.status = 'completed';
+        c.winner = match.winner === 'a' ? match.a : match.b;
+      }
+    }
+
+    const isCreator = currentUser && currentUser.name.toLowerCase() === c.creator.toLowerCase();
+    const isOpponent = currentUser && c.opponent && currentUser.name.toLowerCase() === c.opponent.toLowerCase();
+    const isAdmin = currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin');
+    const canManage = isCreator || isOpponent || isAdmin;
+    const scoreStr = (match && match.sets && match.sets.length) ? match.sets.map(s => `${s.score[0]}–${s.score[1]}`).join(' | ') : '';
+
+    return `
+      <div class="challenge-card ${c.status === 'open' ? 'open-status' : (c.status === 'completed' ? 'completed-status' : 'accepted-status')}" style="padding:16px 18px;border-radius:var(--radius-md);border:1px solid var(--clr-border);background:var(--clr-surface-card);display:flex;flex-direction:column;justify-content:space-between;gap:12px;box-shadow:var(--shadow-card);">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span class="challenge-badge ${c.status}" style="font-weight:800;font-size:0.7rem;padding:3px 8px;border-radius:4px;text-transform:uppercase;">
+                ${c.status === 'open' ? 'OPEN' : (c.status === 'completed' ? 'COMPLETED' : 'IN PROGRESS')}
+              </span>
+              ${canManage ? '<span style="font-size:0.68rem;color:var(--clr-gold);font-weight:700;">★ YOUR MATCH</span>' : ''}
+            </div>
+            <span style="font-size:0.75rem;color:var(--clr-text-muted);">${c.createdAt || 'Today'}</span>
           </div>
-        `}
+
+          <div style="font-weight:800;font-size:1.1rem;color:var(--clr-text);margin-bottom:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span>${escapeHtml(c.creator)}</span>
+            <span style="color:var(--clr-green);font-size:0.85rem;font-weight:700;">vs</span>
+            <span>${c.opponent ? escapeHtml(c.opponent) : '<em style="color:var(--clr-text-muted);font-weight:400;font-size:0.9rem;">(Waiting...)</em>'}</span>
+          </div>
+
+          <div style="font-size:0.8rem;color:var(--clr-text-muted);display:flex;gap:8px;margin-top:6px;align-items:center;flex-wrap:wrap;">
+            <span>${c.category === 'doubles' ? 'Doubles (2v2)' : 'Singles (1v1)'}</span>
+            <span>·</span>
+            <span>${c.points} Points</span>
+            <span>·</span>
+            <span>${escapeHtml(c.note)}</span>
+          </div>
+
+          ${c.status === 'completed' ? `
+            <div style="margin-top:8px;padding:6px 10px;background:rgba(16,185,129,0.1);border-radius:var(--radius-xs);color:var(--clr-green);font-size:0.84rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;">
+              <span>🏆 Winner: ${escapeHtml(c.winner || (match ? (match.winner === 'a' ? match.a : match.b) : ''))}</span>
+              <span style="font-family:monospace;font-weight:800;">${scoreStr}</span>
+            </div>
+          ` : ''}
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
+          ${c.status === 'open' ? `
+            ${isCreator ? `
+              <button class="btn btn-ghost btn-sm" style="flex:1;gap:6px;" onclick="copyChallengeInviteLink('${c.id}')">
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                <span>Share Link</span>
+              </button>
+              <button class="btn btn-ghost btn-sm" style="color:var(--clr-red);padding:6px 10px;" onclick="cancelChallenge('${c.id}')" title="Cancel this challenge">
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            ` : `
+              <button class="btn btn-primary btn-sm" style="width:100%;font-weight:700;gap:6px;" onclick="acceptChallenge('${c.id}')">
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <span>Accept Challenge &rarr;</span>
+              </button>
+            `}
+          ` : (c.status === 'completed' ? `
+            <button class="btn btn-ghost btn-sm" style="flex:1;gap:6px;" onclick="openScorecardModal('${match ? match.id : ''}')">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span>View Scorecard</span>
+            </button>
+            ${canManage ? `
+              <button class="btn btn-ghost btn-sm" style="color:var(--clr-text-muted);padding:6px 10px;" onclick="cancelChallenge('${c.id}')" title="Remove from board">
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              </button>
+            ` : ''}
+          ` : `
+            <!-- In Progress / Accepted Challenge Management -->
+            <button class="btn btn-primary btn-sm" style="flex:1;min-width:130px;gap:6px;font-weight:700;" onclick="launchChallengeUmpire('${c.id}')">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 8 12 2"/></svg>
+              <span>Play / Referee</span>
+            </button>
+            <button class="btn btn-ghost btn-sm" style="gap:6px;font-weight:600;" onclick="enterChallengeQuickScore('${c.id}')" title="Enter Final Score">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              <span>Score</span>
+            </button>
+            ${canManage ? `
+              <button class="btn btn-ghost btn-sm" style="color:var(--clr-red);padding:6px 10px;" onclick="cancelChallenge('${c.id}')" title="Cancel or Forfeit Match">
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            ` : ''}
+          `)}
+        </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 /* ═══════════════════════════════════════════════════
@@ -10165,6 +10338,21 @@ function showWinCelebrationModal(match) {
   document.getElementById('winSubtitle').textContent = `${winnerName} wins the match!`;
   document.getElementById('winScoreSummary').textContent =
     match.sets.filter(s => s.winner).map(s => `${s.score[0]}–${s.score[1]}`).join(' | ');
+
+  try {
+    const chList = getChallengesDB();
+    const target = chList.find(c => c.matchId === match.id ||
+      ((c.creator.toLowerCase() === match.a.toLowerCase() && c.opponent && c.opponent.toLowerCase() === match.b.toLowerCase()) ||
+       (c.creator.toLowerCase() === match.b.toLowerCase() && c.opponent && c.opponent.toLowerCase() === match.a.toLowerCase()))
+    );
+    if (target) {
+      target.status = 'completed';
+      target.winner = winnerName;
+      target.matchId = match.id;
+      saveChallengesDB(chList);
+      renderChallengesBoard();
+    }
+  } catch (e) {}
 
   triggerVictoryConfetti();
   dlg.showModal();
