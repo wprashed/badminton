@@ -70,10 +70,13 @@ SCREENS_CONTENT = """
 
     <!-- User Panel / Profile & Auth -->
     <div class="user-panel" id="userStatusPanel">
-      <div class="user-avatar" id="headerAvatar" onclick="handleUserAvatarClick()" title="View Athlete Profile" style="cursor:pointer;">?</div>
-      <div id="headerUserInfo" onclick="handleUserAvatarClick()" style="display:none;cursor:pointer;flex-direction:column;line-height:1.15;" title="View Athlete Profile">
-        <span class="user-name-label" id="headerUsername" style="font-weight:700;font-size:0.8rem;color:var(--clr-text);max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Guest</span>
-        <span id="headerUserRole" style="font-size:0.65rem;font-weight:800;letter-spacing:0.04em;color:var(--clr-gold);text-transform:uppercase;">GUEST</span>
+      <div class="user-pill" id="headerUserPill" onclick="handleUserAvatarClick()" title="View Athlete Profile & Settings" style="display:none;cursor:pointer;">
+        <div class="user-avatar" id="headerAvatar" style="width:24px;height:24px;border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;">?</div>
+        <div id="headerUserInfo" style="display:flex;flex-direction:column;line-height:1.15;">
+          <span class="user-name-label" id="headerUsername" style="font-weight:700;font-size:0.8rem;color:var(--clr-text);max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">User</span>
+          <span id="headerUserRole" style="font-size:0.62rem;font-weight:800;letter-spacing:0.04em;color:var(--clr-gold);text-transform:uppercase;">PLAYER</span>
+        </div>
+        <svg class="icon" viewBox="0 0 24 24" width="12" height="12" style="color:var(--clr-text-muted);stroke:currentColor;stroke-width:2.5;fill:none;"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <button class="btn btn-primary btn-xs" id="authBtn" onclick="handleAuthBtnClick()">Sign In</button>
     </div>

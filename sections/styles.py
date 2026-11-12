@@ -321,13 +321,35 @@ body.theme-contrast .stage-tab.active {
 }
 
 .user-panel {
-  display: flex;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+.user-pill {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--clr-border);
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 140ms ease;
+  user-select: none;
+}
+.user-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+body.theme-light .user-pill {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+body.theme-light .user-pill:hover {
+  background: #e2e8f0;
 }
 body.theme-light .user-panel {
   background: #ffffff;
@@ -1146,7 +1168,8 @@ button.modal-close .icon,
   color: #fff;
   font-family: inherit;
   font-size: 0.88rem;
-  transition: border-color 140ms ease;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+  box-sizing: border-box;
 }
 body.theme-light .modal-input {
   background: #ffffff;
@@ -1156,7 +1179,64 @@ body.theme-light .modal-input {
 .modal-input:focus {
   outline: none;
   border-color: var(--clr-green);
-  box-shadow: 0 0 0 1px var(--clr-green);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+
+/* Universal Modern Accessible Form Select */
+select.modal-input,
+.app-custom-select,
+.modal-box select,
+select:not([multiple]) {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  background-size: 14px 14px !important;
+  padding-right: 36px !important;
+  cursor: pointer !important;
+  border: 1px solid var(--clr-border) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--clr-text) !important;
+  font-family: inherit !important;
+  font-size: 0.88rem !important;
+  line-height: 1.4 !important;
+  transition: border-color 140ms ease, box-shadow 140ms ease !important;
+  box-sizing: border-box !important;
+}
+
+select:focus,
+select.modal-input:focus,
+.app-custom-select:focus {
+  outline: none !important;
+  border-color: var(--clr-green) !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25) !important;
+}
+
+select option,
+select.modal-input option {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  padding: 8px !important;
+}
+
+body.theme-light select,
+body.theme-light select.modal-input,
+body.theme-light .app-custom-select,
+body.theme-light .modal-box select,
+body.theme-light select:not([multiple]) {
+  background-color: #ffffff !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.theme-light select option,
+body.theme-light select.modal-input option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
 }
 
 #appToast {

@@ -714,14 +714,19 @@ function saveTournamentsDB(list) {
 }
 
 function renderTournamentSwitcher() {
-  const select = document.getElementById('tournamentSelectHeader');
-  if (!select) return;
+  const selects = [
+    document.getElementById('tournamentSelectMore'),
+    document.getElementById('tournamentSelectHeader')
+  ].filter(Boolean);
+  if (!selects.length) return;
   const list = getTournamentsDB();
   const currentId = state.tournamentId || 'main';
 
-  select.innerHTML = list.map(t =>
-    `<option value="${t.id}" ${t.id === currentId ? 'selected' : ''}>${t.title}</option>`
+  const html = list.map(t =>
+    `<option value="${t.id}" ${t.id === currentId ? 'selected' : ''}>${window.escapeHtml ? window.escapeHtml(t.title) : t.title}</option>`
   ).join('') + `<option value="__NEW__">+ New Tournament...</option>`;
+
+  selects.forEach(s => { s.innerHTML = html; });
 }
 
 function switchActiveTournament(targetId) {
@@ -1238,17 +1243,20 @@ function updateUserUI() {
   const avatar = document.getElementById('headerAvatar');
   const authBtn = document.getElementById('authBtn');
   const userInfo = document.getElementById('headerUserInfo');
+  const userPill = document.getElementById('headerUserPill');
   const navHub = document.getElementById('navPlayerHubBtn');
   const tabHub = document.getElementById('tabNavPlayerHub');
   const mobHub = document.getElementById('mobNavPlayerHub');
 
   if (currentUser) {
+    if (userPill) userPill.style.display = 'inline-flex';
     if (nameLabel) {
       nameLabel.textContent = currentUser.name;
       nameLabel.style.display = 'inline-block';
     }
     if (userInfo) userInfo.style.display = 'flex';
     if (avatar) {
+      avatar.style.display = 'inline-flex';
       avatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
       avatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
       avatar.style.color = '#ffffff';
@@ -1262,20 +1270,20 @@ function updateUserUI() {
       authBtn.textContent = 'Sign Out';
       authBtn.className = 'btn btn-ghost btn-xs';
       authBtn.title = 'Sign Out of Badminton Cup';
+      authBtn.style.display = 'inline-flex';
     }
     if (navHub) navHub.style.display = 'inline-flex';
     if (tabHub) tabHub.style.display = 'inline-flex';
     if (mobHub) mobHub.style.display = 'inline-flex';
   } else {
+    if (userPill) userPill.style.display = 'none';
     if (nameLabel) {
       nameLabel.textContent = 'Guest';
       nameLabel.style.display = 'none';
     }
     if (userInfo) userInfo.style.display = 'none';
     if (avatar) {
-      avatar.textContent = '?';
-      avatar.style.background = 'rgba(255, 255, 255, 0.1)';
-      avatar.style.color = 'var(--clr-text-muted)';
+      avatar.style.display = 'none';
     }
     if (roleBadge) {
       roleBadge.style.display = 'none';
@@ -1284,6 +1292,7 @@ function updateUserUI() {
       authBtn.textContent = 'Sign In';
       authBtn.className = 'btn btn-primary btn-xs';
       authBtn.title = 'Sign In to Badminton Cup';
+      authBtn.style.display = 'inline-flex';
     }
     if (navHub) navHub.style.display = 'none';
     if (tabHub) tabHub.style.display = 'none';
@@ -5592,6 +5601,7 @@ function promptInstallPWA() {
 }
 
 function openMoreMenu() {
+  renderTournamentSwitcher();
   const modal = document.getElementById('moreMenuModal');
   if (modal) modal.showModal();
 }

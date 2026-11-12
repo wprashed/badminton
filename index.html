@@ -340,13 +340,35 @@ body.theme-contrast .stage-tab.active {
 }
 
 .user-panel {
-  display: flex;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+.user-pill {
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--clr-border);
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 140ms ease;
+  user-select: none;
+}
+.user-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+body.theme-light .user-pill {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+body.theme-light .user-pill:hover {
+  background: #e2e8f0;
 }
 body.theme-light .user-panel {
   background: #ffffff;
@@ -1165,7 +1187,8 @@ button.modal-close .icon,
   color: #fff;
   font-family: inherit;
   font-size: 0.88rem;
-  transition: border-color 140ms ease;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
+  box-sizing: border-box;
 }
 body.theme-light .modal-input {
   background: #ffffff;
@@ -1175,7 +1198,64 @@ body.theme-light .modal-input {
 .modal-input:focus {
   outline: none;
   border-color: var(--clr-green);
-  box-shadow: 0 0 0 1px var(--clr-green);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+
+/* Universal Modern Accessible Form Select */
+select.modal-input,
+.app-custom-select,
+.modal-box select,
+select:not([multiple]) {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-color: rgba(15, 23, 42, 0.6) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  background-size: 14px 14px !important;
+  padding-right: 36px !important;
+  cursor: pointer !important;
+  border: 1px solid var(--clr-border) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--clr-text) !important;
+  font-family: inherit !important;
+  font-size: 0.88rem !important;
+  line-height: 1.4 !important;
+  transition: border-color 140ms ease, box-shadow 140ms ease !important;
+  box-sizing: border-box !important;
+}
+
+select:focus,
+select.modal-input:focus,
+.app-custom-select:focus {
+  outline: none !important;
+  border-color: var(--clr-green) !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25) !important;
+}
+
+select option,
+select.modal-input option {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  padding: 8px !important;
+}
+
+body.theme-light select,
+body.theme-light select.modal-input,
+body.theme-light .app-custom-select,
+body.theme-light .modal-box select,
+body.theme-light select:not([multiple]) {
+  background-color: #ffffff !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+body.theme-light select option,
+body.theme-light select.modal-input option {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
 }
 
 #appToast {
@@ -2729,10 +2809,13 @@ body.theme-light #headerCoinBtn span {
 
     <!-- User Panel / Profile & Auth -->
     <div class="user-panel" id="userStatusPanel">
-      <div class="user-avatar" id="headerAvatar" onclick="handleUserAvatarClick()" title="View Athlete Profile" style="cursor:pointer;">?</div>
-      <div id="headerUserInfo" onclick="handleUserAvatarClick()" style="display:none;cursor:pointer;flex-direction:column;line-height:1.15;" title="View Athlete Profile">
-        <span class="user-name-label" id="headerUsername" style="font-weight:700;font-size:0.8rem;color:var(--clr-text);max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Guest</span>
-        <span id="headerUserRole" style="font-size:0.65rem;font-weight:800;letter-spacing:0.04em;color:var(--clr-gold);text-transform:uppercase;">GUEST</span>
+      <div class="user-pill" id="headerUserPill" onclick="handleUserAvatarClick()" title="View Athlete Profile & Settings" style="display:none;cursor:pointer;">
+        <div class="user-avatar" id="headerAvatar" style="width:24px;height:24px;border-radius:var(--radius-xs);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;">?</div>
+        <div id="headerUserInfo" style="display:flex;flex-direction:column;line-height:1.15;">
+          <span class="user-name-label" id="headerUsername" style="font-weight:700;font-size:0.8rem;color:var(--clr-text);max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">User</span>
+          <span id="headerUserRole" style="font-size:0.62rem;font-weight:800;letter-spacing:0.04em;color:var(--clr-gold);text-transform:uppercase;">PLAYER</span>
+        </div>
+        <svg class="icon" viewBox="0 0 24 24" width="12" height="12" style="color:var(--clr-text-muted);stroke:currentColor;stroke-width:2.5;fill:none;"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <button class="btn btn-primary btn-xs" id="authBtn" onclick="handleAuthBtnClick()">Sign In</button>
     </div>
@@ -4722,14 +4805,20 @@ body.theme-light #headerCoinBtn span {
     </div>
 
     <!-- Active Tournament Quick Selection -->
-    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;letter-spacing:0.04em;">Active Tournament:</span>
-        <select id="tournamentSelectMore" class="modal-input" style="width:auto;padding:5px 12px;font-size:0.84rem;background:rgba(0,0,0,0.25);border-color:var(--clr-border);border-radius:var(--radius-xs);" onchange="switchActiveTournament(this.value)">
-          <option value="main">The Badminton Cup 2026</option>
-        </select>
+    <div class="active-tournament-card" style="background:linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));border:1px solid var(--clr-border);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="display:inline-flex;align-items:center;gap:6px;font-size:0.76rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;letter-spacing:0.04em;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24" style="color:var(--clr-gold);stroke:currentColor;fill:none;stroke-width:2;"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+          <span>Active Tournament:</span>
+        </div>
+        <div style="position:relative;display:inline-flex;align-items:center;">
+          <select id="tournamentSelectMore" class="modal-input app-custom-select" style="min-width:220px;padding:7px 38px 7px 12px;font-size:0.86rem;font-weight:600;background-color:rgba(0,0,0,0.3);border-color:var(--clr-border);border-radius:var(--radius-sm);cursor:pointer;" onchange="switchActiveTournament(this.value)">
+            <option value="main">The Badminton Cup 2026</option>
+          </select>
+        </div>
       </div>
-      <button class="btn btn-primary btn-xs admin-only-item" onclick="document.getElementById('moreMenuModal').close();handleSetupNav();" style="display:inline-flex;align-items:center;gap:6px;">
+      <button class="btn btn-primary btn-xs admin-only-item" onclick="document.getElementById('moreMenuModal').close();handleSetupNav();" style="display:inline-flex;align-items:center;gap:6px;font-weight:600;padding:6px 14px;border-radius:var(--radius-sm);">
+        <svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;stroke-width:2.2;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span>+ New Tournament</span>
       </button>
     </div>
@@ -5968,14 +6057,19 @@ function saveTournamentsDB(list) {
 }
 
 function renderTournamentSwitcher() {
-  const select = document.getElementById('tournamentSelectHeader');
-  if (!select) return;
+  const selects = [
+    document.getElementById('tournamentSelectMore'),
+    document.getElementById('tournamentSelectHeader')
+  ].filter(Boolean);
+  if (!selects.length) return;
   const list = getTournamentsDB();
   const currentId = state.tournamentId || 'main';
 
-  select.innerHTML = list.map(t =>
-    `<option value="${t.id}" ${t.id === currentId ? 'selected' : ''}>${t.title}</option>`
+  const html = list.map(t =>
+    `<option value="${t.id}" ${t.id === currentId ? 'selected' : ''}>${window.escapeHtml ? window.escapeHtml(t.title) : t.title}</option>`
   ).join('') + `<option value="__NEW__">+ New Tournament...</option>`;
+
+  selects.forEach(s => { s.innerHTML = html; });
 }
 
 function switchActiveTournament(targetId) {
@@ -6492,17 +6586,20 @@ function updateUserUI() {
   const avatar = document.getElementById('headerAvatar');
   const authBtn = document.getElementById('authBtn');
   const userInfo = document.getElementById('headerUserInfo');
+  const userPill = document.getElementById('headerUserPill');
   const navHub = document.getElementById('navPlayerHubBtn');
   const tabHub = document.getElementById('tabNavPlayerHub');
   const mobHub = document.getElementById('mobNavPlayerHub');
 
   if (currentUser) {
+    if (userPill) userPill.style.display = 'inline-flex';
     if (nameLabel) {
       nameLabel.textContent = currentUser.name;
       nameLabel.style.display = 'inline-block';
     }
     if (userInfo) userInfo.style.display = 'flex';
     if (avatar) {
+      avatar.style.display = 'inline-flex';
       avatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
       avatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
       avatar.style.color = '#ffffff';
@@ -6516,20 +6613,20 @@ function updateUserUI() {
       authBtn.textContent = 'Sign Out';
       authBtn.className = 'btn btn-ghost btn-xs';
       authBtn.title = 'Sign Out of Badminton Cup';
+      authBtn.style.display = 'inline-flex';
     }
     if (navHub) navHub.style.display = 'inline-flex';
     if (tabHub) tabHub.style.display = 'inline-flex';
     if (mobHub) mobHub.style.display = 'inline-flex';
   } else {
+    if (userPill) userPill.style.display = 'none';
     if (nameLabel) {
       nameLabel.textContent = 'Guest';
       nameLabel.style.display = 'none';
     }
     if (userInfo) userInfo.style.display = 'none';
     if (avatar) {
-      avatar.textContent = '?';
-      avatar.style.background = 'rgba(255, 255, 255, 0.1)';
-      avatar.style.color = 'var(--clr-text-muted)';
+      avatar.style.display = 'none';
     }
     if (roleBadge) {
       roleBadge.style.display = 'none';
@@ -6538,6 +6635,7 @@ function updateUserUI() {
       authBtn.textContent = 'Sign In';
       authBtn.className = 'btn btn-primary btn-xs';
       authBtn.title = 'Sign In to Badminton Cup';
+      authBtn.style.display = 'inline-flex';
     }
     if (navHub) navHub.style.display = 'none';
     if (tabHub) tabHub.style.display = 'none';
@@ -10846,6 +10944,7 @@ function promptInstallPWA() {
 }
 
 function openMoreMenu() {
+  renderTournamentSwitcher();
   const modal = document.getElementById('moreMenuModal');
   if (modal) modal.showModal();
 }

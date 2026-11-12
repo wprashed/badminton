@@ -593,14 +593,20 @@ DIALOGS_CONTENT = """
     </div>
 
     <!-- Active Tournament Quick Selection -->
-    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-      <div style="display:flex;align-items:center;gap:8px;">
-        <span style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;letter-spacing:0.04em;">Active Tournament:</span>
-        <select id="tournamentSelectMore" class="modal-input" style="width:auto;padding:5px 12px;font-size:0.84rem;background:rgba(0,0,0,0.25);border-color:var(--clr-border);border-radius:var(--radius-xs);" onchange="switchActiveTournament(this.value)">
-          <option value="main">The Badminton Cup 2026</option>
-        </select>
+    <div class="active-tournament-card" style="background:linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));border:1px solid var(--clr-border);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="display:inline-flex;align-items:center;gap:6px;font-size:0.76rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;letter-spacing:0.04em;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24" style="color:var(--clr-gold);stroke:currentColor;fill:none;stroke-width:2;"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+          <span>Active Tournament:</span>
+        </div>
+        <div style="position:relative;display:inline-flex;align-items:center;">
+          <select id="tournamentSelectMore" class="modal-input app-custom-select" style="min-width:220px;padding:7px 38px 7px 12px;font-size:0.86rem;font-weight:600;background-color:rgba(0,0,0,0.3);border-color:var(--clr-border);border-radius:var(--radius-sm);cursor:pointer;" onchange="switchActiveTournament(this.value)">
+            <option value="main">The Badminton Cup 2026</option>
+          </select>
+        </div>
       </div>
-      <button class="btn btn-primary btn-xs admin-only-item" onclick="document.getElementById('moreMenuModal').close();handleSetupNav();" style="display:inline-flex;align-items:center;gap:6px;">
+      <button class="btn btn-primary btn-xs admin-only-item" onclick="document.getElementById('moreMenuModal').close();handleSetupNav();" style="display:inline-flex;align-items:center;gap:6px;font-weight:600;padding:6px 14px;border-radius:var(--radius-sm);">
+        <svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;stroke-width:2.2;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span>+ New Tournament</span>
       </button>
     </div>
