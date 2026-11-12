@@ -373,7 +373,7 @@ SCREENS_CONTENT = """
         <h3 class="card-title"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg> Group Stage Fixtures & Live Matches</h3>
         <span style="font-size:0.78rem;color:var(--clr-text-muted);">Tap "Referee" on any match for live court scoring</span>
       </div>
-      <div id="groupMatchesContainer" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 300px), 1fr));gap:14px;"></div>
+      <div id="groupMatchesContainer" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 340px), 1fr));gap:16px;"></div>
     </div>
   </section>
 

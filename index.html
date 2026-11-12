@@ -3426,7 +3426,7 @@ body.theme-light .data-table td {
         <h3 class="card-title"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg> Group Stage Fixtures & Live Matches</h3>
         <span style="font-size:0.78rem;color:var(--clr-text-muted);">Tap "Referee" on any match for live court scoring</span>
       </div>
-      <div id="groupMatchesContainer" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 300px), 1fr));gap:14px;"></div>
+      <div id="groupMatchesContainer" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(min(100%, 340px), 1fr));gap:16px;"></div>
     </div>
   </section>
 
@@ -9634,18 +9634,59 @@ function renderGroups() {
 }
 
 
-function getPlayerAvatarHtml(playerName, size = 32, isWinner = false) {
+function getPlayerAvatarHtml(playerName, size = 34, isWinner = false) {
   const users = (typeof getUsersDB === 'function') ? getUsersDB() : [];
-  const user = users.find(u => (u.name || '').toLowerCase() === (playerName || '').toLowerCase());
-  const initial = (playerName || '?').trim().charAt(0).toUpperCase();
+  if (!playerName) playerName = '?';
+
+  // Handle Doubles pairs formatted as "Player 1 / Player 2"
+  if (playerName.includes('/')) {
+    const parts = playerName.split('/').map(p => p.trim()).filter(Boolean);
+    if (parts.length >= 2) {
+      const subSize = Math.max(24, Math.round(size * 0.82));
+      const av1 = getSinglePlayerAvatarHtml(parts[0], subSize, isWinner, users);
+      const av2 = getSinglePlayerAvatarHtml(parts[1], subSize, isWinner, users);
+      const overlap = Math.round(subSize * 0.38);
+      const totalWidth = (subSize * 2) - overlap;
+      return `<div style="display:inline-flex;align-items:center;position:relative;width:${totalWidth}px;height:${subSize}px;flex-shrink:0;" title="${escapeHtml(playerName)}">
+        <div style="position:relative;z-index:1;display:flex;">${av1}</div>
+        <div style="position:relative;z-index:2;margin-left:-${overlap}px;display:flex;border-radius:50%;box-shadow:0 0 0 2px var(--clr-surface-card);">${av2}</div>
+      </div>`;
+    }
+  }
+
+  return getSinglePlayerAvatarHtml(playerName, size, isWinner, users);
+}
+
+function getSinglePlayerAvatarHtml(name, size, isWinner, users) {
+  const user = users.find(u => (u.name || '').toLowerCase() === (name || '').toLowerCase());
+  const initial = (name || '?').trim().charAt(0).toUpperCase();
   if (user && user.photoUrl) {
-    return `<img src="${user.photoUrl}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:1.5px solid ${isWinner ? 'var(--clr-green)' : 'var(--clr-border)'};flex-shrink:0;" alt="${escapeHtml(playerName)}">`;
+    return `<img src="${user.photoUrl}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:1.5px solid ${isWinner ? 'var(--clr-green)' : 'var(--clr-border)'};flex-shrink:0;" alt="${escapeHtml(name)}">`;
   }
   const bg = isWinner ? 'rgba(16,185,129,0.18)' : 'rgba(255,255,255,0.08)';
   const color = isWinner ? 'var(--clr-green)' : 'var(--clr-text)';
   const border = isWinner ? 'rgba(16,185,129,0.45)' : 'var(--clr-border)';
   return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${bg};color:${color};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:${Math.round(size * 0.42)}px;border:1px solid ${border};flex-shrink:0;">${escapeHtml(initial)}</div>`;
 }
+
+function formatCompetitorNameHtml(name, isWinner = false) {
+  if (!name) return '—';
+  const crown = isWinner ? '<span title="Match Winner" style="color:#f59e0b;font-size:0.85rem;margin-left:4px;">👑</span>' : '';
+  if (name.includes('/')) {
+    const parts = name.split('/').map(p => p.trim());
+    return `<div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;line-height:1.25;">
+      <span style="font-weight:700;">${escapeHtml(parts[0])}</span>
+      <span style="color:var(--clr-text-muted);font-size:0.75rem;font-weight:400;margin:0 1px;">&amp;</span>
+      <span style="font-weight:700;">${escapeHtml(parts[1])}</span>
+      ${crown}
+    </div>`;
+  }
+  return `<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+    <span style="font-weight:700;">${escapeHtml(name)}</span>
+    ${crown}
+  </div>`;
+}
+
 function renderGroupMatches() {
   const container = document.getElementById('groupMatchesContainer');
   if (!container) return;
@@ -9698,22 +9739,27 @@ function renderGroupMatches() {
       if (m.winner === 'a') setsWonA = 2; else setsWonB = 2;
     }
 
+    const hasStarted = isLive || isCompleted || sets.some(s => s.score[0] > 0 || s.score[1] > 0);
+
     // Set points display for Competitor A and B
     let setPointsHtmlA = '';
     let setPointsHtmlB = '';
-    if (sets.length > 0 && sets.some(s => s.score[0] > 0 || s.score[1] > 0 || s.winner)) {
+    if (hasStarted && sets.length > 0) {
       setPointsHtmlA = sets.map((s, idx) => {
-        const isWinner = s.winner === 'a';
-        return `<span class="mfc-score-pill ${isWinner ? 'is-set-winner' : ''}" title="Set ${idx+1}">${s.score[0]}</span>`;
+        const isSetWinner = s.winner === 'a';
+        return `<span class="mfc-score-pill ${isSetWinner ? 'is-set-winner' : ''}" title="Set ${idx+1}">${s.score[0]}</span>`;
       }).join('');
       setPointsHtmlB = sets.map((s, idx) => {
-        const isWinner = s.winner === 'b';
-        return `<span class="mfc-score-pill ${isWinner ? 'is-set-winner' : ''}" title="Set ${idx+1}">${s.score[1]}</span>`;
+        const isSetWinner = s.winner === 'b';
+        return `<span class="mfc-score-pill ${isSetWinner ? 'is-set-winner' : ''}" title="Set ${idx+1}">${s.score[1]}</span>`;
       }).join('');
     }
 
     const avatarA = getPlayerAvatarHtml(m.a, 34, m.winner === 'a');
     const avatarB = getPlayerAvatarHtml(m.b, 34, m.winner === 'b');
+    const nameHtmlA = formatCompetitorNameHtml(m.a, m.winner === 'a');
+    const nameHtmlB = formatCompetitorNameHtml(m.b, m.winner === 'b');
+    const isDoubles = (m.a && m.a.includes('/')) || (m.b && m.b.includes('/')) || (state.category === 'doubles');
 
     return `
       <div class="match-fixture-card ${isLive ? 'is-live' : (isCompleted ? 'is-completed' : '')}">
@@ -9721,13 +9767,14 @@ function renderGroupMatches() {
           <div class="mfc-court-pill">
             <span class="mfc-badge-court">Court ${m.court}</span>
             <span class="mfc-badge-pool">Pool ${m.pool}</span>
+            ${isDoubles ? '<span style="font-size:0.68rem;color:var(--clr-text-muted);background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">Doubles</span>' : ''}
           </div>
           <div>
             ${isLive ?
               '<span class="status-badge-live" style="display:inline-flex;align-items:center;gap:4px;color:#34d399;font-weight:800;background:rgba(16,185,129,0.12);padding:2px 8px;border-radius:12px;">● LIVE</span>' :
               (isCompleted ?
                 '<span class="mfc-badge-completed">✓ COMPLETED</span>' :
-                '<span class="mfc-badge-scheduled">SCHEDULED</span>'
+                '<span class="mfc-badge-scheduled">⏳ SCHEDULED</span>'
               )}
           </div>
         </div>
@@ -9738,16 +9785,16 @@ function renderGroupMatches() {
             <div class="mfc-player-info">
               ${avatarA}
               <div class="mfc-name-group">
-                <span class="mfc-name">
-                  <span>${escapeHtml(m.a)}</span>
-                  ${m.winner === 'a' ? '<span title="Match Winner" style="color:#f59e0b;font-size:0.85rem;">👑</span>' : ''}
-                </span>
-                <span class="mfc-role">Player A</span>
+                <div class="mfc-name">${nameHtmlA}</div>
+                <div class="mfc-role">${isDoubles ? 'Team A' : 'Player A'}</div>
               </div>
             </div>
             <div class="mfc-score-group">
               ${setPointsHtmlA}
-              <span class="mfc-games-won ${m.winner === 'a' ? 'winner-games' : ''}">${setsWonA}</span>
+              ${hasStarted ?
+                `<span class="mfc-games-won ${m.winner === 'a' ? 'winner-games' : ''}">${setsWonA}</span>` :
+                `<span style="color:var(--clr-text-muted);font-size:0.85rem;font-weight:700;padding:0 6px;">—</span>`
+              }
             </div>
           </div>
 
@@ -9756,16 +9803,16 @@ function renderGroupMatches() {
             <div class="mfc-player-info">
               ${avatarB}
               <div class="mfc-name-group">
-                <span class="mfc-name">
-                  <span>${escapeHtml(m.b)}</span>
-                  ${m.winner === 'b' ? '<span title="Match Winner" style="color:#f59e0b;font-size:0.85rem;">👑</span>' : ''}
-                </span>
-                <span class="mfc-role">Player B</span>
+                <div class="mfc-name">${nameHtmlB}</div>
+                <div class="mfc-role">${isDoubles ? 'Team B' : 'Player B'}</div>
               </div>
             </div>
             <div class="mfc-score-group">
               ${setPointsHtmlB}
-              <span class="mfc-games-won ${m.winner === 'b' ? 'winner-games' : ''}">${setsWonB}</span>
+              ${hasStarted ?
+                `<span class="mfc-games-won ${m.winner === 'b' ? 'winner-games' : ''}">${setsWonB}</span>` :
+                `<span style="color:var(--clr-text-muted);font-size:0.85rem;font-weight:700;padding:0 6px;">—</span>`
+              }
             </div>
           </div>
         </div>
