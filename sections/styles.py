@@ -1212,16 +1212,16 @@ body.theme-light .modal-input {
 
 /* Universal Modern Accessible Form Select */
 select.modal-input,
+select.app-custom-select,
 .app-custom-select,
-.modal-box select,
-select:not([multiple]) {
+.modal-box select {
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
   appearance: none !important;
   background-color: rgba(15, 23, 42, 0.6) !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
   background-repeat: no-repeat !important;
-  background-position: right 12px center !important;
+  background-position: calc(100% - 12px) center !important;
   background-size: 14px 14px !important;
   padding-right: 36px !important;
   cursor: pointer !important;
@@ -1235,34 +1235,43 @@ select:not([multiple]) {
   box-sizing: border-box !important;
 }
 
-select:focus,
 select.modal-input:focus,
-.app-custom-select:focus {
+select.app-custom-select:focus,
+.app-custom-select:focus,
+.modal-box select:focus {
   outline: none !important;
   border-color: var(--clr-green) !important;
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25) !important;
 }
 
-select option,
-select.modal-input option {
+select.modal-input option,
+select.app-custom-select option,
+.app-custom-select option,
+.modal-box select option {
   background-color: #0f172a !important;
   color: #f8fafc !important;
   padding: 8px !important;
 }
 
-body.theme-light select,
+/* Light Theme Select Rules - Explicit No-Repeat and Single Position */
 body.theme-light select.modal-input,
+body.theme-light select.app-custom-select,
 body.theme-light .app-custom-select,
-body.theme-light .modal-box select,
-body.theme-light select:not([multiple]) {
+body.theme-light .modal-box select {
   background-color: #ffffff !important;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: calc(100% - 12px) center !important;
+  background-size: 14px 14px !important;
+  padding-right: 36px !important;
   color: #0f172a !important;
   border-color: #cbd5e1 !important;
 }
 
-body.theme-light select option,
-body.theme-light select.modal-input option {
+body.theme-light select.modal-input option,
+body.theme-light select.app-custom-select option,
+body.theme-light .app-custom-select option,
+body.theme-light .modal-box select option {
   background-color: #ffffff !important;
   color: #0f172a !important;
 }
@@ -2280,11 +2289,9 @@ body.theme-light .modal-close:hover {
   border-color: #cbd5e1 !important;
 }
 
-body.theme-light input,
-body.theme-light select,
-body.theme-light textarea,
-body.theme-light .modal-input {
-  background: #ffffff !important;
+body.theme-light input:not([type="checkbox"]):not([type="radio"]),
+body.theme-light textarea {
+  background-color: #ffffff !important;
   color: #0f172a !important;
   border: 1px solid #cbd5e1 !important;
 }

@@ -295,16 +295,13 @@ SCREENS_CONTENT = """
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:14px;">
       <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
         <h2 style="font-family:var(--font-display);font-size:1.35rem;font-weight:800;color:var(--clr-text);letter-spacing:-0.01em;margin:0;">Group Stage & Standings</h2>
-        <div style="display:inline-flex;align-items:center;background:var(--clr-surface-card);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:2px 10px;">
-          <svg class="icon icon-xs" viewBox="0 0 24 24" style="color:var(--clr-text-muted);margin-right:6px;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
-          <select id="groupCourtFilter" style="padding:6px 8px;font-size:0.84rem;font-weight:600;background:transparent;border:none;color:var(--clr-text);font-family:inherit;cursor:pointer;outline:none;" onchange="renderGroupMatches()">
-            <option value="all">All Courts</option>
-            <option value="1">Court 1</option>
-            <option value="2">Court 2</option>
-            <option value="3">Court 3</option>
-            <option value="4">Court 4</option>
-          </select>
-        </div>
+        <select id="groupCourtFilter" class="app-custom-select" style="min-width:130px;padding:6px 36px 6px 12px;font-size:0.84rem;font-weight:600;cursor:pointer;" onchange="renderGroupMatches()">
+          <option value="all">All Courts</option>
+          <option value="1">Court 1</option>
+          <option value="2">Court 2</option>
+          <option value="3">Court 3</option>
+          <option value="4">Court 4</option>
+        </select>
       </div>
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
         <button class="btn btn-ghost btn-sm" onclick="openSuggestScoreModal()" style="gap:6px;">
