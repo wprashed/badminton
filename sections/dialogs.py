@@ -743,7 +743,7 @@ DIALOGS_CONTENT = """
       <!-- Coin Wallet & Betting -->
       <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();openCoinBalanceModal();">
         <div class="more-card-icon" style="color:var(--clr-gold);">
-          <span style="font-size:1.1rem;">🪙</span>
+          <svg class="gold-coin-icon" viewBox="0 0 24 24" width="22" height="22" style="filter:drop-shadow(0 1px 2px rgba(245,158,11,0.4));"><circle cx="12" cy="12" r="10" fill="#f59e0b" stroke="#78350f" stroke-width="1.2"/><path d="M12 6.5l1.6 3.3 3.6.5-2.6 2.6.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.6 3.6-.5z" fill="#78350f"/></svg>
         </div>
         <div class="more-card-text">
           <span class="more-card-title">Coin Wallet & Betting</span>
@@ -885,13 +885,13 @@ DIALOGS_CONTENT = """
     <div style="margin-bottom:16px;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
         <label style="font-size:0.8rem;color:var(--clr-text-muted);">Prediction Wager (Coins):</label>
-        <span style="font-size:0.78rem;color:var(--clr-gold);font-weight:700;">Balance: <span id="bettingModalUserBalance">100</span> 🪙</span>
+        <span style="font-size:0.78rem;color:var(--clr-gold);font-weight:700;">Balance: <span id="bettingModalUserBalance">100</span> PTS</span>
       </div>
       <input type="number" id="betModalAmountInput" class="modal-input" min="1" max="10000" value="25" style="font-family:monospace;font-size:1.1rem;font-weight:700;margin-bottom:8px;">
       <div style="display:flex;gap:6px;">
-        <button type="button" class="btn btn-ghost btn-xs" onclick="setBetAmount(10)">10 🪙</button>
-        <button type="button" class="btn btn-ghost btn-xs" onclick="setBetAmount(25)">25 🪙</button>
-        <button type="button" class="btn btn-ghost btn-xs" onclick="setBetAmount(50)">50 🪙</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="setBetAmount(10)">10 PTS</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="setBetAmount(25)">25 PTS</button>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="setBetAmount(50)">50 PTS</button>
         <button type="button" class="btn btn-ghost btn-xs" onclick="setBetAmount(getUserCoins())">All In</button>
       </div>
     </div>
@@ -961,14 +961,18 @@ DIALOGS_CONTENT = """
 
     <!-- Hero Balance Display -->
     <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius-sm);padding:20px 16px;text-align:center;margin-bottom:18px;">
-      <div style="font-size:0.75rem;font-weight:700;color:var(--clr-gold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Available Prediction Balance</div>
+      <div style="font-size:0.75rem;font-weight:700;color:var(--clr-gold);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Available Points & Coin Balance</div>
       <div style="display:flex;align-items:center;justify-content:center;gap:10px;">
-        <svg class="icon icon-lg" viewBox="0 0 24 24" style="color:var(--clr-gold);"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M15 9.5a3 3 0 0 0-3-2.5h-1a2.5 2.5 0 0 0 0 5h2a2.5 2.5 0 0 1 0 5h-1a3 3 0 0 1-3-2.5"/></svg>
+        <svg class="gold-coin-icon" viewBox="0 0 24 24" width="34" height="34" style="flex-shrink:0;filter:drop-shadow(0 2px 4px rgba(245,158,11,0.5));" aria-hidden="true">
+          <circle cx="12" cy="12" r="10" fill="#f59e0b" stroke="#78350f" stroke-width="1.3"/>
+          <circle cx="12" cy="12" r="7.5" fill="none" stroke="#fef9c3" stroke-width="0.8" stroke-dasharray="2 1.5"/>
+          <path d="M12 6.5l1.6 3.3 3.6.5-2.6 2.6.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.6 3.6-.5z" fill="#78350f"/>
+        </svg>
         <span style="font-family:var(--font-display);font-size:2.8rem;font-weight:900;color:var(--clr-text);line-height:1;" id="coinModalBigCount">100</span>
-        <span style="font-size:0.9rem;font-weight:700;color:var(--clr-gold);">COINS</span>
+        <span style="font-size:0.9rem;font-weight:700;color:var(--clr-gold);">PTS / COINS</span>
       </div>
-      <div style="font-size:0.8rem;color:var(--clr-text-muted);margin-top:8px;">
-        Use coins to predict match winners & earn bonus multipliers
+      <div style="font-size:0.82rem;color:var(--clr-text-muted);margin-top:8px;">
+        Earned from tournament match scoring, victories (+50 bonus), and daily rewards.
       </div>
     </div>
 

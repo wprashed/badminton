@@ -2600,5 +2600,20 @@ body.theme-light .stack-progress-bg {
   transition: width 300ms ease;
 }
 
+
+/* Gold Coin & Points Badge Styling */
+.gold-coin-icon {
+  display: inline-block;
+  vertical-align: middle;
+}
+body.theme-light #headerCoinBtn {
+  background: #fef3c7 !important;
+  border-color: #f59e0b !important;
+  color: #b45309 !important;
+}
+body.theme-light #headerCoinBtn span {
+  color: #b45309 !important;
+}
+
 </style>
 """

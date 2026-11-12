@@ -2667,7 +2667,9 @@ function getUserCoins() {
   const username = currentUser ? currentUser.name : 'Guest';
   const wallets = getWalletsDB();
   if (wallets[username] === undefined) {
-    wallets[username] = 100; // 100 free starter coins for everyone!
+    const stats = getLeaderboardDB()[username];
+    const matchPts = (stats && stats.totalPts) ? stats.totalPts : 0;
+    wallets[username] = 100 + matchPts; // 100 free starter coins + match points earned
     saveWalletsDB(wallets);
   }
   return wallets[username];
@@ -4862,6 +4864,23 @@ function recordMatchStats(match) {
   });
 
   saveLeaderboardDB(db);
+
+  // Award match victory bonus & point coins to players
+  try {
+    const wallets = getWalletsDB();
+    if (wallets[winner] === undefined) wallets[winner] = 100;
+    if (wallets[loser] === undefined) wallets[loser] = 100;
+    wallets[winner] += 50; // +50 bonus coins for victory
+    let ptsA = 0, ptsB = 0;
+    (match.sets || []).forEach(s => {
+      ptsA += (s.score[0] || 0);
+      ptsB += (s.score[1] || 0);
+    });
+    wallets[match.a] = (wallets[match.a] || 100) + ptsA;
+    wallets[match.b] = (wallets[match.b] || 100) + ptsB;
+    saveWalletsDB(wallets);
+    updateBettingUI();
+  } catch (e) {}
 
   // Synchronize updated Elo directly to registered user accounts
   try {

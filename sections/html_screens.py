@@ -40,9 +40,22 @@ SCREENS_CONTENT = """
 
     <!-- PWA Install Button -->
     
-    <!-- Virtual Coin Wallet for General Users -->
-    <button class="btn btn-ghost btn-xs" id="headerCoinBtn" onclick="openCoinBalanceModal()" title="Virtual Coin Balance & Predictions" style="color:var(--clr-gold);font-weight:700;border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08);">
-      <span style="font-size:0.9rem;">🪙</span> <span id="headerCoinCount">100</span>
+    <!-- Virtual Points & Coin Wallet -->
+    <button class="btn btn-ghost btn-xs" id="headerCoinBtn" onclick="openCoinBalanceModal()" title="Virtual Points & Prediction Coins Balance" style="color:var(--clr-gold);font-weight:700;border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.08);display:inline-flex;align-items:center;gap:6px;padding:3px 10px;">
+      <svg class="gold-coin-icon" viewBox="0 0 24 24" width="18" height="18" style="flex-shrink:0;filter:drop-shadow(0 1px 2px rgba(245,158,11,0.4));" aria-hidden="true">
+        <defs>
+          <linearGradient id="headerGoldCoinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fde047"/>
+            <stop offset="40%" stop-color="#f59e0b"/>
+            <stop offset="100%" stop-color="#b45309"/>
+          </linearGradient>
+        </defs>
+        <circle cx="12" cy="12" r="10" fill="url(#headerGoldCoinGrad)" stroke="#78350f" stroke-width="1.2"/>
+        <circle cx="12" cy="12" r="7.5" fill="none" stroke="#fef9c3" stroke-width="0.8" stroke-dasharray="2 1.5"/>
+        <path d="M12 6.5l1.6 3.3 3.6.5-2.6 2.6.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.6 3.6-.5z" fill="#78350f"/>
+      </svg>
+      <span id="headerCoinCount" style="font-family:var(--font-display);font-weight:800;font-size:0.86rem;letter-spacing:0.02em;">100</span>
+      <span style="font-size:0.7rem;font-weight:700;opacity:0.85;text-transform:uppercase;">PTS</span>
     </button>
 <button class="install-app-pill" id="installAppBtn" onclick="promptInstallPWA()" style="display:none;" title="Install Badminton Cup App">
       <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -1104,7 +1117,10 @@ SCREENS_CONTENT = """
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-ghost btn-sm" onclick="showScreen('groupsScreen')">&larr; Back to Tournament</button>
         <button class="btn btn-ghost btn-sm" onclick="openCoinBalanceModal()" style="color:var(--clr-gold);">
-          <span>🪙 Wallet</span>
+          <span style="display:inline-flex;align-items:center;gap:5px;">
+          <svg class="gold-coin-icon" viewBox="0 0 24 24" width="16" height="16" style="filter:drop-shadow(0 1px 2px rgba(245,158,11,0.4));"><circle cx="12" cy="12" r="10" fill="#f59e0b" stroke="#78350f" stroke-width="1.2"/><path d="M12 6.5l1.6 3.3 3.6.5-2.6 2.6.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.6 3.6-.5z" fill="#78350f"/></svg>
+          <span>Wallet</span>
+        </span>
         </button>
         <button class="btn btn-primary btn-sm" onclick="openProfileSettingsModal()" style="display:inline-flex;align-items:center;gap:6px;">
           <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
@@ -1161,7 +1177,7 @@ SCREENS_CONTENT = """
       <div class="stack-card">
         <div class="stack-header">
           <span class="stack-title">Predictions & Coins</span>
-          <span style="font-size:0.85rem;">🪙</span>
+          <svg class="gold-coin-icon" viewBox="0 0 24 24" width="16" height="16" style="filter:drop-shadow(0 1px 2px rgba(245,158,11,0.4));"><circle cx="12" cy="12" r="10" fill="#f59e0b" stroke="#78350f" stroke-width="1.2"/><path d="M12 6.5l1.6 3.3 3.6.5-2.6 2.6.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.6 3.6-.5z" fill="#78350f"/></svg>
         </div>
         <div class="stack-value" id="playerHubCoinWallet" style="color:var(--clr-gold);">100</div>
         <div class="stack-sublabel" id="playerHubBettingSub">0 predictions · 0% accuracy</div>
