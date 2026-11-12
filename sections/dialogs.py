@@ -527,8 +527,8 @@ DIALOGS_CONTENT = """
     <div class="modal-form-item">
       <label data-i18n="challengePointsLabel">Points Target</label>
       <select id="challengePointsSelect" class="modal-input">
+        <option value="15" selected>15 Points (13 Hope Ball · 14 Game Ball · 15 Win)</option>
         <option value="21">21 Points (Standard BWF)</option>
-        <option value="15">15 Points (Quick School Game)</option>
         <option value="11">11 Points (Express Knockout)</option>
       </select>
     </div>

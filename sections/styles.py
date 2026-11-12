@@ -2753,20 +2753,28 @@ body.theme-light #headerCoinBtn span {
 
 
 
-/* Match Fixture Cards - Clean Spacious Styling */
+/* Match Fixture Cards - Clean Modern Sports Board Styling */
 .match-fixture-card {
   background: var(--clr-surface-card);
   border: 1px solid var(--clr-border);
   border-radius: var(--radius-md);
-  padding: 18px 20px;
+  padding: 16px 18px;
   box-shadow: var(--shadow-card);
-  transition: transform 140ms ease, border-color 140ms ease;
+  transition: transform 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 .match-fixture-card:hover {
   border-color: rgba(255, 255, 255, 0.16);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+}
+.match-fixture-card.is-live {
+  border-color: rgba(16, 185, 129, 0.6) !important;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.12);
+}
+.match-fixture-card.is-completed {
+  border-color: rgba(16, 185, 129, 0.25);
 }
 body.theme-light .match-fixture-card {
   background: #ffffff;
@@ -2774,6 +2782,234 @@ body.theme-light .match-fixture-card {
 }
 body.theme-light .match-fixture-card:hover {
   border-color: #cbd5e1;
+}
+body.theme-light .match-fixture-card.is-live {
+  border-color: #10b981 !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+}
+body.theme-light .match-fixture-card.is-completed {
+  border-color: #cbd5e1;
+}
+
+.mfc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.76rem;
+}
+.mfc-court-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.mfc-badge-court {
+  font-weight: 700;
+  color: var(--clr-text-muted);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+body.theme-light .mfc-badge-court {
+  background: #f1f5f9;
+  color: #475569;
+}
+.mfc-badge-pool {
+  font-weight: 600;
+  color: var(--clr-text-muted);
+  font-size: 0.72rem;
+}
+.mfc-badge-completed {
+  color: var(--clr-green);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  background: rgba(16, 185, 129, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+body.theme-light .mfc-badge-completed {
+  background: #ecfdf5;
+  color: #059669;
+  border-color: #a7f3d0;
+}
+.mfc-badge-scheduled {
+  color: var(--clr-text-muted);
+  font-size: 0.72rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+body.theme-light .mfc-badge-scheduled {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.mfc-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.16);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+body.theme-light .mfc-body {
+  background: #f8fafc;
+  border-color: #f1f5f9;
+}
+.mfc-competitor-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+  transition: opacity 140ms ease;
+}
+.mfc-competitor-row.is-defeated {
+  opacity: 0.65;
+}
+.mfc-player-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+.mfc-name-group {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.mfc-name {
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--clr-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.mfc-competitor-row.is-winner .mfc-name {
+  color: var(--clr-green);
+  font-weight: 800;
+}
+body.theme-light .mfc-competitor-row.is-winner .mfc-name {
+  color: #059669;
+}
+.mfc-role {
+  font-size: 0.68rem;
+  color: var(--clr-text-muted);
+}
+.mfc-score-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.mfc-score-pill {
+  font-family: monospace;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--clr-text-muted);
+  min-width: 26px;
+  text-align: center;
+  white-space: nowrap;
+}
+.mfc-score-pill.is-set-winner {
+  color: var(--clr-gold);
+  font-weight: 800;
+}
+body.theme-light .mfc-score-pill.is-set-winner {
+  color: #b45309;
+}
+.mfc-games-won {
+  font-family: monospace;
+  font-size: 1.05rem;
+  font-weight: 900;
+  min-width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--clr-text);
+  border: 1px solid var(--clr-border);
+}
+body.theme-light .mfc-games-won {
+  background: #ffffff;
+  color: #0f172a;
+  border-color: #cbd5e1;
+}
+.mfc-games-won.winner-games {
+  background: rgba(16, 185, 129, 0.16);
+  color: var(--clr-green);
+  border-color: rgba(16, 185, 129, 0.45);
+}
+body.theme-light .mfc-games-won.winner-games {
+  background: #ecfdf5;
+  color: #059669;
+  border-color: #10b981;
+}
+
+.mfc-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+body.theme-light .mfc-footer {
+  border-top-color: #f1f5f9;
+}
+.mfc-winner-banner {
+  font-size: 0.82rem;
+  color: var(--clr-green);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+body.theme-light .mfc-winner-banner {
+  color: #059669;
+}
+.mfc-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+.mfc-action-main {
+  flex: 1;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 600;
+}
+.mfc-action-predict {
+  justify-content: center;
+  gap: 6px;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+  color: var(--clr-gold) !important;
+  font-weight: 600;
+}
+
+/* Hope Ball & Game Ball Badges */
+.badge-hope-ball {
+  background: rgba(245, 158, 11, 0.16) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.4) !important;
+}
+.badge-game-ball {
+  background: rgba(239, 68, 68, 0.18) !important;
+  color: #f87171 !important;
+  border: 1px solid rgba(239, 68, 68, 0.45) !important;
+  animation: pulse 1.2s infinite;
 }
 
 /* Data Table Typography & Comfortable Row Spacing */

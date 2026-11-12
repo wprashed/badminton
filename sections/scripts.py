@@ -271,8 +271,8 @@ function openQuickScoreModal(matchId) {
   document.getElementById('quickTeamBName').textContent = match.b;
   document.getElementById('quickScoreLabelA').textContent = `${match.a} Points`;
   document.getElementById('quickScoreLabelB').textContent = `${match.b} Points`;
-  document.getElementById('quickScoreInputA').value = state.ptsToWin || 21;
-  document.getElementById('quickScoreInputB').value = Math.max(0, (state.ptsToWin || 21) - 6);
+  document.getElementById('quickScoreInputA').value = state.ptsToWin || 15;
+  document.getElementById('quickScoreInputB').value = Math.max(0, (state.ptsToWin || 15) - 2);
   document.getElementById('quickScoreModal').showModal();
 }
 
@@ -282,7 +282,7 @@ function awardInstantWinner(side, specificMatchId = null) {
   const match = state.matches.find(m => m.id === matchId);
   if (!match) return;
 
-  const pts = state.ptsToWin || 21;
+  const pts = state.ptsToWin || 15;
   const winName = side === 'a' ? match.a : match.b;
   const runnerScore = Math.max(0, pts - 6);
 
@@ -783,7 +783,7 @@ const STORAGE_KEY_TOURNAMENTS = 'badminton_cup_tournaments_v4';
 const state = {
   title: 'The Badminton Cup 2026',
   category: 'singles', // 'singles' or 'doubles'
-  ptsToWin: 21,
+  ptsToWin: 15,
   bestOf: 3,
   stageFormat: 'rr',   // 'rr' or 'ko'
   courtNumber: 2,
@@ -1112,16 +1112,24 @@ function speakScoreAnnouncement(customText = null) {
       const pts = state.ptsToWin;
       const leadingScore = Math.max(serverScore, receiverScore);
       const trailingScore = Math.min(serverScore, receiverScore);
-      if (leadingScore >= pts - 1 && leadingScore - trailingScore >= 1) {
-        const setsNeeded = Math.ceil(state.bestOf / 2);
-        const leaderSide = set.score[0] > set.score[1] ? 'a' : 'b';
-        const wonSoFar = getMatchSetsWon(match, leaderSide);
-        if (wonSoFar + 1 >= setsNeeded) {
-          textToSpeak += match.pool === 'KO' && state.koRounds.length && state.koRounds[state.koRounds.length - 1].length === 1
-            ? ". Championship point"
-            : ". Match point";
-        } else {
-          textToSpeak += ". Game point";
+      if (pts === 15) {
+        if (leadingScore === 14) {
+          textToSpeak += ". Game ball";
+        } else if (leadingScore === 13) {
+          textToSpeak += ". Hope ball";
+        }
+      } else {
+        if (leadingScore >= pts - 1 && leadingScore - trailingScore >= 1) {
+          const setsNeeded = Math.ceil(state.bestOf / 2);
+          const leaderSide = set.score[0] > set.score[1] ? 'a' : 'b';
+          const wonSoFar = getMatchSetsWon(match, leaderSide);
+          if (wonSoFar + 1 >= setsNeeded) {
+            textToSpeak += match.pool === 'KO' && state.koRounds.length && state.koRounds[state.koRounds.length - 1].length === 1
+              ? ". Championship point"
+              : ". Match point";
+          } else {
+            textToSpeak += ". Game point";
+          }
         }
       }
     }
@@ -4030,6 +4038,19 @@ function renderGroups() {
   renderGroupMatches();
 }
 
+
+function getPlayerAvatarHtml(playerName, size = 32, isWinner = false) {
+  const users = (typeof getUsersDB === 'function') ? getUsersDB() : [];
+  const user = users.find(u => (u.name || '').toLowerCase() === (playerName || '').toLowerCase());
+  const initial = (playerName || '?').trim().charAt(0).toUpperCase();
+  if (user && user.photoUrl) {
+    return `<img src="${user.photoUrl}" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;border:1.5px solid ${isWinner ? 'var(--clr-green)' : 'var(--clr-border)'};flex-shrink:0;" alt="${escapeHtml(playerName)}">`;
+  }
+  const bg = isWinner ? 'rgba(16,185,129,0.18)' : 'rgba(255,255,255,0.08)';
+  const color = isWinner ? 'var(--clr-green)' : 'var(--clr-text)';
+  const border = isWinner ? 'rgba(16,185,129,0.45)' : 'var(--clr-border)';
+  return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${bg};color:${color};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:${Math.round(size * 0.42)}px;border:1px solid ${border};flex-shrink:0;">${escapeHtml(initial)}</div>`;
+}
 function renderGroupMatches() {
   const container = document.getElementById('groupMatchesContainer');
   if (!container) return;
@@ -4041,7 +4062,7 @@ function renderGroupMatches() {
   }
 
   if (!matches.length) {
-    const isAdmin = isAdminUser();
+    const isAdmin = (typeof isAdminUser === 'function') ? isAdminUser() : false;
     container.innerHTML = `
       <div class="card" style="grid-column:1/-1;text-align:center;padding:36px 20px;border:1px solid var(--clr-border);border-radius:var(--radius-md);">
         <div style="width:48px;height:48px;border-radius:50%;background:rgba(16,185,129,0.1);color:var(--clr-green);display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;border:1px solid rgba(16,185,129,0.25);">
@@ -4066,79 +4087,116 @@ function renderGroupMatches() {
 
   const isAdmin = (typeof isAdminUser === 'function') ? isAdminUser() : false;
   container.innerHTML = matches.map(m => {
-    const isLive = (m.id === state.currentMatchId);
-    const scoreStr = (m.sets && m.sets.length) ? m.sets.map(s => `${s.score[0]}–${s.score[1]}`).join(' | ') : 'VS';
-    const winnerName = m.winner ? (m.winner === 'a' ? m.a : m.b) : null;
-    return `
-      <div class="match-fixture-card" style="border:1.5px solid ${isLive ? 'var(--clr-green)' : (m.winner ? 'rgba(16,185,129,0.3)' : 'var(--clr-border)')};">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:0.75rem;">
-          <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-weight:700;color:var(--clr-text-muted);background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:4px;">
-              Court ${m.court}
-            </span>
-            <span style="font-weight:600;color:var(--clr-text-muted);font-size:0.72rem;">
-              Pool ${m.pool}
-            </span>
-          </div>
-          ${isLive ?
-            '<span class="status-badge-live" style="display:inline-flex;align-items:center;gap:4px;color:#34d399;font-weight:800;background:rgba(16,185,129,0.12);padding:2px 8px;border-radius:12px;">● LIVE</span>' :
-            (m.winner ?
-              '<span style="color:var(--clr-green);font-weight:700;font-size:0.72rem;text-transform:uppercase;background:rgba(16,185,129,0.08);padding:2px 8px;border-radius:12px;">COMPLETED</span>' :
-              '<span style="color:var(--clr-text-muted);font-size:0.72rem;background:rgba(255,255,255,0.04);padding:2px 8px;border-radius:12px;">SCHEDULED</span>'
-            )}
-        </div>
+    const isLive = !m.winner && (m.id === state.currentMatchId);
+    const isCompleted = !!m.winner;
+    const winnerName = isCompleted ? (m.winner === 'a' ? m.a : m.b) : null;
+    const sets = m.sets || [];
 
-        <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:14px;">
-          <div style="text-align:left;display:flex;align-items:center;gap:8px;">
-            <div style="width:30px;height:30px;border-radius:50%;background:${m.winner === 'a' ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.06)'};color:${m.winner === 'a' ? 'var(--clr-green)' : 'var(--clr-text)'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.8rem;border:1px solid ${m.winner === 'a' ? 'rgba(16,185,129,0.4)' : 'var(--clr-border)'};flex-shrink:0;">
-              ${escapeHtml(m.a.charAt(0).toUpperCase())}
-            </div>
-            <div style="min-width:0;">
-              <div style="font-weight:700;font-size:0.95rem;color:${m.winner === 'a' ? 'var(--clr-green)' : 'var(--clr-text)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(m.a)}</div>
-              <div style="font-size:0.68rem;color:var(--clr-text-muted);">Player A</div>
-            </div>
+    // Calculate sets won accurately
+    let setsWonA = 0;
+    let setsWonB = 0;
+    sets.forEach(s => {
+      if (s.winner === 'a') setsWonA++;
+      else if (s.winner === 'b') setsWonB++;
+    });
+    if (isCompleted && setsWonA === 0 && setsWonB === 0) {
+      if (m.winner === 'a') setsWonA = 2; else setsWonB = 2;
+    }
+
+    // Set points display for Competitor A and B
+    let setPointsHtmlA = '';
+    let setPointsHtmlB = '';
+    if (sets.length > 0 && sets.some(s => s.score[0] > 0 || s.score[1] > 0 || s.winner)) {
+      setPointsHtmlA = sets.map((s, idx) => {
+        const isWinner = s.winner === 'a';
+        return `<span class="mfc-score-pill ${isWinner ? 'is-set-winner' : ''}" title="Set ${idx+1}">${s.score[0]}</span>`;
+      }).join('');
+      setPointsHtmlB = sets.map((s, idx) => {
+        const isWinner = s.winner === 'b';
+        return `<span class="mfc-score-pill ${isWinner ? 'is-set-winner' : ''}" title="Set ${idx+1}">${s.score[1]}</span>`;
+      }).join('');
+    }
+
+    const avatarA = getPlayerAvatarHtml(m.a, 34, m.winner === 'a');
+    const avatarB = getPlayerAvatarHtml(m.b, 34, m.winner === 'b');
+
+    return `
+      <div class="match-fixture-card ${isLive ? 'is-live' : (isCompleted ? 'is-completed' : '')}">
+        <div class="mfc-header">
+          <div class="mfc-court-pill">
+            <span class="mfc-badge-court">Court ${m.court}</span>
+            <span class="mfc-badge-pool">Pool ${m.pool}</span>
           </div>
-          <div style="text-align:center;padding:0 6px;">
-            ${m.winner ?
-              `<div style="font-family:monospace;font-size:1.05rem;font-weight:800;color:var(--clr-gold);background:rgba(245,158,11,0.1);padding:3px 8px;border-radius:4px;border:1px solid rgba(245,158,11,0.2);">${scoreStr}</div>` :
-              (isLive ?
-                `<div style="font-family:monospace;font-size:1rem;font-weight:800;color:#34d399;background:rgba(16,185,129,0.12);padding:3px 8px;border-radius:4px;">${scoreStr}</div>` :
-                `<div style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);background:rgba(255,255,255,0.05);padding:3px 8px;border-radius:4px;">VS</div>`
+          <div>
+            ${isLive ?
+              '<span class="status-badge-live" style="display:inline-flex;align-items:center;gap:4px;color:#34d399;font-weight:800;background:rgba(16,185,129,0.12);padding:2px 8px;border-radius:12px;">● LIVE</span>' :
+              (isCompleted ?
+                '<span class="mfc-badge-completed">✓ COMPLETED</span>' :
+                '<span class="mfc-badge-scheduled">SCHEDULED</span>'
               )}
           </div>
-          <div style="text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:8px;">
-            <div style="min-width:0;">
-              <div style="font-weight:700;font-size:0.95rem;color:${m.winner === 'b' ? 'var(--clr-green)' : 'var(--clr-text)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(m.b)}</div>
-              <div style="font-size:0.68rem;color:var(--clr-text-muted);">Player B</div>
+        </div>
+
+        <div class="mfc-body">
+          <!-- Competitor A Row -->
+          <div class="mfc-competitor-row ${m.winner === 'a' ? 'is-winner' : (isCompleted ? 'is-defeated' : '')}">
+            <div class="mfc-player-info">
+              ${avatarA}
+              <div class="mfc-name-group">
+                <span class="mfc-name">
+                  <span>${escapeHtml(m.a)}</span>
+                  ${m.winner === 'a' ? '<span title="Match Winner" style="color:#f59e0b;font-size:0.85rem;">👑</span>' : ''}
+                </span>
+                <span class="mfc-role">Player A</span>
+              </div>
             </div>
-            <div style="width:30px;height:30px;border-radius:50%;background:${m.winner === 'b' ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.06)'};color:${m.winner === 'b' ? 'var(--clr-green)' : 'var(--clr-text)'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.8rem;border:1px solid ${m.winner === 'b' ? 'rgba(16,185,129,0.4)' : 'var(--clr-border)'};flex-shrink:0;">
-              ${escapeHtml(m.b.charAt(0).toUpperCase())}
+            <div class="mfc-score-group">
+              ${setPointsHtmlA}
+              <span class="mfc-games-won ${m.winner === 'a' ? 'winner-games' : ''}">${setsWonA}</span>
+            </div>
+          </div>
+
+          <!-- Competitor B Row -->
+          <div class="mfc-competitor-row ${m.winner === 'b' ? 'is-winner' : (isCompleted ? 'is-defeated' : '')}">
+            <div class="mfc-player-info">
+              ${avatarB}
+              <div class="mfc-name-group">
+                <span class="mfc-name">
+                  <span>${escapeHtml(m.b)}</span>
+                  ${m.winner === 'b' ? '<span title="Match Winner" style="color:#f59e0b;font-size:0.85rem;">👑</span>' : ''}
+                </span>
+                <span class="mfc-role">Player B</span>
+              </div>
+            </div>
+            <div class="mfc-score-group">
+              ${setPointsHtmlB}
+              <span class="mfc-games-won ${m.winner === 'b' ? 'winner-games' : ''}">${setsWonB}</span>
             </div>
           </div>
         </div>
 
-        <div style="display:flex;gap:8px;align-items:center;margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
-          ${m.winner ? `
-            <div style="width:100%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-              <span style="font-size:0.82rem;color:var(--clr-green);font-weight:700;">🏆 Winner: ${winnerName}</span>
-              <div style="display:flex;gap:6px;">
-                <button class="btn btn-ghost btn-xs" onclick="openScorecardModal('${m.id}')" style="gap:4px;">
-                  <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                  <span>Scorecard</span>
+        <div class="mfc-footer">
+          ${isCompleted ? `
+            <div class="mfc-winner-banner">
+              <span>🏆 <strong>${escapeHtml(winnerName)}</strong> won</span>
+            </div>
+            <div class="mfc-footer-actions">
+              <button class="btn btn-ghost btn-xs" onclick="openScorecardModal('${m.id}')" style="gap:4px;">
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span>Scorecard</span>
+              </button>
+              ${isAdmin ? `
+                <button class="btn btn-ghost btn-xs" onclick="openQuickScoreModal('${m.id}')" title="Edit Score">
+                  <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                 </button>
-                ${isAdmin ? `
-                  <button class="btn btn-ghost btn-xs" onclick="openQuickScoreModal('${m.id}')" title="Edit Score">
-                    <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                  </button>
-                ` : ''}
-              </div>
+              ` : ''}
             </div>
           ` : `
-            <button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;gap:6px;font-weight:600;" onclick="startUmpireMatch('${m.id}')">
+            <button class="btn btn-primary btn-sm mfc-action-main" onclick="startUmpireMatch('${m.id}')">
               <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 8 12 2"/></svg>
               <span>${isLive ? 'Resume Match' : 'Score / Referee'}</span>
             </button>
-            <button class="btn btn-ghost btn-sm" style="justify-content:center;gap:6px;border-color:rgba(245,158,11,0.3);color:var(--clr-gold);font-weight:600;" onclick="openBettingModal('${m.id}')" title="Predict match winner with coins">
+            <button class="btn btn-ghost btn-sm mfc-action-predict" onclick="openBettingModal('${m.id}')" title="Predict match winner with coins">
               <svg class="gold-coin-icon" viewBox="0 0 24 24" width="14" height="14"><circle cx="12" cy="12" r="10" fill="url(#headerGoldCoinGrad)"/><path d="M12 6.5l1.6 3.3 3.6.5-2.6 2.6.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.6 3.6-.5z" fill="#78350f"/></svg>
               <span>Predict</span>
             </button>
@@ -4544,6 +4602,26 @@ function updateLiveStatusBadges(match, set) {
   const [scoreA, scoreB] = set.score;
   const pts = state.ptsToWin;
 
+  // 13 Hope Ball · 14 Game Ball · 15 Win Rules
+  if (pts === 15) {
+    if (scoreA === 14 && scoreB === 14) {
+      banner.innerHTML = `<span class="status-badge-live badge-game-ball" style="background:rgba(239,68,68,0.18);color:#f87171;border:1px solid rgba(239,68,68,0.45);font-weight:800;padding:4px 14px;border-radius:20px;">🔥 DUAL GAME BALL (14-14) · NEXT RALLY WINS OR DOWNGRADE</span>`;
+    } else if (scoreA === 14) {
+      banner.innerHTML = `<span class="status-badge-live badge-game-ball" style="background:rgba(239,68,68,0.16);color:#f87171;border:1px solid rgba(239,68,68,0.4);font-weight:800;padding:4px 14px;border-radius:20px;">🔥 GAME BALL — ${escapeHtml(match.a)} (14 PTS)</span>`;
+    } else if (scoreB === 14) {
+      banner.innerHTML = `<span class="status-badge-live badge-game-ball" style="background:rgba(239,68,68,0.16);color:#f87171;border:1px solid rgba(239,68,68,0.4);font-weight:800;padding:4px 14px;border-radius:20px;">🔥 GAME BALL — ${escapeHtml(match.b)} (14 PTS)</span>`;
+    } else if (scoreA === 13 && scoreB === 13) {
+      banner.innerHTML = `<span class="status-badge-live badge-hope-ball" style="background:rgba(245,158,11,0.16);color:#fbbf24;border:1px solid rgba(245,158,11,0.4);font-weight:800;padding:4px 14px;border-radius:20px;">🎾 HOPE BALL (13-13) · BOTH AT HOPE BALL</span>`;
+    } else if (scoreA === 13) {
+      banner.innerHTML = `<span class="status-badge-live badge-hope-ball" style="background:rgba(245,158,11,0.16);color:#fbbf24;border:1px solid rgba(245,158,11,0.4);font-weight:800;padding:4px 14px;border-radius:20px;">🎾 HOPE BALL — ${escapeHtml(match.a)} (13 PTS)</span>`;
+    } else if (scoreB === 13) {
+      banner.innerHTML = `<span class="status-badge-live badge-hope-ball" style="background:rgba(245,158,11,0.16);color:#fbbf24;border:1px solid rgba(245,158,11,0.4);font-weight:800;padding:4px 14px;border-radius:20px;">🎾 HOPE BALL — ${escapeHtml(match.b)} (13 PTS)</span>`;
+    } else {
+      banner.innerHTML = '';
+    }
+    return;
+  }
+
   if (scoreA === 29 && scoreB === 29) {
     banner.innerHTML = `<span class="status-badge-live badge-sudden-death">${svgIcon('zap', 'icon-xs')} SUDDEN DEATH · 30TH POINT WINS</span>`;
   } else if (scoreA >= pts - 1 && scoreB >= pts - 1 && scoreA === scoreB) {
@@ -4590,6 +4668,20 @@ function scorePoint(side) {
   }
 
   const idx = side === 'a' ? 0 : 1;
+  const oppIdx = side === 'a' ? 1 : 0;
+  const scorerName = side === 'a' ? match.a : match.b;
+  const oppName = side === 'a' ? match.b : match.a;
+
+  // 13 Hope Ball · 14 Game Ball · 15 Win Rule
+  // If opponent has 14 points (Game Ball) and current player scores a point:
+  // Opponent is downgraded from Game Ball (14) back to Hope Ball (13)!
+  let downgraded = false;
+  const isHopeGameSystem = (state.ptsToWin === 15);
+  if (isHopeGameSystem && set.score[oppIdx] === 14) {
+    set.score[oppIdx] = 13;
+    downgraded = true;
+  }
+
   set.score[idx]++;
   state.servingSide = side;
 
@@ -4597,7 +4689,8 @@ function scorePoint(side) {
   match.history.push({
     set: state.currentSetIdx + 1,
     score: [set.score[0], set.score[1]],
-    scorer: side === 'a' ? match.a : match.b,
+    scorer: scorerName,
+    downgraded: downgraded ? oppName : null,
     time: new Date().toLocaleTimeString()
   });
 
@@ -4607,6 +4700,16 @@ function scorePoint(side) {
     setTimeout(() => el.classList.remove('pop'), 160);
   }
 
+  if (downgraded) {
+    const oppEl = document.getElementById(side === 'a' ? 'scoreDigitB' : 'scoreDigitA');
+    if (oppEl) {
+      oppEl.classList.add('pop');
+      setTimeout(() => oppEl.classList.remove('pop'), 260);
+    }
+    showToast(`⚠️ DOWNGRADE! ${oppName} lost Game Ball and dropped back to Hope Ball (13)!`, 'warning');
+    if ('vibrate' in navigator) navigator.vibrate([60, 40, 60]);
+  }
+
   const isDecidingSet = (state.bestOf === 3 && state.currentSetIdx === 2) || (state.bestOf === 5 && state.currentSetIdx === 4);
   const midpoint = Math.ceil(state.ptsToWin / 2);
   if (isDecidingSet && !state.endsSwitchedInDecidingSet && (set.score[0] >= midpoint || set.score[1] >= midpoint)) {
@@ -4614,7 +4717,8 @@ function scorePoint(side) {
     triggerEndsSwitch();
   }
 
-  if ((set.score[0] === 11 || set.score[1] === 11) && Math.max(set.score[0], set.score[1]) === 11) {
+  const intervalPt = isHopeGameSystem ? 8 : 11;
+  if ((set.score[0] === intervalPt || set.score[1] === intervalPt) && Math.max(set.score[0], set.score[1]) === intervalPt) {
     triggerIntervalTimer(60);
   }
 
@@ -4622,7 +4726,12 @@ function scorePoint(side) {
   updateLiveScoreboardUI();
   saveState();
   broadcastStateChange();
-  speakScoreAnnouncement();
+
+  if (downgraded) {
+    speakScoreAnnouncement(`Point to ${scorerName}. Downgrade! ${oppName} back to Hope Ball, 13.`);
+  } else {
+    speakScoreAnnouncement();
+  }
   const annEl = document.getElementById('ariaLiveAnnouncer');
   if (annEl) {
     const curS = match.sets[state.currentSetIdx];
@@ -4670,13 +4779,19 @@ function undoPoint() {
 function evaluateSetStatus(match, set) {
   const [scoreA, scoreB] = set.score;
   const pts = state.ptsToWin;
-  const maxCap = (pts === 21) ? 30 : (pts === 11 ? 15 : pts + 5);
 
   let setWinner = null;
-  if (scoreA >= pts && scoreA - scoreB >= 2) setWinner = 'a';
-  else if (scoreB >= pts && scoreB - scoreA >= 2) setWinner = 'b';
-  else if (scoreA === maxCap) setWinner = 'a';
-  else if (scoreB === maxCap) setWinner = 'b';
+  if (pts === 15) {
+    // 13 Hope Ball · 14 Game Ball · 15 Win (First to 15 wins!)
+    if (scoreA >= 15) setWinner = 'a';
+    else if (scoreB >= 15) setWinner = 'b';
+  } else {
+    const maxCap = (pts === 21) ? 30 : (pts === 11 ? 15 : pts + 5);
+    if (scoreA >= pts && scoreA - scoreB >= 2) setWinner = 'a';
+    else if (scoreB >= pts && scoreB - scoreA >= 2) setWinner = 'b';
+    else if (scoreA === maxCap) setWinner = 'a';
+    else if (scoreB === maxCap) setWinner = 'b';
+  }
 
   if (setWinner) {
     set.winner = setWinner;
@@ -4905,6 +5020,7 @@ function advanceToNextMatch() {
 
 function exitLiveScoreboard() {
   releaseWakeLock();
+  state.currentMatchId = null; // Clear active live match so completed matches don't stay marked ● LIVE
   if (state.stopwatchInterval) clearInterval(state.stopwatchInterval);
   if (state.intervalTimer) clearInterval(state.intervalTimer);
 

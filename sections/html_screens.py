@@ -162,10 +162,10 @@ SCREENS_CONTENT = """
       <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr));gap:16px;margin-bottom:20px;">
         <div>
           <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Points to Win Set</label>
-          <div style="display:flex;gap:6px;">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-xs active" onclick="selectPoints(15)" id="ptsBtn15">15 pts (13 Hope · 14 Game · 15 Win)</button>
+            <button class="btn btn-ghost btn-xs" onclick="selectPoints(21)" id="ptsBtn21">21 pts (BWF Standard)</button>
             <button class="btn btn-ghost btn-xs" onclick="selectPoints(11)" id="ptsBtn11">11 pts</button>
-            <button class="btn btn-ghost btn-xs" onclick="selectPoints(15)" id="ptsBtn15">15 pts</button>
-            <button class="btn btn-ghost btn-xs active" onclick="selectPoints(21)" id="ptsBtn21">21 pts (BWF)</button>
             <button class="btn btn-ghost btn-xs" onclick="selectPoints(30)" id="ptsBtn30">30 pts</button>
           </div>
         </div>
@@ -676,6 +676,34 @@ SCREENS_CONTENT = """
 
     <!-- ── TAB 1: APP USER GUIDE ── -->
     <div id="guideSectionApp" class="guide-content-section">
+      <!-- 13 Hope Ball / 14 Game Ball / 15 Win Rule Card -->
+      <div class="card" style="margin-bottom:20px;background:var(--clr-surface-card);border:1px solid var(--clr-border);border-left:3px solid #f59e0b;">
+        <h3 style="font-size:1.1rem;font-weight:800;color:var(--clr-gold);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+          <span>🏸 Point System: 13 Hope Ball · 14 Game Ball · 15 Win</span>
+        </h3>
+        <p style="font-size:0.88rem;color:var(--clr-text);line-height:1.5;margin-bottom:12px;">
+          This tournament uses the authentic club point system designed for intense, thrilling rallies and comeback opportunities:
+        </p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:12px;">
+          <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.25);border-radius:8px;padding:12px;">
+            <div style="font-weight:800;color:#fbbf24;font-size:0.92rem;margin-bottom:4px;">🎾 13 Points — Hope Ball</div>
+            <p style="font-size:0.82rem;color:var(--clr-text-muted);margin:0;line-height:1.4;">When a player reaches 13 points, they enter Hope Ball. Umpire audio and live status announce Hope Ball.</p>
+          </div>
+          <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:12px;">
+            <div style="font-weight:800;color:#f87171;font-size:0.92rem;margin-bottom:4px;">🔥 14 Points — Game Ball</div>
+            <p style="font-size:0.82rem;color:var(--clr-text-muted);margin:0;line-height:1.4;">1 point away from victory. The player must actively score the winning rally point to clinch the set.</p>
+          </div>
+          <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:8px;padding:12px;">
+            <div style="font-weight:800;color:var(--clr-green);font-size:0.92rem;margin-bottom:4px;">⚠️ Downgrade Rule</div>
+            <p style="font-size:0.82rem;color:var(--clr-text-muted);margin:0;line-height:1.4;"><strong>Crucial Rule:</strong> If a team is on 14 (Game Ball) and their opponent wins the rally, the opponent gets their point AND the leading team is <em>downgraded from 14 back to 13 (Hope Ball)</em>!</p>
+          </div>
+          <div style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.25);border-radius:8px;padding:12px;">
+            <div style="font-weight:800;color:#60a5fa;font-size:0.92rem;margin-bottom:4px;">🏆 15 Points — Victory</div>
+            <p style="font-size:0.82rem;color:var(--clr-text-muted);margin:0;line-height:1.4;">First player to convert from Game Ball (14) to 15 points wins the set!</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Quick Start Overview -->
       <div class="card" style="margin-bottom:20px;background:var(--clr-surface-card);border:1px solid var(--clr-border);border-left:3px solid var(--clr-green);">
         <h3 style="font-size:1.1rem;font-weight:800;color:var(--clr-green);margin-bottom:8px;display:flex;align-items:center;gap:6px;">
