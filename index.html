@@ -1060,19 +1060,40 @@ body.theme-light .data-table tr:hover td {
 ═══════════════════════════════════════════════════ */
 dialog {
   border: 1px solid var(--clr-border);
-  background: #0f172a;
+  background: var(--clr-surface-card);
   color: var(--clr-text);
   border-radius: var(--radius-md);
   padding: 0;
-  max-width: 580px;
-  width: 92%;
+  max-width: 92vw;
+  width: auto;
   margin: auto;
   box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+dialog.modal {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+dialog.modal .modal-box {
+  border: 1px solid var(--clr-border);
+  background: var(--clr-surface-card);
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7);
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 body.theme-light dialog {
   background: #ffffff;
   border-color: #e2e8f0;
   box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.15);
+}
+body.theme-light dialog.modal .modal-box {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.15) !important;
 }
 dialog::backdrop {
   background: rgba(0, 0, 0, 0.65);
@@ -4688,7 +4709,7 @@ body.theme-light #headerCoinBtn span {
 <!-- ═══════════════════════════════════════════════════
      MORE MENU MODAL (Streamlined Secondary Tools)
 ═══════════════════════════════════════════════════ -->
-<dialog id="moreMenuModal" class="modal" aria-labelledby="moreMenuTitle">
+<dialog id="moreMenuModal" class="modal" aria-labelledby="moreMenuTitle" style="max-width:720px;width:92%;">
   <div class="modal-box" style="max-width:720px;max-height:90vh;overflow-y:auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
       <h3 id="moreMenuTitle" style="font-family:var(--font-display);font-size:1.25rem;display:flex;align-items:center;gap:8px;margin:0;">
@@ -4912,49 +4933,61 @@ body.theme-light #headerCoinBtn span {
 <!-- ═══════════════════════════════════════════════════
      PUSH NOTIFICATIONS MODAL
 ═══════════════════════════════════════════════════ -->
-<dialog id="notificationSettingsModal" class="modal" aria-labelledby="notifyModalTitle">
-  <div class="modal-box" style="max-width:480px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:16px;">
-      <h3 id="notifyModalTitle" style="font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:8px;margin:0;">
-        <svg class="icon icon-sm" viewBox="0 0 24 24" style="color:var(--clr-green);"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        <span data-i18n="notifyModalTitle">Push Notifications</span>
-      </h3>
-      <button class="modal-close" onclick="document.getElementById('notificationSettingsModal').close()" aria-label="Close" style="background:transparent!important;border:none!important;color:var(--clr-text-muted);cursor:pointer;padding:0;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;outline:none;">
+<dialog id="notificationSettingsModal" class="modal" aria-labelledby="notifyModalTitle" style="max-width:390px;width:92%;">
+  <div class="modal-box" style="max-width:390px;width:100%;padding:20px 22px;">
+    <!-- Minimal Header -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--clr-border);">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <svg class="icon icon-xs" viewBox="0 0 24 24" style="color:var(--clr-green);"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span id="notifyModalTitle" style="font-family:var(--font-display);font-size:0.95rem;font-weight:700;color:var(--clr-text);">Push Notifications</span>
+      </div>
+      <button class="modal-close" onclick="document.getElementById('notificationSettingsModal').close()" aria-label="Close" style="background:transparent!important;border:none!important;color:var(--clr-text-muted);cursor:pointer;padding:0;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;outline:none;">
         <svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;stroke-width:2.2;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
 
-    <div style="text-align:center;padding:12px 0 18px;">
-      <div id="notifyStatusIcon" style="display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;background:rgba(16,185,129,0.12);color:var(--clr-green);margin-bottom:14px;border:1px solid rgba(16,185,129,0.25);">
-        <svg class="icon icon-lg" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    <!-- Centered Minimal Hero -->
+    <div style="text-align:center;padding:10px 0 14px;">
+      <div id="notifyStatusIcon" style="position:relative;display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:rgba(34,197,94,0.12);color:var(--clr-green);margin-bottom:12px;">
+        <svg class="icon icon-md" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span id="notifyStatusDot" style="position:absolute;top:2px;right:2px;width:9px;height:9px;border-radius:50%;background:var(--clr-green);border:2px solid var(--clr-surface-card);"></span>
       </div>
-      <h4 id="notifyStatusHeading" style="font-size:1.1rem;font-weight:700;margin:0 0 6px;color:var(--clr-text);">Notification Alerts</h4>
-      <p id="notifyStatusDesc" style="font-size:0.84rem;color:var(--clr-text-muted);line-height:1.45;margin:0 auto 20px;max-width:380px;">
-        Get instant alerts on your phone or computer whenever a new open challenge is posted, a match completes, or a tournament champion is crowned.
+
+      <h4 id="notifyStatusHeading" style="font-size:1.05rem;font-weight:700;margin:0 0 4px;color:var(--clr-text);">Notifications Active</h4>
+      <p id="notifyStatusDesc" style="font-size:0.8rem;color:var(--clr-text-muted);line-height:1.45;margin:0 auto 16px;max-width:290px;">
+        Instant alerts for challenges, match wins, and champion finishes.
       </p>
 
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <button class="btn btn-primary btn-md" id="btnRequestNotification" onclick="requestNotificationPermission()" style="width:100%;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;min-height:42px;">
+      <!-- Active Status Badge -->
+      <div id="notifyActiveBadge" style="display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:999px;background:rgba(34,197,94,0.12);color:var(--clr-green);font-size:0.75rem;font-weight:700;margin-bottom:14px;border:1px solid rgba(34,197,94,0.25);">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--clr-green);"></span>
+        <span>Alerts Active</span>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="btn btn-primary btn-sm" id="btnRequestNotification" onclick="requestNotificationPermission()" style="width:100%;min-height:38px;font-weight:600;display:none;align-items:center;justify-content:center;gap:6px;">
           <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          <span data-i18n="enableNotifyBtn">Turn On Push Notifications</span>
+          <span>Turn On Notifications</span>
         </button>
 
-        <button class="btn btn-ghost btn-sm" id="btnTestNotification" onclick="testPushNotification()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;min-height:38px;">
+        <button class="btn btn-ghost btn-sm" id="btnTestNotification" onclick="testPushNotification()" style="width:100%;min-height:36px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:0.82rem;font-weight:600;">
           <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          <span data-i18n="testNotifyBtn">⚡ Send Test Notification</span>
+          <span>Send Test Alert</span>
         </button>
       </div>
     </div>
 
-    <div style="display:flex;justify-content:center;border-top:1px solid var(--clr-border);padding-top:14px;margin-top:6px;">
-      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('notificationSettingsModal').close()" style="min-width:140px;">Done</button>
+    <!-- Minimal Footer -->
+    <div style="display:flex;justify-content:center;padding-top:10px;border-top:1px solid var(--clr-border);">
+      <button class="btn btn-ghost btn-xs" onclick="document.getElementById('notificationSettingsModal').close()" style="color:var(--clr-text-muted);min-width:100px;">Done</button>
     </div>
   </div>
 </dialog>
 <!-- ═══════════════════════════════════════════════════
      MATCH PREDICTION & BETTING MODAL (General User Capability)
 ═══════════════════════════════════════════════════ -->
-<dialog id="matchBettingModal" class="modal" aria-labelledby="betModalTitle">
+<dialog id="matchBettingModal" class="modal" aria-labelledby="betModalTitle" style="max-width:440px;width:92%;">
   <div class="modal-box" style="max-width:440px;">
     <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
       <h3 id="betModalTitle" style="font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:8px;margin:0;">
@@ -5014,7 +5047,7 @@ body.theme-light #headerCoinBtn span {
 <!-- ═══════════════════════════════════════════════════
      ADMIN ACCESS GUARD MODAL (Capability Protection)
 ═══════════════════════════════════════════════════ -->
-<dialog id="adminAuthGuardModal" class="modal" aria-labelledby="guardModalTitle">
+<dialog id="adminAuthGuardModal" class="modal" aria-labelledby="guardModalTitle" style="max-width:460px;width:92%;">
   <div class="modal-box" style="max-width:460px;">
     <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:16px;">
       <h3 id="guardModalTitle" style="font-family:var(--font-display);font-size:1.15rem;display:flex;align-items:center;gap:8px;margin:0;color:var(--clr-text);">
@@ -5055,7 +5088,7 @@ body.theme-light #headerCoinBtn span {
 <!-- ═══════════════════════════════════════════════════
      COIN WALLET & BONUS MODAL
 ═══════════════════════════════════════════════════ -->
-<dialog id="coinBalanceModal" class="modal" aria-labelledby="coinModalTitle">
+<dialog id="coinBalanceModal" class="modal" aria-labelledby="coinModalTitle" style="max-width:440px;width:92%;">
   <div class="modal-box" style="max-width:440px;">
     <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:16px;">
       <h3 id="coinModalTitle" style="font-family:var(--font-display);font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:8px;margin:0;color:var(--clr-text);">
@@ -5108,7 +5141,7 @@ body.theme-light #headerCoinBtn span {
 <!-- ═══════════════════════════════════════════════════
      GENERIC CUSTOM CONFIRM & PROMPT MODALS (PWA NATIVE ALTERNATIVES)
 ═══════════════════════════════════════════════════ -->
-<dialog id="appConfirmModal" class="modal" aria-labelledby="appConfirmTitle">
+<dialog id="appConfirmModal" class="modal" aria-labelledby="appConfirmTitle" style="max-width:420px;width:92%;">
   <div class="modal-box" style="max-width:440px;text-align:center;">
     <div style="display:flex;justify-content:flex-end;">
       <button class="modal-close" onclick="document.getElementById('appConfirmModal').close()" aria-label="Close">
@@ -5127,7 +5160,7 @@ body.theme-light #headerCoinBtn span {
   </div>
 </dialog>
 
-<dialog id="appPromptModal" class="modal" aria-labelledby="appPromptTitle">
+<dialog id="appPromptModal" class="modal" aria-labelledby="appPromptTitle" style="max-width:440px;width:92%;">
   <div class="modal-box" style="max-width:440px;">
     <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:14px;">
       <h3 id="appPromptTitle" style="font-family:var(--font-display);font-size:1.15rem;font-weight:700;margin:0;color:var(--clr-text);">Input Required</h3>
@@ -5146,7 +5179,7 @@ body.theme-light #headerCoinBtn span {
 
 
 <!-- User Profile Settings Modal -->
-<dialog id="userProfileSettingsModal" class="modal" aria-labelledby="profileSettingsTitle">
+<dialog id="userProfileSettingsModal" class="modal" aria-labelledby="profileSettingsTitle" style="max-width:520px;width:92%;">
   <div class="modal-box" style="max-width:520px;max-height:90vh;overflow-y:auto;">
     <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:16px;">
       <h3 id="profileSettingsTitle" style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;display:flex;align-items:center;gap:8px;margin:0;color:var(--clr-text);">
@@ -10794,36 +10827,49 @@ function openNotificationModal() {
 function updateNotificationModalUI() {
   const heading = document.getElementById('notifyStatusHeading');
   const desc = document.getElementById('notifyStatusDesc');
-  const btn = document.getElementById('btnRequestNotification');
+  const btnRequest = document.getElementById('btnRequestNotification');
+  const btnTest = document.getElementById('btnTestNotification');
+  const activeBadge = document.getElementById('notifyActiveBadge');
+  const dot = document.getElementById('notifyStatusDot');
+
   if (!('Notification' in window)) {
     if (heading) heading.textContent = 'Notifications Not Supported';
     if (desc) desc.textContent = 'This browser does not support Web Push Notifications.';
-    if (btn) btn.style.display = 'none';
+    if (btnRequest) btnRequest.style.display = 'none';
+    if (btnTest) btnTest.style.display = 'none';
+    if (activeBadge) activeBadge.style.display = 'none';
+    if (dot) dot.style.display = 'none';
     return;
   }
 
   const perm = Notification.permission;
   if (perm === 'granted') {
-    if (heading) heading.textContent = 'Notifications Active ✓';
-    if (desc) desc.textContent = 'Awesome! You will receive live alerts for challenges, match wins, and champion announcements.';
-    if (btn) {
-      btn.innerHTML = '<svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> ' + ('Notifications Enabled');
-      btn.classList.remove('btn-primary');
-      btn.classList.add('btn-ghost');
+    if (heading) heading.textContent = 'Notifications Active';
+    if (desc) desc.textContent = 'Instant alerts for challenges, match scores, and winners.';
+    if (activeBadge) activeBadge.style.display = 'inline-flex';
+    if (btnRequest) btnRequest.style.display = 'none';
+    if (btnTest) btnTest.style.display = 'flex';
+    if (dot) {
+      dot.style.display = 'block';
+      dot.style.background = 'var(--clr-green)';
     }
   } else if (perm === 'denied') {
     if (heading) heading.textContent = 'Notifications Blocked';
-    if (desc) desc.textContent = 'Notifications were blocked in your browser settings. Please allow notifications in site permissions.';
-    if (btn) btn.style.display = 'none';
+    if (desc) desc.textContent = 'Notifications are blocked in your browser settings. Please allow permissions in your site URL bar.';
+    if (activeBadge) activeBadge.style.display = 'none';
+    if (btnRequest) btnRequest.style.display = 'none';
+    if (btnTest) btnTest.style.display = 'none';
+    if (dot) {
+      dot.style.display = 'block';
+      dot.style.background = 'var(--clr-red)';
+    }
   } else {
     if (heading) heading.textContent = 'Enable Notifications';
-    if (desc) desc.textContent = 'Stay updated! Get instant notifications when a challenge is posted or match results are recorded.';
-    if (btn) {
-      btn.style.display = 'flex';
-      btn.innerHTML = '<svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> ' + ('Turn On Push Notifications');
-      btn.classList.add('btn-primary');
-      btn.classList.remove('btn-ghost');
-    }
+    if (desc) desc.textContent = 'Stay updated with live alerts for challenges, match scores, and winners.';
+    if (activeBadge) activeBadge.style.display = 'none';
+    if (btnRequest) btnRequest.style.display = 'flex';
+    if (btnTest) btnTest.style.display = 'none';
+    if (dot) dot.style.display = 'none';
   }
   updateNotificationUI();
 }

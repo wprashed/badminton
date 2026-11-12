@@ -5574,36 +5574,49 @@ function openNotificationModal() {
 function updateNotificationModalUI() {
   const heading = document.getElementById('notifyStatusHeading');
   const desc = document.getElementById('notifyStatusDesc');
-  const btn = document.getElementById('btnRequestNotification');
+  const btnRequest = document.getElementById('btnRequestNotification');
+  const btnTest = document.getElementById('btnTestNotification');
+  const activeBadge = document.getElementById('notifyActiveBadge');
+  const dot = document.getElementById('notifyStatusDot');
+
   if (!('Notification' in window)) {
     if (heading) heading.textContent = 'Notifications Not Supported';
     if (desc) desc.textContent = 'This browser does not support Web Push Notifications.';
-    if (btn) btn.style.display = 'none';
+    if (btnRequest) btnRequest.style.display = 'none';
+    if (btnTest) btnTest.style.display = 'none';
+    if (activeBadge) activeBadge.style.display = 'none';
+    if (dot) dot.style.display = 'none';
     return;
   }
 
   const perm = Notification.permission;
   if (perm === 'granted') {
-    if (heading) heading.textContent = 'Notifications Active ✓';
-    if (desc) desc.textContent = 'Awesome! You will receive live alerts for challenges, match wins, and champion announcements.';
-    if (btn) {
-      btn.innerHTML = '<svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> ' + ('Notifications Enabled');
-      btn.classList.remove('btn-primary');
-      btn.classList.add('btn-ghost');
+    if (heading) heading.textContent = 'Notifications Active';
+    if (desc) desc.textContent = 'Instant alerts for challenges, match scores, and winners.';
+    if (activeBadge) activeBadge.style.display = 'inline-flex';
+    if (btnRequest) btnRequest.style.display = 'none';
+    if (btnTest) btnTest.style.display = 'flex';
+    if (dot) {
+      dot.style.display = 'block';
+      dot.style.background = 'var(--clr-green)';
     }
   } else if (perm === 'denied') {
     if (heading) heading.textContent = 'Notifications Blocked';
-    if (desc) desc.textContent = 'Notifications were blocked in your browser settings. Please allow notifications in site permissions.';
-    if (btn) btn.style.display = 'none';
+    if (desc) desc.textContent = 'Notifications are blocked in your browser settings. Please allow permissions in your site URL bar.';
+    if (activeBadge) activeBadge.style.display = 'none';
+    if (btnRequest) btnRequest.style.display = 'none';
+    if (btnTest) btnTest.style.display = 'none';
+    if (dot) {
+      dot.style.display = 'block';
+      dot.style.background = 'var(--clr-red)';
+    }
   } else {
     if (heading) heading.textContent = 'Enable Notifications';
-    if (desc) desc.textContent = 'Stay updated! Get instant notifications when a challenge is posted or match results are recorded.';
-    if (btn) {
-      btn.style.display = 'flex';
-      btn.innerHTML = '<svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> ' + ('Turn On Push Notifications');
-      btn.classList.add('btn-primary');
-      btn.classList.remove('btn-ghost');
-    }
+    if (desc) desc.textContent = 'Stay updated with live alerts for challenges, match scores, and winners.';
+    if (activeBadge) activeBadge.style.display = 'none';
+    if (btnRequest) btnRequest.style.display = 'flex';
+    if (btnTest) btnTest.style.display = 'none';
+    if (dot) dot.style.display = 'none';
   }
   updateNotificationUI();
 }

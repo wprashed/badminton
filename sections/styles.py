@@ -1041,19 +1041,40 @@ body.theme-light .data-table tr:hover td {
 ═══════════════════════════════════════════════════ */
 dialog {
   border: 1px solid var(--clr-border);
-  background: #0f172a;
+  background: var(--clr-surface-card);
   color: var(--clr-text);
   border-radius: var(--radius-md);
   padding: 0;
-  max-width: 580px;
-  width: 92%;
+  max-width: 92vw;
+  width: auto;
   margin: auto;
   box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+}
+dialog.modal {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+dialog.modal .modal-box {
+  border: 1px solid var(--clr-border);
+  background: var(--clr-surface-card);
+  border-radius: var(--radius-md);
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7);
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 body.theme-light dialog {
   background: #ffffff;
   border-color: #e2e8f0;
   box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.15);
+}
+body.theme-light dialog.modal .modal-box {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.15) !important;
 }
 dialog::backdrop {
   background: rgba(0, 0, 0, 0.65);
