@@ -154,11 +154,37 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   top: 56px;
   z-index: 45;
   background: var(--clr-surface);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--clr-border);
-  padding: 6px 16px;
+  padding: 8px 24px;
   transition: opacity 200ms ease;
+  box-sizing: border-box;
+}
+.stage-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--clr-text-muted);
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 140ms ease;
+  text-decoration: none;
+}
+.stage-tab:hover {
+  color: var(--clr-text);
+  background: rgba(255, 255, 255, 0.05);
+}
+.stage-tab.active {
+  color: var(--clr-green);
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
 }
 body.theme-light .app-stage-nav {
   background: rgba(255, 255, 255, 0.95);
@@ -276,16 +302,18 @@ body.theme-contrast .stage-tab.active {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 20px;
+  padding: 0 24px;
+  height: 56px;
   background: var(--clr-surface);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--clr-border);
   position: sticky;
   top: 0;
   z-index: 50;
-  gap: 12px;
-  flex-wrap: wrap;
+  gap: 14px;
+  flex-wrap: nowrap !important;
+  box-sizing: border-box;
 }
 .brand-title {
   display: flex;
@@ -2716,5 +2744,48 @@ body.theme-light #headerCoinBtn span {
   color: #b45309 !important;
 }
 
+
+
+/* Match Fixture Cards - Clean Spacious Styling */
+.match-fixture-card {
+  background: var(--clr-surface-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-card);
+  transition: transform 140ms ease, border-color 140ms ease;
+  display: flex;
+  flex-direction: column;
+}
+.match-fixture-card:hover {
+  border-color: rgba(255, 255, 255, 0.16);
+  transform: translateY(-1px);
+}
+body.theme-light .match-fixture-card {
+  background: #ffffff;
+  border-color: #e2e8f0;
+}
+body.theme-light .match-fixture-card:hover {
+  border-color: #cbd5e1;
+}
+
+/* Data Table Typography & Comfortable Row Spacing */
+.data-table th {
+  padding: 10px 12px !important;
+  font-size: 0.74rem !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  font-weight: 700 !important;
+  color: var(--clr-text-muted) !important;
+  border-bottom: 1px solid var(--clr-border) !important;
+}
+.data-table td {
+  padding: 11px 12px !important;
+  font-size: 0.88rem !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+body.theme-light .data-table td {
+  border-bottom: 1px solid #f1f5f9 !important;
+}
 </style>
 """

@@ -592,6 +592,17 @@ DIALOGS_CONTENT = """
       </button>
     </div>
 
+    <!-- Sound & Atmosphere Settings Strip -->
+    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:8px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;align-items:center;gap:8px;font-size:0.82rem;color:var(--clr-text-muted);">
+        <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        <span style="font-weight:600;">Match Atmosphere & Sound Effects:</span>
+      </div>
+      <button class="btn btn-ghost btn-xs" id="moreMenuSoundBtn" onclick="toggleMuteAudio()" style="display:inline-flex;align-items:center;gap:6px;font-weight:600;">
+        <span id="moreMenuSoundLabel">Sound: ON</span>
+      </button>
+    </div>
+
     <!-- Active Tournament Quick Selection -->
     <div class="active-tournament-card" style="background:linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));border:1px solid var(--clr-border);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">

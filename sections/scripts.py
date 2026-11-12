@@ -3760,13 +3760,16 @@ function renderGroups() {
       return;
     }
     el.innerHTML = list.map((s, idx) => `
-      <tr>
-        <td style="font-weight:900;color:${idx === 0 ? 'var(--clr-gold)' : 'var(--clr-text-muted)'};">${idx + 1}</td>
-        <td><strong>${s.name}</strong></td>
-        <td style="color:var(--clr-green);font-weight:bold;">${s.W}</td>
-        <td style="color:var(--clr-red);">${s.L}</td>
-        <td>${(s.ptsWon - s.ptsLost) > 0 ? '+' : ''}${s.ptsWon - s.ptsLost}</td>
-        <td style="font-weight:bold;color:var(--clr-gold);">${s.W * 2}</td>
+      <tr style="${idx < 2 ? 'border-left: 3px solid var(--clr-green);' : 'border-left: 3px solid transparent;'}">
+        <td style="font-weight:800;color:${idx === 0 ? 'var(--clr-gold)' : (idx === 1 ? 'var(--clr-green)' : 'var(--clr-text-muted)')};padding:10px 8px;font-variant-numeric:tabular-nums;text-align:center;">${idx + 1}</td>
+        <td style="padding:10px 10px;">
+          <div style="font-weight:700;color:var(--clr-text);">${escapeHtml(s.name)}</div>
+          ${idx < 2 ? '<div style="font-size:0.65rem;font-weight:800;color:var(--clr-green);text-transform:uppercase;letter-spacing:0.04em;">● Top 2 Qualifier</div>' : ''}
+        </td>
+        <td style="color:var(--clr-green);font-weight:700;text-align:center;font-variant-numeric:tabular-nums;padding:10px 8px;">${s.W}</td>
+        <td style="color:var(--clr-red);text-align:center;font-variant-numeric:tabular-nums;padding:10px 8px;">${s.L}</td>
+        <td style="text-align:center;font-variant-numeric:tabular-nums;padding:10px 8px;color:var(--clr-text-muted);">${(s.ptsWon - s.ptsLost) > 0 ? '+' : ''}${s.ptsWon - s.ptsLost}</td>
+        <td style="font-weight:800;color:var(--clr-gold);text-align:center;font-variant-numeric:tabular-nums;padding:10px 8px;">${s.W * 2}</td>
       </tr>
     `).join('');
   };
@@ -3810,63 +3813,89 @@ function renderGroupMatches() {
     return;
   }
 
+  const isAdmin = (typeof isAdminUser === 'function') ? isAdminUser() : false;
   container.innerHTML = matches.map(m => {
     const isLive = (m.id === state.currentMatchId);
     const scoreStr = (m.sets && m.sets.length) ? m.sets.map(s => `${s.score[0]}–${s.score[1]}`).join(' | ') : 'VS';
     const winnerName = m.winner ? (m.winner === 'a' ? m.a : m.b) : null;
     return `
-      <div class="card" style="padding:16px;border:1.5px solid ${isLive ? 'var(--clr-green)' : (m.winner ? 'rgba(16,185,129,0.3)' : 'var(--clr-border)')};">
+      <div class="match-fixture-card" style="border:1.5px solid ${isLive ? 'var(--clr-green)' : (m.winner ? 'rgba(16,185,129,0.3)' : 'var(--clr-border)')};">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:0.75rem;">
-          <span style="font-weight:700;color:var(--clr-text-muted);background:rgba(255,255,255,0.05);padding:3px 8px;border-radius:var(--radius-xs);">
-            Pool ${m.pool} · Court ${m.court}
-          </span>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-weight:700;color:var(--clr-text-muted);background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:4px;">
+              Court ${m.court}
+            </span>
+            <span style="font-weight:600;color:var(--clr-text-muted);font-size:0.72rem;">
+              Pool ${m.pool}
+            </span>
+          </div>
           ${isLive ?
-            '<span class="status-badge-live badge-game-point" style="display:inline-flex;align-items:center;gap:4px;color:#34d399;font-weight:700;">● LIVE</span>' :
+            '<span class="status-badge-live" style="display:inline-flex;align-items:center;gap:4px;color:#34d399;font-weight:800;background:rgba(16,185,129,0.12);padding:2px 8px;border-radius:12px;">● LIVE</span>' :
             (m.winner ?
-              '<span style="color:var(--clr-green);font-weight:700;font-size:0.72rem;text-transform:uppercase;">COMPLETED</span>' :
-              '<span style="color:var(--clr-text-muted);font-size:0.72rem;">UPCOMING</span>'
+              '<span style="color:var(--clr-green);font-weight:700;font-size:0.72rem;text-transform:uppercase;background:rgba(16,185,129,0.08);padding:2px 8px;border-radius:12px;">COMPLETED</span>' :
+              '<span style="color:var(--clr-text-muted);font-size:0.72rem;background:rgba(255,255,255,0.04);padding:2px 8px;border-radius:12px;">SCHEDULED</span>'
             )}
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;margin-bottom:14px;">
-          <div style="text-align:left;">
-            <div style="font-weight:800;font-size:1.05rem;color:${m.winner === 'a' ? 'var(--clr-green)' : 'var(--clr-text)'};">${escapeHtml(m.a)}</div>
-            <div style="font-size:0.72rem;color:var(--clr-text-muted);">Team A</div>
+        <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-bottom:14px;">
+          <div style="text-align:left;display:flex;align-items:center;gap:8px;">
+            <div style="width:30px;height:30px;border-radius:50%;background:${m.winner === 'a' ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.06)'};color:${m.winner === 'a' ? 'var(--clr-green)' : 'var(--clr-text)'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.8rem;border:1px solid ${m.winner === 'a' ? 'rgba(16,185,129,0.4)' : 'var(--clr-border)'};flex-shrink:0;">
+              ${escapeHtml(m.a.charAt(0).toUpperCase())}
+            </div>
+            <div style="min-width:0;">
+              <div style="font-weight:700;font-size:0.95rem;color:${m.winner === 'a' ? 'var(--clr-green)' : 'var(--clr-text)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(m.a)}</div>
+              <div style="font-size:0.68rem;color:var(--clr-text-muted);">Player A</div>
+            </div>
           </div>
-          <div style="text-align:center;padding:0 8px;">
-            <div style="font-family:monospace;font-size:1.1rem;font-weight:800;color:var(--clr-gold);">${m.winner ? scoreStr : 'VS'}</div>
+          <div style="text-align:center;padding:0 6px;">
+            ${m.winner ?
+              `<div style="font-family:monospace;font-size:1.05rem;font-weight:800;color:var(--clr-gold);background:rgba(245,158,11,0.1);padding:3px 8px;border-radius:4px;border:1px solid rgba(245,158,11,0.2);">${scoreStr}</div>` :
+              (isLive ?
+                `<div style="font-family:monospace;font-size:1rem;font-weight:800;color:#34d399;background:rgba(16,185,129,0.12);padding:3px 8px;border-radius:4px;">${scoreStr}</div>` :
+                `<div style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);background:rgba(255,255,255,0.05);padding:3px 8px;border-radius:4px;">VS</div>`
+              )}
           </div>
-          <div style="text-align:right;">
-            <div style="font-weight:800;font-size:1.05rem;color:${m.winner === 'b' ? 'var(--clr-green)' : 'var(--clr-text)'};">${escapeHtml(m.b)}</div>
-            <div style="font-size:0.72rem;color:var(--clr-text-muted);">Team B</div>
+          <div style="text-align:right;display:flex;align-items:center;justify-content:flex-end;gap:8px;">
+            <div style="min-width:0;">
+              <div style="font-weight:700;font-size:0.95rem;color:${m.winner === 'b' ? 'var(--clr-green)' : 'var(--clr-text)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(m.b)}</div>
+              <div style="font-size:0.68rem;color:var(--clr-text-muted);">Player B</div>
+            </div>
+            <div style="width:30px;height:30px;border-radius:50%;background:${m.winner === 'b' ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.06)'};color:${m.winner === 'b' ? 'var(--clr-green)' : 'var(--clr-text)'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.8rem;border:1px solid ${m.winner === 'b' ? 'rgba(16,185,129,0.4)' : 'var(--clr-border)'};flex-shrink:0;">
+              ${escapeHtml(m.b.charAt(0).toUpperCase())}
+            </div>
           </div>
         </div>
 
-        <div class="quick-match-row">
+        <div style="display:flex;gap:8px;align-items:center;margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
           ${m.winner ? `
             <div style="width:100%;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
               <span style="font-size:0.82rem;color:var(--clr-green);font-weight:700;">🏆 Winner: ${winnerName}</span>
               <div style="display:flex;gap:6px;">
-                <button class="btn btn-ghost btn-xs" onclick="openScorecardModal('${m.id}')">Scorecard</button>
-                <button class="btn btn-ghost btn-xs" onclick="openQuickScoreModal('${m.id}')">Edit Score</button>
+                <button class="btn btn-ghost btn-xs" onclick="openScorecardModal('${m.id}')" style="gap:4px;">
+                  <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  <span>Scorecard</span>
+                </button>
+                ${isAdmin ? `
+                  <button class="btn btn-ghost btn-xs" onclick="openQuickScoreModal('${m.id}')" title="Edit Score">
+                    <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                  </button>
+                ` : ''}
               </div>
             </div>
           ` : `
-            <button class="quick-win-btn" onclick="awardInstantWinner('a', '${m.id}')" title="Award instant 2-0 win to ${m.a}">
-              🏆 ${m.a} Won
+            <button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;gap:6px;font-weight:600;" onclick="startUmpireMatch('${m.id}')">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 8 12 2"/></svg>
+              <span>${isLive ? 'Resume Match' : 'Score / Referee'}</span>
             </button>
-            <button class="quick-score-btn" onclick="openQuickScoreModal('${m.id}')" title="Enter manual final score">
-              ⚡ Score
+            <button class="btn btn-ghost btn-sm" style="justify-content:center;gap:6px;border-color:rgba(245,158,11,0.3);color:var(--clr-gold);font-weight:600;" onclick="openBettingModal('${m.id}')" title="Predict match winner with coins">
+              <svg class="gold-coin-icon" viewBox="0 0 24 24" width="14" height="14"><circle cx="12" cy="12" r="10" fill="url(#headerGoldCoinGrad)"/><path d="M12 6.5l1.6 3.3 3.6.5-2.6 2.6.6 3.6-3.2-1.7-3.2 1.7.6-3.6-2.6-2.6 3.6-.5z" fill="#78350f"/></svg>
+              <span>Predict</span>
             </button>
-            <button class="quick-win-btn" onclick="awardInstantWinner('b', '${m.id}')" title="Award instant 2-0 win to ${m.b}">
-              🏆 ${m.b} Won
-            </button>
-            <button class="btn btn-secondary btn-xs" onclick="openBettingModal('${m.id}')" title="Place virtual coin prediction on this match">
-              🎲 Predict
-            </button>
-            <button class="btn btn-ghost btn-xs" onclick="startUmpireMatch('${m.id}')" title="Open live court umpire referee">
-              🏸 Referee
-            </button>
+            ${isAdmin ? `
+              <button class="btn btn-ghost btn-sm admin-only-item" style="padding:6px 10px;color:var(--clr-text-muted);" onclick="openQuickScoreModal('${m.id}')" title="Manual Quick Score">
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              </button>
+            ` : ''}
           `}
         </div>
       </div>
@@ -5534,6 +5563,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   loadAuthUser();
   loadSavedState();
   renderTournamentSwitcher();
+  checkWelcomeBanner();
   updatePlayerCounts();
   checkUrlInvitationToken();
   checkObsOverlayRoute();
@@ -5774,6 +5804,22 @@ if (typeof HTMLDialogElement !== 'undefined') {
     document.body.classList.add('modal-open');
     originalShowModal.call(this);
   };
+}
+
+
+function dismissWelcomeBanner() {
+  const el = document.getElementById('groupsWelcomeBanner');
+  if (el) el.style.display = 'none';
+  try { sessionStorage.setItem('badminton_welcome_dismissed', 'true'); } catch (e) {}
+}
+
+function checkWelcomeBanner() {
+  try {
+    if (sessionStorage.getItem('badminton_welcome_dismissed') === 'true') {
+      const el = document.getElementById('groupsWelcomeBanner');
+      if (el) el.style.display = 'none';
+    }
+  } catch (e) {}
 }
 </script>
 """
