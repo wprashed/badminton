@@ -5066,10 +5066,9 @@ body.theme-light .data-table td {
     </div>
     <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:16px;" data-i18n="openChallengeDesc">Post a challenge on the public board. Any school student or player can accept your challenge and play!</p>
 
-    <div class="modal-form-item">
-      <label data-i18n="challengerNameLabel">Your Name / Team</label>
-      <input type="text" id="challengeCreatorName" class="modal-input" placeholder="e.g. Tanvir (Class 9) or Sifat">
-    </div>
+    <!-- Auto Athlete Profile Identity (No Typing Required) -->
+    <div id="challengeCreatorIdentityCard" style="margin-bottom:14px;"></div>
+    <input type="hidden" id="challengeCreatorName">
 
     <div class="modal-form-item">
       <label data-i18n="challengeCategoryLabel">Format</label>
@@ -6110,8 +6109,37 @@ function saveChallengesDB(list) {
 
 function openNewChallengeModal() {
   if (!requireAuthUser('create or accept challenges')) return;
-  document.getElementById('challengeCreatorName').value = currentUser ? currentUser.name : '';
+  const card = document.getElementById('challengeCreatorIdentityCard');
+  const hiddenInput = document.getElementById('challengeCreatorName');
+
+  const name = currentUser ? currentUser.name : 'Athlete';
+  if (hiddenInput) hiddenInput.value = name;
+
+  if (card) {
+    const avatarHtml = typeof getPlayerAvatarHtml === 'function' ? getPlayerAvatarHtml(name, 42) : '';
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.25);border-radius:var(--radius-sm);">
+        <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+          ${avatarHtml}
+          <div style="min-width:0;">
+            <div style="font-weight:800;font-size:1.02rem;color:var(--clr-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(name)}</div>
+            <div style="font-size:0.75rem;color:var(--clr-green);display:flex;align-items:center;gap:4px;">
+              <span>✓ Verified Profile</span> · <span>${currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'Director' : 'Athlete'}</span>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-ghost btn-xs" onclick="switchChallengeAthleteProfile()" style="font-size:0.72rem;padding:4px 8px;">Switch Profile</button>
+      </div>
+      <span style="font-size:0.72rem;color:var(--clr-text-muted);display:block;margin-top:6px;">Your name is automatically verified from your active profile.</span>
+    `;
+  }
+
   document.getElementById('newChallengeModal').showModal();
+}
+
+function switchChallengeAthleteProfile() {
+  document.getElementById('newChallengeModal').close();
+  openAuthModal();
 }
 
 function postNewChallenge() {
@@ -6265,8 +6293,16 @@ function acceptChallenge(id) {
   const chal = list.find(c => c.id === id);
   if (!chal) return;
 
-  const joinerName = currentUser.name;
-  if (!joinerName || !joinerName.trim()) return;
+  const joinerName = currentUser ? currentUser.name : '';
+  if (!joinerName || !joinerName.trim()) {
+    showToast('Please sign in to accept challenges.', 'warning');
+    return;
+  }
+
+  if (chal.creator.toLowerCase() === joinerName.toLowerCase()) {
+    showToast('You cannot accept your own challenge! Share the invite link with a friend.', 'warning');
+    return;
+  }
 
   chal.opponent = joinerName.trim();
   chal.status = 'accepted';
@@ -6279,7 +6315,7 @@ function acceptChallenge(id) {
   saveChallengesDB(list);
   saveState();
   renderChallengesBoard();
-  showToast(`${joinerName} accepted the challenge! Launching match...`);
+  showToast(`⚡ Match Accepted! Launching live referee court for ${chal.creator} vs ${joinerName}...`, 'success');
   
   setTimeout(() => {
     startUmpireMatch(newMatch.id);
@@ -6321,307 +6357,130 @@ function renderChallengesBoard() {
       }
     }
 
-    const isCreator = currentUser && currentUser.name.toLowerCase() === c.creator.toLowerCase();
-    const isOpponent = currentUser && c.opponent && currentUser.name.toLowerCase() === c.opponent.toLowerCase();
+    const curName = (currentUser && currentUser.name) ? currentUser.name.toLowerCase() : '';
+    const isCreator = curName && (c.creator || '').toLowerCase() === curName;
+    const isOpponent = curName && (c.opponent || '').toLowerCase() === curName;
+    const isMyMatch = isCreator || isOpponent;
     const isAdmin = currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin');
-    const canManage = isCreator || isOpponent || isAdmin;
+    const canCancel = isMyMatch || isAdmin;
     const scoreStr = (match && match.sets && match.sets.length) ? match.sets.map(s => `${s.score[0]}–${s.score[1]}`).join(' | ') : '';
+    const winnerName = c.winner || (match ? (match.winner === 'a' ? match.a : match.b) : null);
+
+    const avatarA = typeof getPlayerAvatarHtml === 'function' ? getPlayerAvatarHtml(c.creator, 38, winnerName === c.creator) : '';
+    const avatarB = c.opponent && typeof getPlayerAvatarHtml === 'function' ? getPlayerAvatarHtml(c.opponent, 38, winnerName === c.opponent) : '';
 
     return `
-      <div class="challenge-card ${c.status === 'open' ? 'open-status' : (c.status === 'completed' ? 'completed-status' : 'accepted-status')}" style="padding:16px 18px;border-radius:var(--radius-md);border:1px solid var(--clr-border);background:var(--clr-surface-card);display:flex;flex-direction:column;justify-content:space-between;gap:12px;box-shadow:var(--shadow-card);">
-        <div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <div style="display:flex;align-items:center;gap:6px;">
-              <span class="challenge-badge ${c.status}" style="font-weight:800;font-size:0.7rem;padding:3px 8px;border-radius:4px;text-transform:uppercase;">
-                ${c.status === 'open' ? 'OPEN' : (c.status === 'completed' ? 'COMPLETED' : 'IN PROGRESS')}
-              </span>
-              ${canManage ? '<span style="font-size:0.68rem;color:var(--clr-gold);font-weight:700;">★ YOUR MATCH</span>' : ''}
-            </div>
+      <div class="challenge-card ${c.status === 'open' ? 'open-status' : (c.status === 'completed' ? 'completed-status' : 'accepted-status')}" style="padding:16px 18px;border-radius:var(--radius-md);border:1px solid var(--clr-border);background:var(--clr-surface-card);display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow-card);">
+        <!-- Top Meta Header -->
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <span class="challenge-badge ${c.status}" style="font-weight:800;font-size:0.7rem;padding:3px 8px;border-radius:4px;text-transform:uppercase;">
+              ${c.status === 'open' ? 'OPEN' : (c.status === 'completed' ? 'COMPLETED' : 'IN PROGRESS')}
+            </span>
+            ${isMyMatch ? '<span style="font-size:0.7rem;color:var(--clr-gold);font-weight:800;background:rgba(245,158,11,0.12);padding:2px 6px;border-radius:4px;border:1px solid rgba(245,158,11,0.25);">★ YOUR MATCH</span>' : ''}
+            <span style="font-weight:600;color:var(--clr-text-muted);font-size:0.72rem;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">
+              ${c.category === 'doubles' ? 'Doubles' : 'Singles'} · ${c.points || 15} pts
+            </span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
             <span style="font-size:0.75rem;color:var(--clr-text-muted);">${c.createdAt || 'Today'}</span>
-          </div>
-
-          <div style="font-weight:800;font-size:1.1rem;color:var(--clr-text);margin-bottom:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-            <span>${escapeHtml(c.creator)}</span>
-            <span style="color:var(--clr-green);font-size:0.85rem;font-weight:700;">vs</span>
-            <span>${c.opponent ? escapeHtml(c.opponent) : '<em style="color:var(--clr-text-muted);font-weight:400;font-size:0.9rem;">(Waiting...)</em>'}</span>
-          </div>
-
-          <div style="font-size:0.8rem;color:var(--clr-text-muted);display:flex;gap:8px;margin-top:6px;align-items:center;flex-wrap:wrap;">
-            <span>${c.category === 'doubles' ? 'Doubles (2v2)' : 'Singles (1v1)'}</span>
-            <span>·</span>
-            <span>${c.points} Points</span>
-            <span>·</span>
-            <span>${escapeHtml(c.note)}</span>
-          </div>
-
-          ${c.status === 'completed' ? `
-            <div style="margin-top:8px;padding:6px 10px;background:rgba(16,185,129,0.1);border-radius:var(--radius-xs);color:var(--clr-green);font-size:0.84rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;">
-              <span>🏆 Winner: ${escapeHtml(c.winner || (match ? (match.winner === 'a' ? match.a : match.b) : ''))}</span>
-              <span style="font-family:monospace;font-weight:800;">${scoreStr}</span>
-            </div>
-          ` : ''}
-        </div>
-
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
-          ${c.status === 'open' ? `
-            ${isCreator ? `
-              <button class="btn btn-ghost btn-sm" style="flex:1;gap:6px;" onclick="copyChallengeInviteLink('${c.id}')">
-                <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                <span>Share Link</span>
-              </button>
-              <button class="btn btn-ghost btn-sm" style="color:var(--clr-red);padding:6px 10px;" onclick="cancelChallenge('${c.id}')" title="Cancel this challenge">
+            ${canCancel ? `
+              <button onclick="cancelChallenge('${c.id}')" title="Cancel challenge" style="background:transparent;border:none;color:var(--clr-text-muted);cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='var(--clr-text-muted)'">
                 <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
+            ` : ''}
+          </div>
+        </div>
+
+        <!-- Competitor Matchup Arena -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:rgba(0,0,0,0.16);border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,0.04);">
+          <!-- Creator Player -->
+          <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;">
+            ${avatarA}
+            <div style="min-width:0;">
+              <div style="font-weight:800;font-size:0.95rem;color:${winnerName === c.creator ? 'var(--clr-green)' : 'var(--clr-text)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                ${escapeHtml(c.creator)} ${winnerName === c.creator ? '👑' : ''}
+              </div>
+              <div style="font-size:0.68rem;color:var(--clr-text-muted);">Challenger</div>
+            </div>
+          </div>
+
+          <!-- VS or Score Badge -->
+          <div style="padding:0 8px;flex-shrink:0;text-align:center;">
+            ${c.status === 'completed' && scoreStr ?
+              `<span style="font-family:monospace;font-size:0.85rem;font-weight:800;color:var(--clr-gold);background:rgba(245,158,11,0.12);padding:2px 6px;border-radius:4px;border:1px solid rgba(245,158,11,0.25);">${scoreStr}</span>` :
+              `<span style="font-size:0.75rem;font-weight:800;color:var(--clr-green);text-transform:uppercase;letter-spacing:0.04em;">VS</span>`
+            }
+          </div>
+
+          <!-- Opponent Player or Waiting Placeholder -->
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0;flex:1;text-align:right;">
+            <div style="min-width:0;">
+              <div style="font-weight:800;font-size:0.95rem;color:${winnerName && winnerName === c.opponent ? 'var(--clr-green)' : (c.opponent ? 'var(--clr-text)' : 'var(--clr-text-muted)')};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                ${c.opponent ? escapeHtml(c.opponent) + (winnerName === c.opponent ? ' 👑' : '') : '<em style="font-weight:400;font-size:0.85rem;">Waiting...</em>'}
+              </div>
+              <div style="font-size:0.68rem;color:var(--clr-text-muted);">${c.opponent ? 'Opponent' : 'Open Slot'}</div>
+            </div>
+            ${c.opponent ?
+              avatarB :
+              `<div style="width:38px;height:38px;border-radius:50%;border:1.5px dashed var(--clr-border);display:flex;align-items:center;justify-content:center;color:var(--clr-text-muted);font-weight:700;font-size:0.9rem;flex-shrink:0;background:rgba(255,255,255,0.02);">+</div>`
+            }
+          </div>
+        </div>
+
+        ${c.note ? `
+          <div style="font-size:0.78rem;color:var(--clr-text-muted);display:flex;align-items:center;gap:5px;">
+            <svg class="icon icon-xs" viewBox="0 0 24 24" style="color:var(--clr-green);"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(c.note)}</span>
+          </div>
+        ` : ''}
+
+        ${c.status === 'completed' && winnerName ? `
+          <div style="padding:6px 10px;background:rgba(16,185,129,0.1);border-radius:var(--radius-xs);color:var(--clr-green);font-size:0.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(16,185,129,0.2);">
+            <span>🏆 Winner: <strong>${escapeHtml(winnerName)}</strong></span>
+            ${scoreStr ? `<span style="font-family:monospace;font-weight:800;">${scoreStr}</span>` : ''}
+          </div>
+        ` : ''}
+
+        <!-- Action Toolbar -->
+        <div style="display:flex;gap:8px;align-items:center;margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
+          ${c.status === 'open' ? `
+            ${isCreator ? `
+              <button class="btn btn-ghost btn-sm" style="flex:1;gap:6px;justify-content:center;" onclick="copyChallengeInviteLink('${c.id}')">
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                <span>Share Invite Link</span>
+              </button>
             ` : `
-              <button class="btn btn-primary btn-sm" style="width:100%;font-weight:700;gap:6px;" onclick="acceptChallenge('${c.id}')">
+              <button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;font-weight:700;gap:6px;" onclick="acceptChallenge('${c.id}')">
                 <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                 <span>Accept Challenge &rarr;</span>
               </button>
             `}
           ` : (c.status === 'completed' ? `
-            <button class="btn btn-ghost btn-sm" style="flex:1;gap:6px;" onclick="openScorecardModal('${match ? match.id : ''}')">
+            <button class="btn btn-ghost btn-sm" style="flex:1;gap:6px;justify-content:center;" onclick="openScorecardModal('${match ? match.id : ''}')">
               <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               <span>View Scorecard</span>
             </button>
-            ${canManage ? `
-              <button class="btn btn-ghost btn-sm" style="color:var(--clr-text-muted);padding:6px 10px;" onclick="cancelChallenge('${c.id}')" title="Remove from board">
-                <svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-              </button>
-            ` : ''}
+            <button class="btn btn-ghost btn-sm" style="gap:6px;" onclick="copyChallengeInviteLink('${c.id}')" title="Share Match Result">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              <span>Share</span>
+            </button>
           ` : `
             <!-- In Progress / Accepted Challenge Management -->
-            <button class="btn btn-primary btn-sm" style="flex:1;min-width:130px;gap:6px;font-weight:700;" onclick="launchChallengeUmpire('${c.id}')">
+            <button class="btn btn-primary btn-sm" style="flex:1;min-width:130px;gap:6px;font-weight:700;justify-content:center;" onclick="launchChallengeUmpire('${c.id}')">
               <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 8 12 2"/></svg>
               <span>Play / Referee</span>
             </button>
-            <button class="btn btn-ghost btn-sm" style="gap:6px;font-weight:600;" onclick="enterChallengeQuickScore('${c.id}')" title="Enter Final Score">
-              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            <button class="btn btn-ghost btn-sm" style="gap:6px;font-weight:600;justify-content:center;" onclick="enterChallengeQuickScore('${c.id}')" title="Enter Final Score">
+              <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               <span>Score</span>
             </button>
-            ${canManage ? `
-              <button class="btn btn-ghost btn-sm" style="color:var(--clr-red);padding:6px 10px;" onclick="cancelChallenge('${c.id}')" title="Cancel or Forfeit Match">
-                <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </button>
-            ` : ''}
           `)}
         </div>
       </div>
     `;
   }).join('');
 }
-
-/* ═══════════════════════════════════════════════════
-   FULL DATA RESET & START OVER LOGIC
-═══════════════════════════════════════════════════ */
-function openDataResetModal() {
-  if (!isAdminUser()) {
-    showToast('Only Admin (Rashed) can reset tournament data.', 'error');
-    return;
-  }
-  document.getElementById('dataResetModal').showModal();
-}
-
-async function resetCurrentTournamentOnly() {
-  if (!isAdminUser()) {
-    showToast('Only Admin (Rashed) can reset tournament data.', 'error');
-    return;
-  }
-  const confirmed = await appConfirm('Wipe all fixtures for the current tournament and start over at setup?', 'Reset Current Tournament', 'Wipe Fixtures', true);
-  if (!confirmed) return;
-  state.matches = [];
-  state.koRounds = [];
-  state.champion = null;
-  state.runnerUp = null;
-  state.thirdPlace = null;
-  state.currentMatchId = null;
-  saveState();
-  const dModal = document.getElementById('dataResetModal');
-  if (dModal && dModal.open) dModal.close();
-  showScreen('setupScreen');
-  showToast('Tournament matches reset to setup.');
-}
-
-async function resetEverythingFullFactory() {
-  if (!isAdminUser()) {
-    showToast('Only Admin (Rashed) can reset tournament data.', 'error');
-    return;
-  }
-  const confirmed = await appConfirm('WARNING: Complete Factory Reset will wipe all tournaments, challenges, wallets, and stats. Are you sure?', 'Factory Reset Warning', 'Factory Reset Everything', true);
-  if (!confirmed) return;
-  localStorage.clear();
-  showToast('All data successfully reset!');
-  setTimeout(() => {
-    window.location.reload();
-  }, 500);
-}
-
-window.svgIcon = function(name, cls) {
-  const c = cls ? `icon ${cls}` : 'icon';
-  switch (name) {
-    case 'shuttle':
-      return `<svg class="${c}" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>`;
-    case 'trophy':
-      return `<svg class="${c}" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg>`;
-    case 'calendar':
-      return `<svg class="${c}" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`;
-    case 'scale':
-      return `<svg class="${c}" viewBox="0 0 24 24"><path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM7 21h10M12 3v18M3 7h18"/></svg>`;
-    case 'clipboard':
-      return `<svg class="${c}" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>`;
-    case 'swords':
-      return `<svg class="${c}" viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>`;
-    case 'check':
-      return `<svg class="${c}" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
-    case 'x':
-      return `<svg class="${c}" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
-    case 'alert':
-      return `<svg class="${c}" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
-    case 'zap':
-      return `<svg class="${c}" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`;
-    case 'mail':
-      return `<svg class="${c}" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>`;
-    case 'printer':
-      return `<svg class="${c}" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>`;
-    case 'copy':
-      return `<svg class="${c}" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>`;
-    case 'download':
-      return `<svg class="${c}" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
-    case 'coin':
-      return `<svg class="${c}" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>`;
-    case 'users':
-      return `<svg class="${c}" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
-    case 'user':
-      return `<svg class="${c}" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`;
-    case 'dot':
-      return `<span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;vertical-align:middle;"></span>`;
-    default:
-      return '';
-  }
-};
-/* ═══════════════════════════════════════════════════
-   STORAGE KEYS & GLOBAL CONSTANTS
-═══════════════════════════════════════════════════ */
-const STORAGE_KEY_STATE = 'badminton_cup_state_v4';
-const STORAGE_KEY_USERS = 'badminton_cup_users_v4';
-const STORAGE_KEY_STATS = 'badminton_cup_stats_v4';
-const STORAGE_KEY_AUTH = 'badminton_cup_cur_user_v4';
-const STORAGE_KEY_THEME = 'badminton_cup_theme_pref';
-const STORAGE_KEY_BETS = 'badminton_cup_bets_v4';
-const STORAGE_KEY_WALLETS = 'badminton_cup_wallets_v4';
-const STORAGE_KEY_TXS = 'badminton_cup_txs_v4';
-const STORAGE_KEY_SUGGESTIONS = 'badminton_cup_suggestions_v4';
-const STORAGE_KEY_SETTINGS = 'badminton_cup_settings_v4';
-const STORAGE_KEY_TOURNAMENTS = 'badminton_cup_tournaments_v4';
-
-/* ═══════════════════════════════════════════════════
-   GLOBAL STATE
-═══════════════════════════════════════════════════ */
-const state = {
-  title: 'The Badminton Cup 2026',
-  category: 'singles', // 'singles' or 'doubles'
-  ptsToWin: 15,
-  bestOf: 3,
-  stageFormat: 'rr',   // 'rr' or 'ko'
-  courtNumber: 2,
-  selectedCourtFilter: 'all',
-  audioEnabled: true,
-  handicapEnabled: false,
-  courtFlipped: false,
-  entryFee: '$20.00',
-  poolA: [],
-  poolB: [],
-  matches: [],
-  koRounds: [],
-  bronzeMatchId: null,
-  currentMatchId: null,
-  currentSetIdx: 0,
-  servingSide: 'a',
-  doublesPositions: {
-    a: { right: '', left: '' },
-    b: { right: '', left: '' }
-  },
-  undoStack: [],
-  champion: null,
-  runnerUp: null,
-  thirdPlace: null,
-  matchStartTime: null,
-  stopwatchInterval: null,
-  intervalTimer: null,
-  endsSwitchedInDecidingSet: false,
-  auditLogs: []
-};
-
-let currentUser = null;
-let audioCtx = null;
-let masterGainNode = null;
-let activeBetMatch = null;
-let activeBetSide = 'a';
-let activeWalkoverType = null;
-let broadcastSync = null;
-let currentPickerTargetPool = 'A';
-let pendingInviteUser = null;
-
-// Settings
-const appSettings = {
-  masterVolume: 0.8,
-  voiceURI: null,
-  buzzerEnabled: true
-};
-
-try {
-  const loadedSettings = JSON.parse(localStorage.getItem(STORAGE_KEY_SETTINGS));
-  if (loadedSettings) Object.assign(appSettings, loadedSettings);
-} catch (e) {}
-
-function saveAppSettings() {
-  try {
-    localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify(appSettings));
-  } catch (e) {}
-}
-
-/* ═══════════════════════════════════════════════════
-   MULTI-TAB REAL-TIME BROADCAST SYNC (ITEM 55)
-═══════════════════════════════════════════════════ */
-if ('BroadcastChannel' in window) {
-  try {
-    broadcastSync = new BroadcastChannel('badminton_cup_live_sync');
-    broadcastSync.onmessage = (e) => {
-      if (e.data && e.data.type === 'STATE_UPDATED') {
-        loadSavedState(false);
-        refreshCurrentViews();
-      }
-    };
-  } catch (e) {}
-}
-
-function broadcastStateChange() {
-  if (broadcastSync) {
-    try {
-      broadcastSync.postMessage({ type: 'STATE_UPDATED', timestamp: Date.now() });
-    } catch (e) {}
-  }
-}
-
-/* ═══════════════════════════════════════════════════
-   MULTI-TOURNAMENT SWITCHER & ISOLATION (ITEM 19)
-═══════════════════════════════════════════════════ */
-function getTournamentsDB() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_TOURNAMENTS);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-    }
-  } catch (e) {}
-  return [{ id: 'main', title: state.title || 'The Badminton Cup 2026', updatedAt: Date.now() }];
-}
-
-function saveTournamentsDB(list) {
-  try {
-    localStorage.setItem(STORAGE_KEY_TOURNAMENTS, JSON.stringify(list));
-  } catch (e) {}
-}
-
 function renderTournamentSwitcher() {
   const selects = [
     document.getElementById('tournamentSelectMore'),

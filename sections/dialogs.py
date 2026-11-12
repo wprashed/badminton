@@ -511,10 +511,9 @@ DIALOGS_CONTENT = """
     </div>
     <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:16px;" data-i18n="openChallengeDesc">Post a challenge on the public board. Any school student or player can accept your challenge and play!</p>
 
-    <div class="modal-form-item">
-      <label data-i18n="challengerNameLabel">Your Name / Team</label>
-      <input type="text" id="challengeCreatorName" class="modal-input" placeholder="e.g. Tanvir (Class 9) or Sifat">
-    </div>
+    <!-- Auto Athlete Profile Identity (No Typing Required) -->
+    <div id="challengeCreatorIdentityCard" style="margin-bottom:14px;"></div>
+    <input type="hidden" id="challengeCreatorName">
 
     <div class="modal-form-item">
       <label data-i18n="challengeCategoryLabel">Format</label>
