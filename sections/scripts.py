@@ -1257,8 +1257,13 @@ function updateUserUI() {
     if (userInfo) userInfo.style.display = 'flex';
     if (avatar) {
       avatar.style.display = 'inline-flex';
-      avatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
-      avatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+      if (currentUser.photoUrl) {
+        avatar.innerHTML = `<img src="${currentUser.photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" alt="${escapeHtml(currentUser.name)}">`;
+        avatar.style.background = 'transparent';
+      } else {
+        avatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
+        avatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+      }
       avatar.style.color = '#ffffff';
     }
     if (roleBadge) {
@@ -1697,11 +1702,76 @@ function confirmPlayerPickerSelection() {
    PERSONALIZED PLAYER HUB (ITEM 13)
 ═══════════════════════════════════════════════════ */
 
-function updateProfileAvatarPreview(val) {
+let tempProfilePhotoDataUrl = null;
+
+function renderProfileAvatarPreview() {
   const preview = document.getElementById('profileEditAvatarPreview');
-  if (preview) {
-    preview.textContent = (val.trim() || '?').charAt(0).toUpperCase();
+  const editAvatar = document.getElementById('profileEditAvatar');
+  const badgeVal = (editAvatar ? editAvatar.value.trim() : '') || (currentUser?.name?.charAt(0) || 'U');
+
+  if (!preview) return;
+  if (tempProfilePhotoDataUrl) {
+    preview.innerHTML = `<img src="${tempProfilePhotoDataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" alt="Avatar">`;
+    preview.style.background = 'transparent';
+  } else {
+    preview.innerHTML = escapeHtml(badgeVal);
+    preview.style.background = (currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin')) ? 'var(--clr-gold)' : 'var(--clr-green)';
   }
+}
+
+function updateProfileAvatarPreview(val) {
+  tempProfilePhotoDataUrl = '';
+  renderProfileAvatarPreview();
+}
+
+function selectPresetAvatarBadge(badge) {
+  const editAvatar = document.getElementById('profileEditAvatar');
+  if (editAvatar) editAvatar.value = badge;
+  tempProfilePhotoDataUrl = '';
+  renderProfileAvatarPreview();
+}
+
+function removeProfilePhoto() {
+  tempProfilePhotoDataUrl = '';
+  renderProfileAvatarPreview();
+  showToast('Profile photo removed. Badge/initial will be displayed.', 'info');
+}
+
+function handleProfilePhotoSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    showToast('Please select a valid image file (PNG, JPG, or WebP).', 'warning');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      try {
+        const canvas = document.createElement('canvas');
+        const MAX_SIZE = 256;
+        const minDim = Math.min(img.width, img.height);
+        const startX = (img.width - minDim) / 2;
+        const startY = (img.height - minDim) / 2;
+
+        canvas.width = MAX_SIZE;
+        canvas.height = MAX_SIZE;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, MAX_SIZE, MAX_SIZE);
+
+        tempProfilePhotoDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+        renderProfileAvatarPreview();
+        showToast('Photo uploaded! Tap "Save Changes" to save to your profile.', 'info');
+      } catch (err) {
+        showToast('Error processing image.', 'error');
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
 function openProfileSettingsModal() {
@@ -1713,6 +1783,8 @@ function openProfileSettingsModal() {
   const modal = document.getElementById('userProfileSettingsModal');
   if (!modal) return;
 
+  tempProfilePhotoDataUrl = currentUser.photoUrl || null;
+
   const editAvatar = document.getElementById('profileEditAvatar');
   const editName = document.getElementById('profileEditName');
   const editEmail = document.getElementById('profileEditEmail');
@@ -1720,7 +1792,6 @@ function openProfileSettingsModal() {
   const editHand = document.getElementById('profileEditHand');
   const editStyle = document.getElementById('profileEditStyle');
   const editPass = document.getElementById('profileEditPasscode');
-  const avatarPreview = document.getElementById('profileEditAvatarPreview');
 
   if (editAvatar) editAvatar.value = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
   if (editName) editName.value = currentUser.name;
@@ -1729,10 +1800,8 @@ function openProfileSettingsModal() {
   if (editHand) editHand.value = currentUser.dominantHand || 'Right-Handed';
   if (editStyle) editStyle.value = currentUser.style || 'All-Rounder';
   if (editPass) editPass.value = '';
-  if (avatarPreview) {
-    avatarPreview.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
-    avatarPreview.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
-  }
+
+  renderProfileAvatarPreview();
 
   modal.showModal();
 }
@@ -1757,7 +1826,11 @@ function saveProfileSettings(e) {
   currentUser.club = editClub ? editClub.value.trim() : (currentUser.club || '');
   currentUser.dominantHand = editHand ? editHand.value : (currentUser.dominantHand || 'Right-Handed');
   currentUser.style = editStyle ? editStyle.value : (currentUser.style || 'All-Rounder');
-  currentUser.avatar = (editAvatar && editAvatar.value.trim()) ? editAvatar.value.trim().toUpperCase() : newName.charAt(0).toUpperCase();
+  currentUser.avatar = (editAvatar && editAvatar.value.trim()) ? editAvatar.value.trim() : newName.charAt(0).toUpperCase();
+
+  if (tempProfilePhotoDataUrl !== null) {
+    currentUser.photoUrl = tempProfilePhotoDataUrl || null;
+  }
 
   if (editPass && editPass.value.trim()) {
     currentUser.passcode = editPass.value.trim();
@@ -1792,7 +1865,7 @@ function saveProfileSettings(e) {
 
   const modal = document.getElementById('userProfileSettingsModal');
   if (modal) modal.close();
-  showToast('Profile updated successfully!', 'success');
+  showToast('Profile photo and details saved successfully!', 'success');
 }
 
 function renderPlayerHub() {
@@ -1821,8 +1894,13 @@ function renderPlayerHub() {
     pSubtitle.textContent = `${currentUser.club || 'Independent Athlete'} · ${currentUser.dominantHand || 'Right-Handed'} · ${currentUser.style || 'All-Rounder'}`;
   }
   if (pAvatar) {
-    pAvatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
-    pAvatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+    if (currentUser.photoUrl) {
+      pAvatar.innerHTML = `<img src="${currentUser.photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" alt="${escapeHtml(currentUser.name)}">`;
+      pAvatar.style.background = 'transparent';
+    } else {
+      pAvatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
+      pAvatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+    }
   }
   if (pRoleBadge) {
     pRoleBadge.textContent = (currentUser.role || 'PLAYER').toUpperCase();

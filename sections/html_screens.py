@@ -1109,7 +1109,7 @@ SCREENS_CONTENT = """
     <!-- Top Nav Action Bar -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
       <div style="display:flex;align-items:center;gap:12px;">
-        <div id="playerHubAvatarLarge" style="width:54px;height:54px;border-radius:var(--radius-sm);background:var(--clr-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;border:2px solid var(--clr-border);">R</div>
+        <div id="playerHubAvatarLarge" style="width:60px;height:60px;border-radius:50%;background:var(--clr-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;border:2px solid var(--clr-border);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.2);">R</div>
         <div>
           <div style="display:flex;align-items:center;gap:8px;">
             <h2 id="playerHubName" style="font-family:var(--font-display);font-size:1.35rem;font-weight:800;color:var(--clr-text);margin:0;">Athlete Name</h2>

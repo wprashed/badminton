@@ -3926,7 +3926,7 @@ body.theme-light .data-table td {
     <!-- Top Nav Action Bar -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
       <div style="display:flex;align-items:center;gap:12px;">
-        <div id="playerHubAvatarLarge" style="width:54px;height:54px;border-radius:var(--radius-sm);background:var(--clr-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;border:2px solid var(--clr-border);">R</div>
+        <div id="playerHubAvatarLarge" style="width:60px;height:60px;border-radius:50%;background:var(--clr-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;border:2px solid var(--clr-border);overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.2);">R</div>
         <div>
           <div style="display:flex;align-items:center;gap:8px;">
             <h2 id="playerHubName" style="font-family:var(--font-display);font-size:1.35rem;font-weight:800;color:var(--clr-text);margin:0;">Athlete Name</h2>
@@ -5371,11 +5371,50 @@ body.theme-light .data-table td {
     </div>
 
     <form id="profileSettingsForm" onsubmit="saveProfileSettings(event)">
-      <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;">
-        <div id="profileEditAvatarPreview" style="width:48px;height:48px;border-radius:var(--radius-sm);background:var(--clr-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.35rem;font-weight:900;flex-shrink:0;">R</div>
-        <div style="flex:1;">
-          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Avatar Initial / Badge</label>
-          <input type="text" id="profileEditAvatar" maxlength="2" class="modal-input" style="width:80px;text-align:center;font-weight:900;text-transform:uppercase;" oninput="updateProfileAvatarPreview(this.value)">
+      <!-- Profile Photo & Avatar Customization -->
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-md);padding:16px;margin-bottom:18px;">
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+          <!-- Avatar / Photo Circle Preview -->
+          <div id="profileEditAvatarPreview" style="width:68px;height:68px;border-radius:50%;background:var(--clr-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;flex-shrink:0;overflow:hidden;border:2px solid var(--clr-border);box-shadow:0 2px 8px rgba(0,0,0,0.25);">
+            R
+          </div>
+
+          <!-- Photo Upload Action Group -->
+          <div style="flex:1;min-width:200px;">
+            <div style="font-size:0.88rem;font-weight:700;color:var(--clr-text);margin-bottom:3px;">Profile Photo</div>
+            <div style="font-size:0.74rem;color:var(--clr-text-muted);margin-bottom:10px;">Upload a custom portrait from your phone or computer.</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+              <input type="file" id="profilePhotoFileInput" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="handleProfilePhotoSelected(event)">
+              <button type="button" class="btn btn-primary btn-xs" onclick="document.getElementById('profilePhotoFileInput').click()" style="display:inline-flex;align-items:center;gap:6px;font-weight:600;">
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <span>Upload Photo</span>
+              </button>
+              <button type="button" class="btn btn-ghost btn-xs" id="removeProfilePhotoBtn" onclick="removeProfilePhoto()" style="color:var(--clr-text-muted);">
+                <span>Remove</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preset Athlete Badges & Custom Initials -->
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+            <span style="font-size:0.74rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;letter-spacing:0.04em;">Or Quick Badges / Emojis:</span>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:0.72rem;color:var(--clr-text-muted);">Custom Initial:</span>
+              <input type="text" id="profileEditAvatar" maxlength="2" class="modal-input" style="width:52px;padding:3px 6px;text-align:center;font-weight:900;text-transform:uppercase;font-size:0.82rem;" oninput="updateProfileAvatarPreview(this.value)">
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('🏸')" style="font-size:1rem;padding:4px 8px;" title="Badminton Shuttle">🏸</button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('🥇')" style="font-size:1rem;padding:4px 8px;" title="Gold Medal">🥇</button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('⚡')" style="font-size:1rem;padding:4px 8px;" title="Lightning">⚡</button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('👑')" style="font-size:1rem;padding:4px 8px;" title="Champion Crown">👑</button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('🦁')" style="font-size:1rem;padding:4px 8px;" title="Lionheart">🦁</button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('🐯')" style="font-size:1rem;padding:4px 8px;" title="Tiger">🐯</button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('🚀')" style="font-size:1rem;padding:4px 8px;" title="Rocket">🚀</button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('🎯')" style="font-size:1rem;padding:4px 8px;" title="Target Bullseye">🎯</button>
+          </div>
         </div>
       </div>
 
@@ -6690,8 +6729,13 @@ function updateUserUI() {
     if (userInfo) userInfo.style.display = 'flex';
     if (avatar) {
       avatar.style.display = 'inline-flex';
-      avatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
-      avatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+      if (currentUser.photoUrl) {
+        avatar.innerHTML = `<img src="${currentUser.photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" alt="${escapeHtml(currentUser.name)}">`;
+        avatar.style.background = 'transparent';
+      } else {
+        avatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
+        avatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+      }
       avatar.style.color = '#ffffff';
     }
     if (roleBadge) {
@@ -7130,11 +7174,76 @@ function confirmPlayerPickerSelection() {
    PERSONALIZED PLAYER HUB (ITEM 13)
 ═══════════════════════════════════════════════════ */
 
-function updateProfileAvatarPreview(val) {
+let tempProfilePhotoDataUrl = null;
+
+function renderProfileAvatarPreview() {
   const preview = document.getElementById('profileEditAvatarPreview');
-  if (preview) {
-    preview.textContent = (val.trim() || '?').charAt(0).toUpperCase();
+  const editAvatar = document.getElementById('profileEditAvatar');
+  const badgeVal = (editAvatar ? editAvatar.value.trim() : '') || (currentUser?.name?.charAt(0) || 'U');
+
+  if (!preview) return;
+  if (tempProfilePhotoDataUrl) {
+    preview.innerHTML = `<img src="${tempProfilePhotoDataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" alt="Avatar">`;
+    preview.style.background = 'transparent';
+  } else {
+    preview.innerHTML = escapeHtml(badgeVal);
+    preview.style.background = (currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin')) ? 'var(--clr-gold)' : 'var(--clr-green)';
   }
+}
+
+function updateProfileAvatarPreview(val) {
+  tempProfilePhotoDataUrl = '';
+  renderProfileAvatarPreview();
+}
+
+function selectPresetAvatarBadge(badge) {
+  const editAvatar = document.getElementById('profileEditAvatar');
+  if (editAvatar) editAvatar.value = badge;
+  tempProfilePhotoDataUrl = '';
+  renderProfileAvatarPreview();
+}
+
+function removeProfilePhoto() {
+  tempProfilePhotoDataUrl = '';
+  renderProfileAvatarPreview();
+  showToast('Profile photo removed. Badge/initial will be displayed.', 'info');
+}
+
+function handleProfilePhotoSelected(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    showToast('Please select a valid image file (PNG, JPG, or WebP).', 'warning');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      try {
+        const canvas = document.createElement('canvas');
+        const MAX_SIZE = 256;
+        const minDim = Math.min(img.width, img.height);
+        const startX = (img.width - minDim) / 2;
+        const startY = (img.height - minDim) / 2;
+
+        canvas.width = MAX_SIZE;
+        canvas.height = MAX_SIZE;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, startX, startY, minDim, minDim, 0, 0, MAX_SIZE, MAX_SIZE);
+
+        tempProfilePhotoDataUrl = canvas.toDataURL('image/jpeg', 0.88);
+        renderProfileAvatarPreview();
+        showToast('Photo uploaded! Tap "Save Changes" to save to your profile.', 'info');
+      } catch (err) {
+        showToast('Error processing image.', 'error');
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
 function openProfileSettingsModal() {
@@ -7146,6 +7255,8 @@ function openProfileSettingsModal() {
   const modal = document.getElementById('userProfileSettingsModal');
   if (!modal) return;
 
+  tempProfilePhotoDataUrl = currentUser.photoUrl || null;
+
   const editAvatar = document.getElementById('profileEditAvatar');
   const editName = document.getElementById('profileEditName');
   const editEmail = document.getElementById('profileEditEmail');
@@ -7153,7 +7264,6 @@ function openProfileSettingsModal() {
   const editHand = document.getElementById('profileEditHand');
   const editStyle = document.getElementById('profileEditStyle');
   const editPass = document.getElementById('profileEditPasscode');
-  const avatarPreview = document.getElementById('profileEditAvatarPreview');
 
   if (editAvatar) editAvatar.value = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
   if (editName) editName.value = currentUser.name;
@@ -7162,10 +7272,8 @@ function openProfileSettingsModal() {
   if (editHand) editHand.value = currentUser.dominantHand || 'Right-Handed';
   if (editStyle) editStyle.value = currentUser.style || 'All-Rounder';
   if (editPass) editPass.value = '';
-  if (avatarPreview) {
-    avatarPreview.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
-    avatarPreview.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
-  }
+
+  renderProfileAvatarPreview();
 
   modal.showModal();
 }
@@ -7190,7 +7298,11 @@ function saveProfileSettings(e) {
   currentUser.club = editClub ? editClub.value.trim() : (currentUser.club || '');
   currentUser.dominantHand = editHand ? editHand.value : (currentUser.dominantHand || 'Right-Handed');
   currentUser.style = editStyle ? editStyle.value : (currentUser.style || 'All-Rounder');
-  currentUser.avatar = (editAvatar && editAvatar.value.trim()) ? editAvatar.value.trim().toUpperCase() : newName.charAt(0).toUpperCase();
+  currentUser.avatar = (editAvatar && editAvatar.value.trim()) ? editAvatar.value.trim() : newName.charAt(0).toUpperCase();
+
+  if (tempProfilePhotoDataUrl !== null) {
+    currentUser.photoUrl = tempProfilePhotoDataUrl || null;
+  }
 
   if (editPass && editPass.value.trim()) {
     currentUser.passcode = editPass.value.trim();
@@ -7225,7 +7337,7 @@ function saveProfileSettings(e) {
 
   const modal = document.getElementById('userProfileSettingsModal');
   if (modal) modal.close();
-  showToast('Profile updated successfully!', 'success');
+  showToast('Profile photo and details saved successfully!', 'success');
 }
 
 function renderPlayerHub() {
@@ -7254,8 +7366,13 @@ function renderPlayerHub() {
     pSubtitle.textContent = `${currentUser.club || 'Independent Athlete'} · ${currentUser.dominantHand || 'Right-Handed'} · ${currentUser.style || 'All-Rounder'}`;
   }
   if (pAvatar) {
-    pAvatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
-    pAvatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+    if (currentUser.photoUrl) {
+      pAvatar.innerHTML = `<img src="${currentUser.photoUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" alt="${escapeHtml(currentUser.name)}">`;
+      pAvatar.style.background = 'transparent';
+    } else {
+      pAvatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
+      pAvatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+    }
   }
   if (pRoleBadge) {
     pRoleBadge.textContent = (currentUser.role || 'PLAYER').toUpperCase();

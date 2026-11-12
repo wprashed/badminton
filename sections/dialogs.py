@@ -1080,11 +1080,50 @@ DIALOGS_CONTENT = """
     </div>
 
     <form id="profileSettingsForm" onsubmit="saveProfileSettings(event)">
-      <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;">
-        <div id="profileEditAvatarPreview" style="width:48px;height:48px;border-radius:var(--radius-sm);background:var(--clr-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.35rem;font-weight:900;flex-shrink:0;">R</div>
-        <div style="flex:1;">
-          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Avatar Initial / Badge</label>
-          <input type="text" id="profileEditAvatar" maxlength="2" class="modal-input" style="width:80px;text-align:center;font-weight:900;text-transform:uppercase;" oninput="updateProfileAvatarPreview(this.value)">
+      <!-- Profile Photo & Avatar Customization -->
+      <div style="background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-md);padding:16px;margin-bottom:18px;">
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+          <!-- Avatar / Photo Circle Preview -->
+          <div id="profileEditAvatarPreview" style="width:68px;height:68px;border-radius:50%;background:var(--clr-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;flex-shrink:0;overflow:hidden;border:2px solid var(--clr-border);box-shadow:0 2px 8px rgba(0,0,0,0.25);">
+            R
+          </div>
+
+          <!-- Photo Upload Action Group -->
+          <div style="flex:1;min-width:200px;">
+            <div style="font-size:0.88rem;font-weight:700;color:var(--clr-text);margin-bottom:3px;">Profile Photo</div>
+            <div style="font-size:0.74rem;color:var(--clr-text-muted);margin-bottom:10px;">Upload a custom portrait from your phone or computer.</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+              <input type="file" id="profilePhotoFileInput" accept="image/png, image/jpeg, image/webp" style="display:none;" onchange="handleProfilePhotoSelected(event)">
+              <button type="button" class="btn btn-primary btn-xs" onclick="document.getElementById('profilePhotoFileInput').click()" style="display:inline-flex;align-items:center;gap:6px;font-weight:600;">
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                <span>Upload Photo</span>
+              </button>
+              <button type="button" class="btn btn-ghost btn-xs" id="removeProfilePhotoBtn" onclick="removeProfilePhoto()" style="color:var(--clr-text-muted);">
+                <span>Remove</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preset Athlete Badges & Custom Initials -->
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+            <span style="font-size:0.74rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;letter-spacing:0.04em;">Or Quick Badges / Emojis:</span>
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:0.72rem;color:var(--clr-text-muted);">Custom Initial:</span>
+              <input type="text" id="profileEditAvatar" maxlength="2" class="modal-input" style="width:52px;padding:3px 6px;text-align:center;font-weight:900;text-transform:uppercase;font-size:0.82rem;" oninput="updateProfileAvatarPreview(this.value)">
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('🏸')" style="font-size:1rem;padding:4px 8px;" title="Badminton Shuttle">🏸</button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('🥇')" style="font-size:1rem;padding:4px 8px;" title="Gold Medal">🥇</button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('⚡')" style="font-size:1rem;padding:4px 8px;" title="Lightning">⚡</button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('👑')" style="font-size:1rem;padding:4px 8px;" title="Champion Crown">👑</button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('🦁')" style="font-size:1rem;padding:4px 8px;" title="Lionheart">🦁</button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('🐯')" style="font-size:1rem;padding:4px 8px;" title="Tiger">🐯</button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('🚀')" style="font-size:1rem;padding:4px 8px;" title="Rocket">🚀</button>
+            <button type="button" class="btn btn-ghost btn-xs" onclick="selectPresetAvatarBadge('🎯')" style="font-size:1rem;padding:4px 8px;" title="Target Bullseye">🎯</button>
+          </div>
         </div>
       </div>
 
