@@ -2447,6 +2447,178 @@ body.theme-light tbody tr:hover {
   background: #f8fafc;
 }
 
+
+/* Leaderboard Filter Pills & Podium */
+.leaderboard-filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.filter-pill-btn {
+  background: var(--clr-surface-card);
+  border: 1px solid var(--clr-border);
+  color: var(--clr-text-muted);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 140ms ease;
+}
+.filter-pill-btn:hover {
+  color: var(--clr-text);
+  border-color: var(--clr-text-muted);
+}
+.filter-pill-btn.active {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: var(--clr-green);
+  color: var(--clr-green);
+  font-weight: 700;
+}
+body.theme-light .filter-pill-btn.active {
+  background: #ecfdf5;
+  border-color: #059669;
+  color: #059669;
+}
+
+/* Podium Showcase */
+.podium-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr 1fr;
+  gap: 14px;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+@media (max-width: 640px) {
+  .podium-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.podium-card {
+  background: var(--clr-surface-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+  position: relative;
+  transition: transform 140ms ease;
+}
+.podium-card:hover {
+  transform: translateY(-2px);
+}
+.podium-gold {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, var(--clr-surface-card) 100%);
+  padding: 22px 16px;
+  order: 2;
+}
+.podium-silver {
+  border-color: rgba(148, 163, 184, 0.4);
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.06) 0%, var(--clr-surface-card) 100%);
+  order: 1;
+}
+.podium-bronze {
+  border-color: rgba(217, 119, 6, 0.35);
+  background: linear-gradient(180deg, rgba(217, 119, 6, 0.05) 0%, var(--clr-surface-card) 100%);
+  order: 3;
+}
+@media (max-width: 640px) {
+  .podium-gold { order: 1; }
+  .podium-silver { order: 2; }
+  .podium-bronze { order: 3; }
+}
+
+.podium-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+.podium-gold .podium-avatar {
+  width: 60px;
+  height: 60px;
+  font-size: 1.55rem;
+  border: 3px solid var(--clr-gold);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+.podium-silver .podium-avatar {
+  border: 2px solid #94a3b8;
+  background: linear-gradient(135deg, #94a3b8, #64748b);
+}
+.podium-bronze .podium-avatar {
+  border: 2px solid #d97706;
+  background: linear-gradient(135deg, #b45309, #78350f);
+}
+
+/* Athlete Profile Stacks */
+.profile-stacks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.stack-card {
+  background: var(--clr-surface-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.stack-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.stack-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--clr-text-muted);
+}
+.stack-value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--clr-text);
+  margin-bottom: 4px;
+}
+.stack-sublabel {
+  font-size: 0.76rem;
+  color: var(--clr-text-muted);
+}
+.stack-progress-bg {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+body.theme-light .stack-progress-bg {
+  background: #e2e8f0;
+}
+.stack-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 300ms ease;
+}
+
 </style>
 </head>
 <body>
@@ -2506,11 +2678,14 @@ body.theme-light tbody tr:hover {
       <span data-i18n="navMore">Menu</span>
     </button>
 
-    <!-- User Panel / Sign In -->
+    <!-- User Panel / Profile & Auth -->
     <div class="user-panel" id="userStatusPanel">
-      <div class="user-avatar" id="headerAvatar">?</div>
-      <span class="user-name-label" id="headerUsername" style="display:none;">Guest</span>
-      <button class="btn btn-primary btn-xs" id="authBtn" onclick="openAuthModal()">Sign In</button>
+      <div class="user-avatar" id="headerAvatar" onclick="handleUserAvatarClick()" title="View Athlete Profile" style="cursor:pointer;">?</div>
+      <div id="headerUserInfo" onclick="handleUserAvatarClick()" style="display:none;cursor:pointer;flex-direction:column;line-height:1.15;" title="View Athlete Profile">
+        <span class="user-name-label" id="headerUsername" style="font-weight:700;font-size:0.8rem;color:var(--clr-text);max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Guest</span>
+        <span id="headerUserRole" style="font-size:0.65rem;font-weight:800;letter-spacing:0.04em;color:var(--clr-gold);text-transform:uppercase;">GUEST</span>
+      </div>
+      <button class="btn btn-primary btn-xs" id="authBtn" onclick="handleAuthBtnClick()">Sign In</button>
     </div>
   </div>
 </header>
@@ -2728,14 +2903,17 @@ body.theme-light tbody tr:hover {
     <!-- Navigation & Action bar -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-        <h2 style="font-family:var(--font-display);font-size:1.45rem;font-weight:800;color:var(--clr-text);letter-spacing:-0.01em;margin:0;">Group Stage & Standings</h2>
-        <select id="groupCourtFilter" style="padding:6px 14px;font-size:0.82rem;font-weight:600;background:rgba(255,255,255,0.05);border:1px solid var(--clr-border);border-radius:var(--radius-sm);color:var(--clr-text);font-family:inherit;cursor:pointer;" onchange="renderGroupMatches()">
-          <option value="all">Court: All Courts</option>
-          <option value="1">Court 1</option>
-          <option value="2">Court 2</option>
-          <option value="3">Court 3</option>
-          <option value="4">Court 4</option>
-        </select>
+        <h2 style="font-family:var(--font-display);font-size:1.35rem;font-weight:800;color:var(--clr-text);letter-spacing:-0.01em;margin:0;">Group Stage & Standings</h2>
+        <div style="display:inline-flex;align-items:center;background:var(--clr-surface-card);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:2px 8px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24" style="color:var(--clr-text-muted);margin-right:4px;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+          <select id="groupCourtFilter" style="padding:4px 8px;font-size:0.82rem;font-weight:600;background:transparent;border:none;color:var(--clr-text);font-family:inherit;cursor:pointer;outline:none;" onchange="renderGroupMatches()">
+            <option value="all">All Courts</option>
+            <option value="1">Court 1</option>
+            <option value="2">Court 2</option>
+            <option value="3">Court 3</option>
+            <option value="4">Court 4</option>
+          </select>
+        </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-ghost btn-sm" onclick="showScreen('scheduleScreen')"><svg class="icon icon-xs" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Match Schedule</button>
@@ -3001,25 +3179,61 @@ body.theme-light tbody tr:hover {
   <!-- ═══════════════════════════════════════════════════
        6. ANALYTICS & HEAD-TO-HEAD (H2H) SCREEN
   ═══════════════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════════
+       TOURNAMENT ANALYSIS & H2H EXPLORER SCREEN
+  ═══════════════════════════════════════════════════ -->
   <section id="analyticsScreen" class="screen">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
       <div>
-        <h2 style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM7 21h10M12 3v18M3 7h18"/></svg> Head-to-Head & Player Analytics</h2>
-        <p style="color:var(--clr-text-muted);font-size:0.85rem;">Compare athlete records, Elo ratings, point differential, and historical matchups.</p>
+        <h2 style="font-family:var(--font-display);font-size:1.35rem;font-weight:800;color:var(--clr-text);display:flex;align-items:center;gap:8px;margin:0;">
+          <svg class="icon icon-md" viewBox="0 0 24 24" style="color:var(--clr-green);"><path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM7 21h10M12 3v18M3 7h18"/></svg>
+          <span>Tournament Analytics & Head-to-Head Explorer</span>
+        </h2>
+        <p style="color:var(--clr-text-muted);font-size:0.82rem;margin:2px 0 0;">Compare athlete records, Elo ratings, head-to-head match encounters, and scoring efficiency.</p>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn btn-ghost btn-sm" onclick="exportStandingsCSV()" title="Download pool standings as CSV"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV</button>
-        <button class="btn btn-ghost btn-sm" onclick="showScreen('leaderboardScreen')"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg> View Hall of Fame</button>
+        <button class="btn btn-ghost btn-sm" onclick="showScreen('groupsScreen')">&larr; Back to Tournament</button>
+        <button class="btn btn-ghost btn-sm" onclick="showScreen('leaderboardScreen')"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg> View Leaderboard</button>
+        <button class="btn btn-primary btn-sm" onclick="exportStandingsCSV()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV</button>
       </div>
     </div>
 
+    <!-- Tournament Overview KPIs -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr));gap:14px;margin-bottom:24px;">
+      <div class="card" style="padding:16px;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Tournament Progress</div>
+        <div id="analyticsKpiMatches" style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--clr-green);margin:4px 0;">0 / 0</div>
+        <div id="analyticsKpiMatchesSub" style="font-size:0.75rem;color:var(--clr-text-muted);">0% fixtures completed</div>
+      </div>
+      <div class="card" style="padding:16px;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Total Points Scored</div>
+        <div id="analyticsKpiPoints" style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--clr-gold);margin:4px 0;">0 pts</div>
+        <div id="analyticsKpiPointsSub" style="font-size:0.75rem;color:var(--clr-text-muted);">Across all courts & sets</div>
+      </div>
+      <div class="card" style="padding:16px;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Avg Match Duration</div>
+        <div id="analyticsKpiDuration" style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--clr-blue);margin:4px 0;">22 min</div>
+        <div style="font-size:0.75rem;color:var(--clr-text-muted);">BWF 21-pt format pacing</div>
+      </div>
+      <div class="card" style="padding:16px;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Active Contenders</div>
+        <div id="analyticsKpiPlayers" style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--clr-text);margin:4px 0;">16</div>
+        <div style="font-size:0.75rem;color:var(--clr-text-muted);">Pool A & Pool B seeds</div>
+      </div>
+    </div>
+
+    <!-- Interactive Head-to-Head Explorer -->
     <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h3 class="card-title" style="margin:0;">Head-to-Head Athlete Faceoff</h3>
+        <span style="font-size:0.78rem;color:var(--clr-text-muted);">Instant statistical comparison</span>
+      </div>
       <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;margin-bottom:20px;">
         <div>
           <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Select Athlete A</label>
           <select id="analyticsPlayerASelect" class="modal-input" onchange="runAnalyticsComparison()"></select>
         </div>
-        <div style="font-family:var(--font-display);font-size:1.6rem;color:var(--clr-gold);text-align:center;padding-top:16px;">VS</div>
+        <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:900;color:var(--clr-gold);text-align:center;padding-top:16px;">VS</div>
         <div>
           <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Select Athlete B</label>
           <select id="analyticsPlayerBSelect" class="modal-input" onchange="runAnalyticsComparison()"></select>
@@ -3406,16 +3620,41 @@ body.theme-light tbody tr:hover {
   <!-- ═══════════════════════════════════════════════════
        8. GLOBAL LEADERBOARD & HALL OF FAME
   ═══════════════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════════
+       PRO LEADERBOARD & HALL OF FAME SCREEN
+  ═══════════════════════════════════════════════════ -->
   <section id="leaderboardScreen" class="screen">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:12px;">
       <div>
-        <h2 style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg> Global Hall of Fame & Rankings</h2>
-        <p style="color:var(--clr-text-muted);font-size:0.85rem;">All-time match records, medals, win percentages, Elo ratings, and point differentials.</p>
+        <h2 style="font-family:var(--font-display);font-size:1.35rem;font-weight:800;color:var(--clr-text);display:flex;align-items:center;gap:8px;margin:0;">
+          <svg class="icon icon-md" viewBox="0 0 24 24" style="color:var(--clr-gold);"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg>
+          <span>Tournament Leaderboard & Hall of Fame</span>
+        </h2>
+        <p style="color:var(--clr-text-muted);font-size:0.82rem;margin:2px 0 0;">Official BWF tiebreaker standings, dynamic Elo ratings, win percentages, and podium trophies.</p>
       </div>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-ghost btn-sm" onclick="showScreen('groupsScreen')">&larr; Back to Tournament</button>
+        <button class="btn btn-ghost btn-sm" onclick="showScreen('analyticsScreen')">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM7 21h10M12 3v18M3 7h18"/></svg>
+          <span>H2H Analytics</span>
+        </button>
         <button class="btn btn-primary btn-sm" onclick="exportStandingsCSV()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV</button>
       </div>
+    </div>
+
+    <!-- Filter Bar Pills -->
+    <div class="leaderboard-filter-bar">
+      <button class="filter-pill-btn active" id="lbFilterAll" onclick="setLeaderboardFilter('all')">All Athletes</button>
+      <button class="filter-pill-btn" id="lbFilterPoolA" onclick="setLeaderboardFilter('poolA')">Pool A</button>
+      <button class="filter-pill-btn" id="lbFilterPoolB" onclick="setLeaderboardFilter('poolB')">Pool B</button>
+      <button class="filter-pill-btn" id="lbFilterElo" onclick="setLeaderboardFilter('elo')">By Elo Rating</button>
+      <button class="filter-pill-btn" id="lbFilterWinRate" onclick="setLeaderboardFilter('winrate')">By Win Rate</button>
+      <button class="filter-pill-btn" id="lbFilterPredictors" onclick="setLeaderboardFilter('predictors')">Top Tipsters / Predictors</button>
+    </div>
+
+    <!-- Top 3 Podium Showcase -->
+    <div id="leaderboardPodiumContainer" class="podium-grid"></div>
+
     <!-- Special Awards & Records -->
     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 260px), 1fr));gap:14px;margin-bottom:20px;">
       <div class="card" style="display:flex;align-items:center;gap:14px;padding:14px;border-left:3px solid var(--clr-gold);">
@@ -3440,8 +3679,7 @@ body.theme-light tbody tr:hover {
       </div>
     </div>
 
-    </div>
-
+    <!-- Full Rankings Table -->
     <div class="card">
       <div class="data-table-container">
         <table class="data-table">
@@ -3470,57 +3708,135 @@ body.theme-light tbody tr:hover {
   <!-- ═══════════════════════════════════════════════════
        9. PERSONALIZED PLAYER HUB (ITEM 13)
   ═══════════════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════════
+       ATHLETE PERSONAL PROFILE & DATA STACKS SCREEN
+  ═══════════════════════════════════════════════════ -->
   <section id="playerHubScreen" class="screen">
+    <!-- Top Nav Action Bar -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-      <div>
-        <h2 style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Athlete Personal Tournament Hub</h2>
-        <p id="playerHubSubtitle" style="color:var(--clr-text-muted);font-size:0.85rem;">Personal upcoming fixtures, assigned courts, rating, and match history.</p>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div id="playerHubAvatarLarge" style="width:54px;height:54px;border-radius:var(--radius-sm);background:var(--clr-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;border:2px solid var(--clr-border);">R</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <h2 id="playerHubName" style="font-family:var(--font-display);font-size:1.35rem;font-weight:800;color:var(--clr-text);margin:0;">Athlete Name</h2>
+            <span id="playerHubRoleBadge" class="badge badge-gold" style="font-size:0.7rem;text-transform:uppercase;">PLAYER</span>
+          </div>
+          <p id="playerHubSubtitle" style="color:var(--clr-text-muted);font-size:0.82rem;margin:2px 0 0;">Club Athlete · BWF Registered</p>
+        </div>
       </div>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-ghost btn-sm" onclick="showScreen('groupsScreen')">&larr; Back to Tournament</button>
-        <button class="btn btn-primary btn-sm" onclick="openProfileSettingsModal()">Edit My Profile</button>
+        <button class="btn btn-ghost btn-sm" onclick="openCoinBalanceModal()" style="color:var(--clr-gold);">
+          <span>🪙 Wallet</span>
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="openProfileSettingsModal()" style="display:inline-flex;align-items:center;gap:6px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          <span>Edit Profile Settings</span>
+        </button>
       </div>
     </div>
 
-    <!-- Next Fixture Callout Card -->
-    <div id="playerNextFixtureCard" class="card" style="background:linear-gradient(135deg, rgba(34,197,94,0.15), rgba(13,31,45,0.8));border-color:var(--clr-green);margin-bottom:24px;"></div>
+    <!-- Next Scheduled Fixture Callout Card -->
+    <div id="playerNextFixtureCard" class="card" style="background:linear-gradient(135deg, rgba(34,197,94,0.12), rgba(13,31,45,0.7));border-color:var(--clr-green);margin-bottom:20px;"></div>
 
-    <!-- Career Dossier Stats -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr));gap:16px;margin-bottom:24px;">
-      <div class="card" style="padding:16px;text-align:center;">
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:700;">PLAYER SKILL RATING</div>
-        <div id="playerHubElo" style="font-family:var(--font-display);font-size:2.2rem;color:var(--clr-gold);">1200</div>
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);">BWF SaaS Elo</div>
+    <!-- Athlete All Data & Stacks Grid -->
+    <div class="profile-stacks-grid">
+      <!-- 1. Elo & Skill Tier Stack -->
+      <div class="stack-card">
+        <div class="stack-header">
+          <span class="stack-title">Skill & Elo Rating</span>
+          <span id="playerHubTierBadge" class="badge" style="font-size:0.7rem;background:rgba(245,158,11,0.15);color:var(--clr-gold);border:1px solid rgba(245,158,11,0.3);">PRO TIER</span>
+        </div>
+        <div class="stack-value" id="playerHubElo" style="color:var(--clr-gold);">1200</div>
+        <div class="stack-sublabel" id="playerHubEloSub">BWF SaaS Dynamic Rating · Rank #--</div>
+        <div class="stack-progress-bg">
+          <div id="playerHubEloBar" class="stack-progress-fill" style="width:65%;background:var(--clr-gold);"></div>
+        </div>
       </div>
-      <div class="card" style="padding:16px;text-align:center;">
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:700;">WIN PERCENTAGE</div>
-        <div id="playerHubWinRate" style="font-family:var(--font-display);font-size:2.2rem;color:var(--clr-green);">0%</div>
-        <div id="playerHubMatchesCount" style="font-size:0.75rem;color:var(--clr-text-muted);">0 matches played</div>
+
+      <!-- 2. Match Records & Win Rate Stack -->
+      <div class="stack-card">
+        <div class="stack-header">
+          <span class="stack-title">Match Records</span>
+          <span id="playerHubStreakBadge" class="badge" style="font-size:0.7rem;background:rgba(34,197,94,0.15);color:var(--clr-green);">Active</span>
+        </div>
+        <div class="stack-value" id="playerHubWinRate" style="color:var(--clr-green);">0%</div>
+        <div class="stack-sublabel" id="playerHubMatchesCount">0 matches played (0W - 0L)</div>
+        <div class="stack-progress-bg">
+          <div id="playerHubWinRateBar" class="stack-progress-fill" style="width:0%;background:var(--clr-green);"></div>
+        </div>
       </div>
-      <div class="card" style="padding:16px;text-align:center;">
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:700;">MEDALS WON</div>
-        <div id="playerHubMedals" style="font-size:0.95rem;font-weight:600;margin:6px 0;color:var(--clr-text-muted);">Gold: 0 · Silver: 0 · Bronze: 0</div>
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);">Tournament Podiums</div>
+
+      <!-- 3. Points Differential Stack -->
+      <div class="stack-card">
+        <div class="stack-header">
+          <span class="stack-title">Scoring Differential</span>
+          <span class="stack-title" style="color:var(--clr-blue);">Net Diff</span>
+        </div>
+        <div class="stack-value" id="playerHubPointDiff" style="color:var(--clr-blue);">+0</div>
+        <div class="stack-sublabel" id="playerHubPointBreakdown">0 pts scored · 0 conceded</div>
+        <div class="stack-progress-bg">
+          <div id="playerHubPointBar" class="stack-progress-fill" style="width:50%;background:var(--clr-blue);"></div>
+        </div>
       </div>
-      <div class="card" style="padding:16px;text-align:center;">
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:700;">FORM GUIDE</div>
-        <div id="playerHubFormGuide" style="font-weight:900;font-size:1.2rem;margin:8px 0;letter-spacing:0.1em;">—</div>
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);">Last 5 Matches</div>
+
+      <!-- 4. Virtual Coins & Prediction Stacks -->
+      <div class="stack-card">
+        <div class="stack-header">
+          <span class="stack-title">Predictions & Coins</span>
+          <span style="font-size:0.85rem;">🪙</span>
+        </div>
+        <div class="stack-value" id="playerHubCoinWallet" style="color:var(--clr-gold);">100</div>
+        <div class="stack-sublabel" id="playerHubBettingSub">0 predictions · 0% accuracy</div>
+        <div class="stack-progress-bg">
+          <div id="playerHubBettingBar" class="stack-progress-fill" style="width:50%;background:var(--clr-gold);"></div>
+        </div>
+      </div>
+
+      <!-- 5. Form Guide Stack -->
+      <div class="stack-card">
+        <div class="stack-header">
+          <span class="stack-title">Form Guide</span>
+          <span class="stack-title">Last 5 Matches</span>
+        </div>
+        <div class="stack-value" id="playerHubFormGuide" style="letter-spacing:0.12em;font-size:1.6rem;padding-top:4px;">—</div>
+        <div class="stack-sublabel" id="playerHubFormSub">Recent tournament performance</div>
+      </div>
+
+      <!-- 6. Medals & Podiums Stack -->
+      <div class="stack-card">
+        <div class="stack-header">
+          <span class="stack-title">Podiums & Medals</span>
+          <span style="font-size:0.85rem;">🏆</span>
+        </div>
+        <div class="stack-value" id="playerHubMedalsSummary" style="font-size:1.45rem;display:flex;gap:10px;align-items:center;">
+          <span>🥇 <span id="playerHubGoldCount" style="color:var(--clr-gold);">0</span></span>
+          <span>🥈 <span id="playerHubSilverCount" style="color:var(--clr-silver);">0</span></span>
+          <span>🥉 <span id="playerHubBronzeCount" style="color:var(--clr-bronze);">0</span></span>
+        </div>
+        <div class="stack-sublabel" id="playerHubMedalsSub">Championship finishes</div>
       </div>
     </div>
 
-    <!-- Personal Matches History -->
+    <!-- Complete Personal Matches History Table -->
     <div class="card">
-      <h3 class="card-title" style="margin-bottom:14px;">My Tournament Encounters</h3>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+        <h3 class="card-title" style="margin:0;display:flex;align-items:center;gap:8px;">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>Tournament Match Records</span>
+        </h3>
+        <span style="font-size:0.78rem;color:var(--clr-text-muted);">Official BWF Record Sheet</span>
+      </div>
       <div class="data-table-container">
         <table class="data-table">
           <thead>
             <tr>
-              <th>Stage</th>
+              <th>Stage / Pool</th>
               <th>Opponent</th>
-              <th>Score (Sets)</th>
+              <th>Scores per Set</th>
               <th>Result</th>
               <th>Court</th>
+              <th>Scorecard</th>
             </tr>
           </thead>
           <tbody id="playerHubMatchesTableBody"></tbody>
@@ -4490,6 +4806,17 @@ body.theme-light tbody tr:hover {
         </div>
       </button>
 
+      <!-- Athlete Profile & Stacks -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();if(currentUser){showScreen('playerHubScreen');}else{openAuthModal();}">
+        <div class="more-card-icon" style="color:var(--clr-green);">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">My Profile & Stacks</span>
+          <span class="more-card-desc">Personal stats, Elo rating & settings</span>
+        </div>
+      </button>
+
       <!-- Coin Wallet & Betting -->
       <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();openCoinBalanceModal();">
         <div class="more-card-icon" style="color:var(--clr-gold);">
@@ -4681,11 +5008,9 @@ body.theme-light tbody tr:hover {
       </div>
 
       <div style="display:flex;flex-direction:column;gap:10px;">
-        <button class="btn btn-primary" onclick="quickSwitchToAdmin()" style="width:100%;min-height:44px;font-weight:700;font-size:0.92rem;display:flex;align-items:center;justify-content:center;gap:8px;">
-          <span>⚡ Switch to Admin Mode (Instant Access)</span>
-        </button>
-        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('adminAuthGuardModal').close();openAuthModal();" style="width:100%;min-height:38px;">
-          Sign In with Director Credentials
+        <button class="btn btn-primary" onclick="document.getElementById('adminAuthGuardModal').close();openAuthModal();" style="width:100%;min-height:44px;font-weight:700;font-size:0.92rem;display:flex;align-items:center;justify-content:center;gap:8px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Sign In with Director Credentials</span>
         </button>
       </div>
     </div>
@@ -4781,6 +5106,81 @@ body.theme-light tbody tr:hover {
       <button type="button" class="btn btn-ghost btn-sm" id="appPromptCancelBtn">Cancel</button>
       <button type="button" class="btn btn-primary btn-sm" id="appPromptOkBtn">Submit</button>
     </div>
+  </div>
+</dialog>
+
+
+<!-- User Profile Settings Modal -->
+<dialog id="userProfileSettingsModal" class="modal" aria-labelledby="profileSettingsTitle">
+  <div class="modal-box" style="max-width:520px;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:16px;">
+      <h3 id="profileSettingsTitle" style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;display:flex;align-items:center;gap:8px;margin:0;color:var(--clr-text);">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" style="color:var(--clr-green);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Athlete Profile Settings</span>
+      </h3>
+      <button class="modal-close" onclick="document.getElementById('userProfileSettingsModal').close()" aria-label="Close" style="background:transparent!important;border:none!important;color:var(--clr-text-muted);cursor:pointer;padding:0;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;outline:none;">
+        <svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;stroke-width:2.2;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <form id="profileSettingsForm" onsubmit="saveProfileSettings(event)">
+      <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;">
+        <div id="profileEditAvatarPreview" style="width:48px;height:48px;border-radius:var(--radius-sm);background:var(--clr-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.35rem;font-weight:900;flex-shrink:0;">R</div>
+        <div style="flex:1;">
+          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Avatar Initial / Badge</label>
+          <input type="text" id="profileEditAvatar" maxlength="2" class="modal-input" style="width:80px;text-align:center;font-weight:900;text-transform:uppercase;" oninput="updateProfileAvatarPreview(this.value)">
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Full Name *</label>
+          <input type="text" id="profileEditName" required class="modal-input" style="width:100%;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Email</label>
+          <input type="email" id="profileEditEmail" class="modal-input" style="width:100%;">
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Club / Team Affiliation</label>
+        <input type="text" id="profileEditClub" placeholder="e.g. Dhaka Smashers, National Academy" class="modal-input" style="width:100%;">
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Dominant Hand</label>
+          <select id="profileEditHand" class="modal-input" style="width:100%;">
+            <option value="Right-Handed">Right-Handed</option>
+            <option value="Left-Handed">Left-Handed</option>
+            <option value="Ambidextrous">Ambidextrous</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Playing Style</label>
+          <select id="profileEditStyle" class="modal-input" style="width:100%;">
+            <option value="Attacking / Smasher">Attacking / Smasher</option>
+            <option value="Defensive / Counter">Defensive / Counter</option>
+            <option value="Tactical / Playmaker">Tactical / Playmaker</option>
+            <option value="Speed & Net Play">Speed & Net Play</option>
+            <option value="All-Rounder">All-Rounder</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Change Passcode / PIN (Leave blank to keep current)</label>
+        <input type="password" id="profileEditPasscode" placeholder="New 4-digit PIN or password" class="modal-input" style="width:100%;">
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--clr-border);padding-top:14px;">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('userProfileSettingsModal').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm" style="display:inline-flex;align-items:center;gap:6px;">
+          <span>Save Changes</span>
+        </button>
+      </div>
+    </form>
   </div>
 </dialog>
 
@@ -5162,6 +5562,7 @@ function saveChallengesDB(list) {
 }
 
 function openNewChallengeModal() {
+  if (!requireAuthUser('create or accept challenges')) return;
   document.getElementById('challengeCreatorName').value = currentUser ? currentUser.name : '';
   document.getElementById('newChallengeModal').showModal();
 }
@@ -6003,32 +6404,79 @@ function logoutUser() {
   showToast('Logged out.');
 }
 
+function handleUserAvatarClick() {
+  if (currentUser) {
+    showScreen('playerHubScreen');
+  } else {
+    openAuthModal();
+  }
+}
+
+function handleAuthBtnClick() {
+  if (currentUser) {
+    logoutUser();
+  } else {
+    openAuthModal();
+  }
+}
+
 function updateUserUI() {
   updateRoleVisibility();
   const nameLabel = document.getElementById('headerUsername');
   const roleBadge = document.getElementById('headerUserRole');
   const avatar = document.getElementById('headerAvatar');
   const authBtn = document.getElementById('authBtn');
+  const userInfo = document.getElementById('headerUserInfo');
   const navHub = document.getElementById('navPlayerHubBtn');
   const tabHub = document.getElementById('tabNavPlayerHub');
+  const mobHub = document.getElementById('mobNavPlayerHub');
 
   if (currentUser) {
-    nameLabel.textContent = currentUser.name;
-    avatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
-    avatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
-    roleBadge.style.display = 'inline-block';
-    roleBadge.textContent = currentUser.role.toUpperCase();
-    authBtn.textContent = 'Sign Out';
+    if (nameLabel) {
+      nameLabel.textContent = currentUser.name;
+      nameLabel.style.display = 'inline-block';
+    }
+    if (userInfo) userInfo.style.display = 'flex';
+    if (avatar) {
+      avatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
+      avatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+      avatar.style.color = '#ffffff';
+    }
+    if (roleBadge) {
+      roleBadge.style.display = 'inline-block';
+      roleBadge.textContent = (currentUser.role || 'PLAYER').toUpperCase();
+      roleBadge.style.color = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+    }
+    if (authBtn) {
+      authBtn.textContent = 'Sign Out';
+      authBtn.className = 'btn btn-ghost btn-xs';
+      authBtn.title = 'Sign Out of Badminton Cup';
+    }
     if (navHub) navHub.style.display = 'inline-flex';
     if (tabHub) tabHub.style.display = 'inline-flex';
+    if (mobHub) mobHub.style.display = 'inline-flex';
   } else {
-    nameLabel.textContent = 'Guest Player';
-    avatar.textContent = '?';
-    avatar.style.background = 'var(--clr-green)';
-    roleBadge.style.display = 'none';
-    authBtn.textContent = 'Sign In';
+    if (nameLabel) {
+      nameLabel.textContent = 'Guest';
+      nameLabel.style.display = 'none';
+    }
+    if (userInfo) userInfo.style.display = 'none';
+    if (avatar) {
+      avatar.textContent = '?';
+      avatar.style.background = 'rgba(255, 255, 255, 0.1)';
+      avatar.style.color = 'var(--clr-text-muted)';
+    }
+    if (roleBadge) {
+      roleBadge.style.display = 'none';
+    }
+    if (authBtn) {
+      authBtn.textContent = 'Sign In';
+      authBtn.className = 'btn btn-primary btn-xs';
+      authBtn.title = 'Sign In to Badminton Cup';
+    }
     if (navHub) navHub.style.display = 'none';
     if (tabHub) tabHub.style.display = 'none';
+    if (mobHub) mobHub.style.display = 'none';
   }
 }
 
@@ -6429,43 +6877,263 @@ function confirmPlayerPickerSelection() {
    PERSONALIZED PLAYER HUB (ITEM 13)
 ═══════════════════════════════════════════════════ */
 
-function openProfileSettingsModal() {
-  if (!currentUser) return;
-  const newHand = prompt('Dominant Hand (Right-Handed / Left-Handed):', currentUser.dominantHand || 'Right-Handed');
-  if (newHand) {
-    currentUser.dominantHand = newHand;
-    const users = getUsersDB();
-    const u = users.find(x => x.id === currentUser.id);
-    if (u) {
-      u.dominantHand = newHand;
-      saveUsersDB(users);
-    }
-    renderPlayerHub();
-    showToast('Profile updated!');
+function updateProfileAvatarPreview(val) {
+  const preview = document.getElementById('profileEditAvatarPreview');
+  if (preview) {
+    preview.textContent = (val.trim() || '?').charAt(0).toUpperCase();
   }
 }
 
-function renderPlayerHub() {
+function openProfileSettingsModal() {
+  if (!currentUser) {
+    showToast('Please sign in to update your profile.', 'warning');
+    openAuthModal();
+    return;
+  }
+  const modal = document.getElementById('userProfileSettingsModal');
+  if (!modal) return;
+
+  const editAvatar = document.getElementById('profileEditAvatar');
+  const editName = document.getElementById('profileEditName');
+  const editEmail = document.getElementById('profileEditEmail');
+  const editClub = document.getElementById('profileEditClub');
+  const editHand = document.getElementById('profileEditHand');
+  const editStyle = document.getElementById('profileEditStyle');
+  const editPass = document.getElementById('profileEditPasscode');
+  const avatarPreview = document.getElementById('profileEditAvatarPreview');
+
+  if (editAvatar) editAvatar.value = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
+  if (editName) editName.value = currentUser.name;
+  if (editEmail) editEmail.value = currentUser.email || '';
+  if (editClub) editClub.value = currentUser.club || '';
+  if (editHand) editHand.value = currentUser.dominantHand || 'Right-Handed';
+  if (editStyle) editStyle.value = currentUser.style || 'All-Rounder';
+  if (editPass) editPass.value = '';
+  if (avatarPreview) {
+    avatarPreview.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
+    avatarPreview.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+  }
+
+  modal.showModal();
+}
+
+function saveProfileSettings(e) {
+  if (e && e.preventDefault) e.preventDefault();
   if (!currentUser) return;
 
-  const titleSub = document.getElementById('playerHubSubtitle');
-  if (titleSub) titleSub.textContent = `${currentUser.name} (${currentUser.club || 'Club Athlete'}) · BWF SaaS Registered`;
+  const editName = document.getElementById('profileEditName');
+  const editEmail = document.getElementById('profileEditEmail');
+  const editClub = document.getElementById('profileEditClub');
+  const editHand = document.getElementById('profileEditHand');
+  const editStyle = document.getElementById('profileEditStyle');
+  const editAvatar = document.getElementById('profileEditAvatar');
+  const editPass = document.getElementById('profileEditPasscode');
 
+  const newName = (editName ? editName.value.trim() : '') || currentUser.name;
+  const oldName = currentUser.name;
+
+  currentUser.name = newName;
+  currentUser.email = editEmail ? editEmail.value.trim() : (currentUser.email || '');
+  currentUser.club = editClub ? editClub.value.trim() : (currentUser.club || '');
+  currentUser.dominantHand = editHand ? editHand.value : (currentUser.dominantHand || 'Right-Handed');
+  currentUser.style = editStyle ? editStyle.value : (currentUser.style || 'All-Rounder');
+  currentUser.avatar = (editAvatar && editAvatar.value.trim()) ? editAvatar.value.trim().toUpperCase() : newName.charAt(0).toUpperCase();
+
+  if (editPass && editPass.value.trim()) {
+    currentUser.passcode = editPass.value.trim();
+  }
+
+  // Update Users DB
+  const users = getUsersDB();
+  const uIdx = users.findIndex(u => u.id === currentUser.id || u.name.toLowerCase() === oldName.toLowerCase());
+  if (uIdx !== -1) {
+    users[uIdx] = { ...users[uIdx], ...currentUser };
+  } else {
+    users.push(currentUser);
+  }
+  saveUsersDB(users);
+
+  // If name changed, keep roster and match references in sync
+  if (oldName !== newName) {
+    if (state.players) state.players = state.players.map(p => p === oldName ? newName : p);
+    if (state.poolA) state.poolA = state.poolA.map(p => p === oldName ? newName : p);
+    if (state.poolB) state.poolB = state.poolB.map(p => p === oldName ? newName : p);
+    state.matches.forEach(m => {
+      if (m.a === oldName) m.a = newName;
+      if (m.b === oldName) m.b = newName;
+    });
+    saveState();
+  }
+
+  localStorage.setItem(STORAGE_KEY_AUTH, JSON.stringify(currentUser));
+  updateUserUI();
+  renderPlayerHub();
+  renderLeaderboard();
+
+  const modal = document.getElementById('userProfileSettingsModal');
+  if (modal) modal.close();
+  showToast('Profile updated successfully!', 'success');
+}
+
+function renderPlayerHub() {
+  if (!currentUser) {
+    const nextCard = document.getElementById('playerNextFixtureCard');
+    if (nextCard) {
+      nextCard.innerHTML = `
+        <div style="text-align:center;padding:24px;">
+          <div style="font-size:1.1rem;font-weight:700;color:var(--clr-text);margin-bottom:8px;">Sign in to view your personal hub</div>
+          <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:16px;">Track your Elo rating, upcoming matches, coin balance, and match records.</p>
+          <button class="btn btn-primary btn-sm" onclick="openAuthModal()">Sign In Now</button>
+        </div>
+      `;
+    }
+    return;
+  }
+
+  // Profile Header Elements
+  const pName = document.getElementById('playerHubName');
+  const pSubtitle = document.getElementById('playerHubSubtitle');
+  const pAvatar = document.getElementById('playerHubAvatarLarge');
+  const pRoleBadge = document.getElementById('playerHubRoleBadge');
+
+  if (pName) pName.textContent = currentUser.name;
+  if (pSubtitle) {
+    pSubtitle.textContent = `${currentUser.club || 'Independent Athlete'} · ${currentUser.dominantHand || 'Right-Handed'} · ${currentUser.style || 'All-Rounder'}`;
+  }
+  if (pAvatar) {
+    pAvatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
+    pAvatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+  }
+  if (pRoleBadge) {
+    pRoleBadge.textContent = (currentUser.role || 'PLAYER').toUpperCase();
+    pRoleBadge.className = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'badge badge-gold' : 'badge badge-green';
+  }
+
+  // 1. Elo Rating Stack
+  const eloVal = currentUser.elo || 1200;
   const eloEl = document.getElementById('playerHubElo');
-  if (eloEl) eloEl.textContent = currentUser.elo || 1200;
+  const tierBadge = document.getElementById('playerHubTierBadge');
+  const eloBar = document.getElementById('playerHubEloBar');
+  const eloSub = document.getElementById('playerHubEloSub');
+
+  let tier = 'SILVER';
+  let tierColor = 'var(--clr-silver)';
+  if (eloVal >= 1350) { tier = 'MASTER'; tierColor = 'var(--clr-red)'; }
+  else if (eloVal >= 1280) { tier = 'DIAMOND'; tierColor = 'var(--clr-blue)'; }
+  else if (eloVal >= 1200) { tier = 'GOLD'; tierColor = 'var(--clr-gold)'; }
+
+  if (eloEl) eloEl.textContent = eloVal;
+  if (tierBadge) {
+    tierBadge.textContent = tier;
+    tierBadge.style.color = tierColor;
+  }
+  if (eloBar) {
+    const pct = Math.min(100, Math.max(10, Math.round(((eloVal - 900) / 700) * 100)));
+    eloBar.style.width = `${pct}%`;
+    eloBar.style.background = tierColor;
+  }
 
   // Career match metrics for this player
   const myMatches = state.matches.filter(m => m.winner && (m.a === currentUser.name || m.b === currentUser.name));
   const wonCount = myMatches.filter(m => (m.winner === 'a' && m.a === currentUser.name) || (m.winner === 'b' && m.b === currentUser.name)).length;
   const lostCount = myMatches.length - wonCount;
-  const rate = myMatches.length > 0 ? Math.round((wonCount / myMatches.length) * 100) : 0;
+  const winRate = myMatches.length > 0 ? Math.round((wonCount / myMatches.length) * 100) : 0;
 
+  // 2. Match Records & Win Rate Stack
   const winRateEl = document.getElementById('playerHubWinRate');
-  if (winRateEl) winRateEl.textContent = `${rate}%`;
   const mCountEl = document.getElementById('playerHubMatchesCount');
-  if (mCountEl) mCountEl.textContent = `${myMatches.length} matches (${wonCount}W - ${lostCount}L)`;
+  const winRateBar = document.getElementById('playerHubWinRateBar');
+  const streakBadge = document.getElementById('playerHubStreakBadge');
 
-  // Form guide (last 5)
+  if (winRateEl) winRateEl.textContent = `${winRate}%`;
+  if (mCountEl) mCountEl.textContent = `${myMatches.length} played (${wonCount}W - ${lostCount}L)`;
+  if (winRateBar) winRateBar.style.width = `${winRate}%`;
+
+  // Streak calculation
+  let currentStreak = 0;
+  let streakType = '';
+  for (let i = myMatches.length - 1; i >= 0; i--) {
+    const m = myMatches[i];
+    const isWin = (m.winner === 'a' && m.a === currentUser.name) || (m.winner === 'b' && m.b === currentUser.name);
+    const type = isWin ? 'W' : 'L';
+    if (!streakType) {
+      streakType = type;
+      currentStreak = 1;
+    } else if (streakType === type) {
+      currentStreak++;
+    } else {
+      break;
+    }
+  }
+  if (streakBadge) {
+    if (streakType === 'W' && currentStreak > 1) {
+      streakBadge.textContent = `🔥 ${currentStreak}W Streak`;
+      streakBadge.style.background = 'rgba(34,197,94,0.18)';
+      streakBadge.style.color = 'var(--clr-green)';
+    } else if (streakType === 'L' && currentStreak > 1) {
+      streakBadge.textContent = `${currentStreak}L Cold`;
+      streakBadge.style.background = 'rgba(239,68,68,0.18)';
+      streakBadge.style.color = 'var(--clr-red)';
+    } else {
+      streakBadge.textContent = 'Active Contender';
+      streakBadge.style.background = 'rgba(255,255,255,0.08)';
+      streakBadge.style.color = 'var(--clr-text-muted)';
+    }
+  }
+
+  // 3. Points Differential Stack
+  let ptsScored = 0;
+  let ptsConceded = 0;
+  myMatches.forEach(m => {
+    (m.sets || []).forEach(s => {
+      const score = s.score || [0, 0];
+      if (m.a === currentUser.name) {
+        ptsScored += Number(score[0]) || 0;
+        ptsConceded += Number(score[1]) || 0;
+      } else {
+        ptsScored += Number(score[1]) || 0;
+        ptsConceded += Number(score[0]) || 0;
+      }
+    });
+  });
+  const netDiff = ptsScored - ptsConceded;
+  const pDiffEl = document.getElementById('playerHubPointDiff');
+  const pBreakdownEl = document.getElementById('playerHubPointBreakdown');
+  const pBar = document.getElementById('playerHubPointBar');
+
+  if (pDiffEl) {
+    pDiffEl.textContent = (netDiff > 0 ? `+${netDiff}` : `${netDiff}`);
+    pDiffEl.style.color = netDiff >= 0 ? 'var(--clr-green)' : 'var(--clr-red)';
+  }
+  if (pBreakdownEl) {
+    pBreakdownEl.textContent = `${ptsScored} pts scored · ${ptsConceded} conceded`;
+  }
+  if (pBar) {
+    const totalPts = ptsScored + ptsConceded;
+    const scoredPct = totalPts > 0 ? Math.round((ptsScored / totalPts) * 100) : 50;
+    pBar.style.width = `${scoredPct}%`;
+    pBar.style.background = netDiff >= 0 ? 'var(--clr-green)' : 'var(--clr-red)';
+  }
+
+  // 4. Coins & Predictions Stack
+  const coinBal = getUserCoins();
+  const coinEl = document.getElementById('playerHubCoinWallet');
+  const betSub = document.getElementById('playerHubBettingSub');
+  const betBar = document.getElementById('playerHubBettingBar');
+
+  const bets = getBetsHistory();
+  const userBets = bets.filter(b => b.userId === currentUser.id || !b.userId);
+  const finishedBets = userBets.filter(b => b.status === 'won' || b.status === 'lost');
+  const wonBets = finishedBets.filter(b => b.status === 'won').length;
+  const betAccuracy = finishedBets.length > 0 ? Math.round((wonBets / finishedBets.length) * 100) : 0;
+
+  if (coinEl) coinEl.textContent = coinBal.toLocaleString();
+  if (betSub) {
+    betSub.textContent = `${userBets.length} wagers · ${betAccuracy}% win accuracy`;
+  }
+  if (betBar) betBar.style.width = `${betAccuracy}%`;
+
+  // 5. Form Guide Stack (last 5)
   const formGuideEl = document.getElementById('playerHubFormGuide');
   if (formGuideEl) {
     if (!myMatches.length) {
@@ -6473,9 +7141,30 @@ function renderPlayerHub() {
     } else {
       formGuideEl.innerHTML = myMatches.slice(-5).map(m => {
         const isWin = (m.winner === 'a' && m.a === currentUser.name) || (m.winner === 'b' && m.b === currentUser.name);
-        return `<span style="color:${isWin ? 'var(--clr-green)' : 'var(--clr-red)'};margin:0 2px;">${isWin ? 'W' : 'L'}</span>`;
+        return `<span style="display:inline-block;padding:2px 7px;border-radius:4px;font-weight:800;font-size:0.85rem;margin:0 2px;background:${isWin ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)'};color:${isWin ? 'var(--clr-green)' : 'var(--clr-red)'};border:1px solid ${isWin ? 'rgba(34,197,94,0.35)' : 'rgba(239,68,68,0.35)'};">${isWin ? 'W' : 'L'}</span>`;
       }).join(' ');
     }
+  }
+
+  // 6. Medals Stack
+  const lbDb = getLeaderboardDB();
+  const myLb = lbDb[currentUser.name] || {};
+  const goldCount = myLb.gold || 0;
+  const silverCount = myLb.silver || 0;
+  const bronzeCount = myLb.bronze || 0;
+
+  const gEl = document.getElementById('playerHubGoldCount');
+  const sEl = document.getElementById('playerHubSilverCount');
+  const bEl = document.getElementById('playerHubBronzeCount');
+  if (gEl) gEl.textContent = goldCount;
+  if (sEl) sEl.textContent = silverCount;
+  if (bEl) bEl.textContent = bronzeCount;
+
+  // Rank in tournament
+  const allPlayersSorted = Object.values(lbDb).sort((x, y) => (y.gold || 0) - (x.gold || 0) || (y.won || 0) - (x.won || 0) || (y.ptsDiff || 0) - (x.ptsDiff || 0));
+  const myRankIdx = allPlayersSorted.findIndex(p => p.name === currentUser.name);
+  if (eloSub) {
+    eloSub.textContent = `BWF SaaS Rating · Rank #${myRankIdx !== -1 ? myRankIdx + 1 : '--'}`;
   }
 
   // Next scheduled match
@@ -6489,45 +7178,53 @@ function renderPlayerHub() {
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
           <div>
             <div style="font-size:1.3rem;font-weight:900;">${currentUser.name} <span style="font-size:0.9rem;color:var(--clr-text-muted);">vs</span> ${opp}</div>
-            <div style="font-size:0.85rem;color:var(--clr-text-muted);">Stage: Pool ${nextMatch.pool} · Assigned to <strong>Court ${nextMatch.court || 1}</strong></div>
+            <div style="font-size:0.85rem;color:var(--clr-text-muted);margin-top:2px;">Stage: Pool ${nextMatch.pool || 'A'} · Assigned to <strong>Court ${nextMatch.court || 1}</strong></div>
           </div>
-          <div>
-            <button class="btn btn-primary" onclick="startUmpireMatch('${nextMatch.id}')">Start Match Live &rarr;</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-primary btn-sm" onclick="startUmpireMatch('${nextMatch.id}')">Start Match Live &rarr;</button>
           </div>
         </div>
       `;
     } else {
       nextCard.innerHTML = `
-        <div style="text-align:center;padding:10px;color:var(--clr-text-muted);">
-          No upcoming scheduled fixtures for ${currentUser.name} right now. Check back when the next round is seeded.
+        <div style="text-align:center;padding:12px;color:var(--clr-text-muted);font-size:0.86rem;">
+          No active fixtures scheduled for <strong>${currentUser.name}</strong> right now. Check back when the next round is seeded!
         </div>
       `;
     }
   }
 
-  // Match History Table
+  // Complete Match History Table
   const tbody = document.getElementById('playerHubMatchesTableBody');
   if (tbody) {
     if (!myMatches.length) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--clr-text-muted);">No completed matches yet.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--clr-text-muted);">No completed matches yet. Play matches or referee fixtures to record scores!</td></tr>`;
     } else {
-      tbody.innerHTML = myMatches.reverse().map(m => {
+      tbody.innerHTML = myMatches.slice().reverse().map(m => {
         const isWin = (m.winner === 'a' && m.a === currentUser.name) || (m.winner === 'b' && m.b === currentUser.name);
         const opp = (m.a === currentUser.name) ? m.b : m.a;
-        const scoreStr = m.sets.map(s => `${s.score[0]}-${s.score[1]}`).join(' | ');
+        const scoreStr = (m.sets || []).map(s => `${s.score[0]}-${s.score[1]}`).join(' | ');
         return `
           <tr>
-            <td>Pool ${m.pool}</td>
+            <td>Pool ${m.pool || 'A'}</td>
             <td><strong>${opp}</strong></td>
-            <td><span style="font-family:monospace;color:var(--clr-gold);">${scoreStr}</span></td>
-            <td><span style="font-weight:bold;color:${isWin ? 'var(--clr-green)' : 'var(--clr-red)'};">${isWin ? 'VICTORY' : 'DEFEAT'}</span></td>
+            <td><span style="font-family:monospace;color:var(--clr-gold);font-weight:700;">${scoreStr || '—'}</span></td>
+            <td>
+              <span style="display:inline-block;padding:2px 8px;border-radius:4px;font-weight:800;font-size:0.75rem;background:${isWin ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)'};color:${isWin ? 'var(--clr-green)' : 'var(--clr-red)'};">
+                ${isWin ? 'VICTORY' : 'DEFEAT'}
+              </span>
+            </td>
             <td>Court ${m.court || 1}</td>
+            <td>
+              <button class="btn btn-ghost btn-xs" onclick="openScorecardModal('${m.id}')">View</button>
+            </td>
           </tr>
         `;
       }).join('');
     }
   }
 }
+
 
 /* ═══════════════════════════════════════════════════
    STADIUM ARENA MULTI-COURT TV (ITEM 28)
@@ -7450,11 +8147,35 @@ function renderAnalyticsScreen() {
   const selB = document.getElementById('analyticsPlayerBSelect');
   if (!selA || !selB) return;
 
+  // 1. Tournament Overview KPIs
+  const totalMatches = state.matches.length;
+  const completedMatches = state.matches.filter(m => !!m.winner).length;
+  const pctCompleted = totalMatches > 0 ? Math.round((completedMatches / totalMatches) * 100) : 0;
+
+  let totalPts = 0;
+  state.matches.forEach(m => {
+    (m.sets || []).forEach(s => {
+      totalPts += (Number(s.score[0]) || 0) + (Number(s.score[1]) || 0);
+    });
+  });
+
+  const kpiMatches = document.getElementById('analyticsKpiMatches');
+  const kpiMatchesSub = document.getElementById('analyticsKpiMatchesSub');
+  const kpiPoints = document.getElementById('analyticsKpiPoints');
+  const kpiPlayers = document.getElementById('analyticsKpiPlayers');
+
+  if (kpiMatches) kpiMatches.textContent = `${completedMatches} / ${totalMatches}`;
+  if (kpiMatchesSub) kpiMatchesSub.textContent = `${pctCompleted}% fixtures completed`;
+  if (kpiPoints) kpiPoints.textContent = `${totalPts} pts`;
+  if (kpiPlayers) kpiPlayers.textContent = `${state.players ? state.players.length : 16}`;
+
+  // 2. Dropdowns Roster
   const db = getLeaderboardDB();
   const allNames = Array.from(new Set([
     ...Object.keys(db),
-    ...state.poolA,
-    ...state.poolB
+    ...(state.poolA || []),
+    ...(state.poolB || []),
+    ...(state.players || [])
   ])).filter(n => n && n !== 'BYE');
 
   if (!allNames.length) {
@@ -7515,65 +8236,86 @@ function runAnalyticsComparison() {
 
   resultDiv.innerHTML = `
     <!-- Top Level Scorecard -->
-    <div style="display:grid;grid-template-columns:1fr 140px 1fr;align-items:center;background:rgba(0,0,0,0.3);border-radius:var(--radius-md);padding:24px;margin-bottom:20px;border:1px solid var(--clr-border);">
+    <div style="display:grid;grid-template-columns:1fr 140px 1fr;align-items:center;background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:20px;margin-bottom:20px;">
       <div style="text-align:center;">
-        <div style="font-size:1.3rem;font-weight:900;color:#60a5fa;">${pA}</div>
-        <div style="font-family:'Anton',sans-serif;font-size:3rem;color:var(--clr-gold);">${winsA}</div>
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:700;">H2H VICTORIES</div>
+        <div style="width:48px;height:48px;border-radius:50%;background:var(--clr-green);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;margin-bottom:8px;">${pA.charAt(0).toUpperCase()}</div>
+        <div style="font-size:1.15rem;font-weight:900;color:var(--clr-text);">${pA}</div>
+        <div style="font-size:0.8rem;color:var(--clr-gold);font-weight:700;">${eloA} Elo Rating</div>
+        <div style="font-size:1.6rem;font-weight:900;color:var(--clr-green);margin-top:6px;">${winsA}</div>
+        <div style="font-size:0.72rem;color:var(--clr-text-muted);text-transform:uppercase;">H2H Wins</div>
+      </div>
+
+      <div style="text-align:center;border-left:1px solid var(--clr-border);border-right:1px solid var(--clr-border);padding:0 12px;">
+        <div style="font-size:0.75rem;font-weight:800;color:var(--clr-text-muted);text-transform:uppercase;">Direct Meetings</div>
+        <div style="font-family:var(--font-display);font-size:2rem;font-weight:900;color:var(--clr-gold);">${h2hMatches.length}</div>
+        <div style="font-size:0.75rem;color:var(--clr-text-muted);">Matches Played</div>
       </div>
 
       <div style="text-align:center;">
-        <div style="font-size:0.8rem;color:var(--clr-text-muted);font-weight:bold;">TOTAL MEETINGS</div>
-        <div style="font-family:'Anton',sans-serif;font-size:2rem;color:#ffffff;">${h2hMatches.length}</div>
-        <div style="font-size:0.75rem;color:var(--clr-gold);">${winsA > winsB ? `${pA} leads` : (winsB > winsA ? `${pB} leads` : 'Tied')}</div>
-      </div>
-
-      <div style="text-align:center;">
-        <div style="font-size:1.3rem;font-weight:900;color:#f87171;">${pB}</div>
-        <div style="font-family:'Anton',sans-serif;font-size:3rem;color:var(--clr-gold);">${winsB}</div>
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:700;">H2H VICTORIES</div>
+        <div style="width:48px;height:48px;border-radius:50%;background:var(--clr-blue);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;margin-bottom:8px;">${pB.charAt(0).toUpperCase()}</div>
+        <div style="font-size:1.15rem;font-weight:900;color:var(--clr-text);">${pB}</div>
+        <div style="font-size:0.8rem;color:var(--clr-gold);font-weight:700;">${eloB} Elo Rating</div>
+        <div style="font-size:1.6rem;font-weight:900;color:var(--clr-blue);margin-top:6px;">${winsB}</div>
+        <div style="font-size:0.72rem;color:var(--clr-text-muted);text-transform:uppercase;">H2H Wins</div>
       </div>
     </div>
 
-    <!-- Comparative Metric Bars -->
-    <div style="display:flex;flex-direction:column;gap:16px;">
-      <!-- Elo -->
-      <div>
-        <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:bold;margin-bottom:4px;">
-          <span style="color:#60a5fa;">${pA}: ${eloA} Elo</span>
-          <span style="color:var(--clr-text-muted);">Skill Rating (Elo)</span>
-          <span style="color:#f87171;">${pB}: ${eloB} Elo</span>
+    <!-- Comparative Metric Gauges -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
+      <div class="card" style="padding:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:0.75rem;font-weight:700;margin-bottom:6px;">
+          <span>${winRateA}% Win Rate</span>
+          <span style="color:var(--clr-text-muted);">Career Win %</span>
+          <span>${winRateB}% Win Rate</span>
         </div>
-        <div style="background:rgba(255,255,255,0.1);height:8px;border-radius:var(--radius-full);overflow:hidden;display:flex;">
-          <div style="width:${eloPctA}%;background:#3b82f6;"></div>
-          <div style="width:${100 - eloPctA}%;background:#ef4444;"></div>
-        </div>
-      </div>
-
-      <!-- Win Rate -->
-      <div>
-        <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:bold;margin-bottom:4px;">
-          <span style="color:#60a5fa;">${winRateA}% (${statsA.won}W / ${statsA.lost}L)</span>
-          <span style="color:var(--clr-text-muted);">Tournament Win Rate</span>
-          <span style="color:#f87171;">${winRateB}% (${statsB.won}W / ${statsB.lost}L)</span>
-        </div>
-        <div style="background:rgba(255,255,255,0.1);height:8px;border-radius:var(--radius-full);overflow:hidden;display:flex;">
-          <div style="width:${winRateA + winRateB > 0 ? Math.round((winRateA / (winRateA + winRateB)) * 100) : 50}%;background:#3b82f6;"></div>
-          <div style="width:${winRateA + winRateB > 0 ? 100 - Math.round((winRateA / (winRateA + winRateB)) * 100) : 50}%;background:#ef4444;"></div>
+        <div style="height:8px;background:rgba(255,255,255,0.08);border-radius:999px;overflow:hidden;display:flex;">
+          <div style="width:${winRateA + winRateB > 0 ? (winRateA / (winRateA + winRateB)) * 100 : 50}%;background:var(--clr-green);"></div>
+          <div style="flex:1;background:var(--clr-blue);"></div>
         </div>
       </div>
 
-      <!-- Total Points -->
-      <div>
-        <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:bold;margin-bottom:4px;">
-          <span style="color:#60a5fa;">${statsA.totalPts || 0} pts</span>
-          <span style="color:var(--clr-text-muted);">Total Points Scored</span>
-          <span style="color:#f87171;">${statsB.totalPts || 0} pts</span>
+      <div class="card" style="padding:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:0.75rem;font-weight:700;margin-bottom:6px;">
+          <span>${statsA.ptsDiff >= 0 ? '+' : ''}${statsA.ptsDiff || 0} Diff</span>
+          <span style="color:var(--clr-text-muted);">Points Differential</span>
+          <span>${statsB.ptsDiff >= 0 ? '+' : ''}${statsB.ptsDiff || 0} Diff</span>
+        </div>
+        <div style="height:8px;background:rgba(255,255,255,0.08);border-radius:999px;overflow:hidden;display:flex;">
+          <div style="width:${eloPctA}%;background:var(--clr-gold);"></div>
+          <div style="flex:1;background:rgba(255,255,255,0.2);"></div>
         </div>
       </div>
+    </div>
+
+    <!-- Historical Direct Encounters -->
+    <div>
+      <div style="font-size:0.8rem;font-weight:800;color:var(--clr-text);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">Encounter Logs (${pA} vs ${pB})</div>
+      ${!h2hMatches.length ? `
+        <div style="text-align:center;padding:16px;background:rgba(255,255,255,0.02);border:1px dashed var(--clr-border);border-radius:var(--radius-sm);color:var(--clr-text-muted);font-size:0.82rem;">
+          No previous direct head-to-head matches on record between these two athletes yet.
+        </div>
+      ` : `
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${h2hMatches.map(m => {
+            const winnerName = m.winner === 'a' ? m.a : m.b;
+            const scoreStr = (m.sets || []).map(s => `${s.score[0]}-${s.score[1]}`).join(' | ');
+            return `
+              <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:10px 14px;flex-wrap:wrap;gap:8px;">
+                <div>
+                  <span style="font-weight:800;color:${winnerName === pA ? 'var(--clr-green)' : 'var(--clr-blue)'};">${winnerName} won</span>
+                  <span style="font-size:0.75rem;color:var(--clr-text-muted);margin-left:8px;">Pool ${m.pool || 'A'} · Court ${m.court || 1}</span>
+                </div>
+                <div style="font-family:monospace;font-size:0.9rem;font-weight:700;color:var(--clr-gold);">${scoreStr}</div>
+                <button class="btn btn-ghost btn-xs" onclick="openScorecardModal('${m.id}')">Scorecard</button>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `}
     </div>
   `;
 }
+
 
 /* ═══════════════════════════════════════════════════
    BWF RULES INTERACTIVE SERVICE COURT TESTER
@@ -7726,51 +8468,21 @@ function handleResetNav() {
 }
 
 function quickSwitchToAdmin() {
-  const users = getUsersDB();
-  let admin = users.find(u => u.name.toLowerCase() === 'rashed');
-  if (!admin) {
-    admin = {
-      id: 1001,
-      name: 'Rashed',
-      email: 'rashed@badminton.local',
-      role: 'admin',
-      status: 'active',
-      avatar: 'R',
-      club: 'Tournament Director',
-      elo: 1650,
-      createdAt: new Date().toLocaleDateString()
-    };
-    users.unshift(admin);
-    saveUsersDB(users);
-  } else {
-    admin.role = 'admin';
-    saveUsersDB(users);
-  }
-  setCurrentUser(admin);
   const guardModal = document.getElementById('adminAuthGuardModal');
   if (guardModal && guardModal.open) guardModal.close();
-  showToast('Signed in as Rashed (Admin & Tournament Director)!', 'success');
+  showToast('Please sign in with Director credentials.');
+  openAuthModal();
 }
 
 function quickSwitchToGeneralUser() {
-  const player = {
-    id: 10001,
-    name: 'Player User',
-    email: 'player@badminton.local',
-    role: 'player',
-    status: 'active',
-    avatar: 'P',
-    createdAt: new Date().toLocaleDateString()
-  };
-  setCurrentUser(player);
-  showToast('Switched to General User mode (Open challenges, betting, play).', 'info');
+  logoutUser();
 }
 
 function toggleRoleDemo() {
   if (isAdminUser()) {
-    quickSwitchToGeneralUser();
+    logoutUser();
   } else {
-    quickSwitchToAdmin();
+    openAuthModal();
   }
 }
 
@@ -7849,6 +8561,7 @@ function showScreen(screenId) {
   if (screenId === 'scorecardsScreen') renderScorecardsScreen();
   if (screenId === 'challengesScreen') renderChallengesBoard();
   if (screenId === 'groupsScreen') renderGroups();
+  if (screenId === 'leaderboardScreen') renderLeaderboard();
 }
 
 function updateTournamentTitle(val) {
@@ -9378,39 +10091,172 @@ function recordTournamentChampion() {
   saveLeaderboardDB(db);
 }
 
+let currentLeaderboardFilter = 'all';
+
+function setLeaderboardFilter(filter) {
+  currentLeaderboardFilter = filter;
+  ['all', 'poolA', 'poolB', 'elo', 'winrate', 'predictors'].forEach(f => {
+    const btn = document.getElementById(`lbFilter${f.charAt(0).toUpperCase() + f.slice(1)}`);
+    if (btn) btn.classList.toggle('active', f === filter);
+  });
+  renderLeaderboard();
+}
+
 function renderLeaderboard() {
   const db = getLeaderboardDB();
   const tbody = document.getElementById('globalLeaderboardTableBody');
+  const podiumContainer = document.getElementById('leaderboardPodiumContainer');
   if (!tbody) return;
 
-  const players = Object.values(db).sort((x, y) => {
-    if (y.gold !== x.gold) return y.gold - x.gold;
-    if (y.won !== x.won) return y.won - x.won;
-    return y.ptsDiff - x.ptsDiff;
+  // Gather all players
+  let players = Object.values(db);
+
+  // If DB is sparse, ensure pool A & pool B players exist
+  const existingNames = new Set(players.map(p => p.name));
+  (state.poolA || []).forEach(name => {
+    if (name && name !== 'BYE' && !existingNames.has(name)) {
+      players.push({ name, elo: 1200, gold: 0, silver: 0, bronze: 0, won: 0, lost: 0, totalPts: 0, ptsDiff: 0, pool: 'A' });
+      existingNames.add(name);
+    }
+  });
+  (state.poolB || []).forEach(name => {
+    if (name && name !== 'BYE' && !existingNames.has(name)) {
+      players.push({ name, elo: 1200, gold: 0, silver: 0, bronze: 0, won: 0, lost: 0, totalPts: 0, ptsDiff: 0, pool: 'B' });
+      existingNames.add(name);
+    }
   });
 
+  // Assign pool tags
+  players.forEach(p => {
+    if (!p.pool) {
+      if ((state.poolA || []).includes(p.name)) p.pool = 'A';
+      else if ((state.poolB || []).includes(p.name)) p.pool = 'B';
+    }
+  });
+
+  // Apply Filter
+  if (currentLeaderboardFilter === 'poolA') {
+    players = players.filter(p => p.pool === 'A');
+  } else if (currentLeaderboardFilter === 'poolB') {
+    players = players.filter(p => p.pool === 'B');
+  }
+
+  // Sorting
+  if (currentLeaderboardFilter === 'elo') {
+    players.sort((x, y) => (y.elo || 1200) - (x.elo || 1200));
+  } else if (currentLeaderboardFilter === 'winrate') {
+    players.sort((x, y) => {
+      const tx = (x.won || 0) + (x.lost || 0);
+      const ty = (y.won || 0) + (y.lost || 0);
+      const rx = tx > 0 ? (x.won / tx) : 0;
+      const ry = ty > 0 ? (y.won / ty) : 0;
+      return ry - rx || (y.won || 0) - (x.won || 0);
+    });
+  } else {
+    // Default 'all' or by championships / wins
+    players.sort((x, y) => {
+      if ((y.gold || 0) !== (x.gold || 0)) return (y.gold || 0) - (x.gold || 0);
+      if ((y.won || 0) !== (x.won || 0)) return (y.won || 0) - (x.won || 0);
+      if ((y.ptsDiff || 0) !== (x.ptsDiff || 0)) return (y.ptsDiff || 0) - (x.ptsDiff || 0);
+      return (y.elo || 1200) - (x.elo || 1200);
+    });
+  }
+
+  // Render Podium for Top 3
+  if (podiumContainer) {
+    if (players.length >= 3) {
+      const first = players[0];
+      const second = players[1];
+      const third = players[2];
+
+      const getPodiumRate = p => {
+        const t = (p.won || 0) + (p.lost || 0);
+        return t > 0 ? Math.round((p.won / t) * 100) : 0;
+      };
+
+      podiumContainer.innerHTML = `
+        <!-- 2nd Place: Silver -->
+        <div class="podium-card podium-silver">
+          <div style="font-size:0.75rem;font-weight:800;color:var(--clr-silver);text-transform:uppercase;margin-bottom:8px;">🥈 2nd Place</div>
+          <div class="podium-avatar">${(second.name || 'P').charAt(0).toUpperCase()}</div>
+          <div style="font-size:1.1rem;font-weight:800;color:var(--clr-text);">${second.name}</div>
+          <div style="font-size:0.78rem;color:var(--clr-text-muted);margin:4px 0;">${second.elo || 1200} Elo · ${getPodiumRate(second)}% Win</div>
+          <div style="font-size:0.72rem;color:var(--clr-silver);font-weight:700;">${second.won || 0}W - ${second.lost || 0}L (${second.ptsDiff >= 0 ? '+' : ''}${second.ptsDiff || 0})</div>
+        </div>
+
+        <!-- 1st Place: Gold -->
+        <div class="podium-card podium-gold">
+          <div style="font-size:0.8rem;font-weight:900;color:var(--clr-gold);text-transform:uppercase;margin-bottom:6px;">👑 1st Champion</div>
+          <div class="podium-avatar">${(first.name || 'P').charAt(0).toUpperCase()}</div>
+          <div style="font-size:1.25rem;font-weight:900;color:var(--clr-text);">${first.name}</div>
+          <div style="font-size:0.82rem;color:var(--clr-gold);font-weight:700;margin:4px 0;">${first.elo || 1200} Elo · ${getPodiumRate(first)}% Win</div>
+          <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:600;">${first.won || 0}W - ${first.lost || 0}L (${first.ptsDiff >= 0 ? '+' : ''}${first.ptsDiff || 0} Diff)</div>
+        </div>
+
+        <!-- 3rd Place: Bronze -->
+        <div class="podium-card podium-bronze">
+          <div style="font-size:0.75rem;font-weight:800;color:var(--clr-bronze);text-transform:uppercase;margin-bottom:8px;">🥉 3rd Place</div>
+          <div class="podium-avatar">${(third.name || 'P').charAt(0).toUpperCase()}</div>
+          <div style="font-size:1.1rem;font-weight:800;color:var(--clr-text);">${third.name}</div>
+          <div style="font-size:0.78rem;color:var(--clr-text-muted);margin:4px 0;">${third.elo || 1200} Elo · ${getPodiumRate(third)}% Win</div>
+          <div style="font-size:0.72rem;color:var(--clr-bronze);font-weight:700;">${third.won || 0}W - ${third.lost || 0}L (${third.ptsDiff >= 0 ? '+' : ''}${third.ptsDiff || 0})</div>
+        </div>
+      `;
+    } else {
+      podiumContainer.innerHTML = '';
+    }
+  }
+
+  // Update Golden Racket / Iron Net Awards
+  const topAttacker = players.slice().sort((a, b) => (b.totalPts || 0) - (a.totalPts || 0))[0];
+  const gRacketLead = document.getElementById('goldenRacketLeader');
+  const gRacketStats = document.getElementById('goldenRacketStats');
+  if (gRacketLead && topAttacker) {
+    gRacketLead.textContent = `Leader: ${topAttacker.name}`;
+    if (gRacketStats) gRacketStats.textContent = `${topAttacker.totalPts || 0} points scored`;
+  }
+
+  const topDefender = players.slice().filter(p => (p.won || 0) + (p.lost || 0) > 0).sort((a, b) => (b.ptsDiff || 0) - (a.ptsDiff || 0))[0];
+  const gGloveLead = document.getElementById('goldenGloveLeader');
+  const gGloveStats = document.getElementById('goldenGloveStats');
+  if (gGloveLead && topDefender) {
+    gGloveLead.textContent = `Leader: ${topDefender.name}`;
+    if (gGloveStats) gGloveStats.textContent = `+${topDefender.ptsDiff || 0} point differential`;
+  }
+
   if (!players.length) {
-    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--clr-text-muted);">No tournament records yet. Complete fixtures to populate the Hall of Fame.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--clr-text-muted);">No athlete records match the selected filter.</td></tr>`;
     return;
   }
 
   tbody.innerHTML = players.map((p, idx) => {
-    const total = p.won + p.lost;
+    const total = (p.won || 0) + (p.lost || 0);
     const rate = total > 0 ? Math.round((p.won / total) * 100) : 0;
     const opponent = players[idx === 0 ? 1 : 0]?.name || p.name;
+    const rankBadge = idx === 0 ? '🥇 1' : (idx === 1 ? '🥈 2' : (idx === 2 ? '🥉 3' : `#${idx + 1}`));
     return `
       <tr>
-        <td style="font-weight:900;color:${idx === 0 ? 'var(--clr-gold)' : (idx === 1 ? 'var(--clr-silver)' : (idx === 2 ? 'var(--clr-bronze)' : 'inherit'))};">${idx + 1}</td>
-        <td><strong>${p.name}</strong></td>
+        <td style="font-weight:900;color:${idx === 0 ? 'var(--clr-gold)' : (idx === 1 ? 'var(--clr-silver)' : (idx === 2 ? 'var(--clr-bronze)' : 'inherit'))};">${rankBadge}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:26px;height:26px;border-radius:4px;background:var(--clr-surface-hi);color:var(--clr-text);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;border:1px solid var(--clr-border);">
+              ${(p.name || 'P').charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <strong>${p.name}</strong>
+              ${p.pool ? `<span style="font-size:0.7rem;color:var(--clr-text-muted);margin-left:4px;">(Pool ${p.pool})</span>` : ''}
+            </div>
+          </div>
+        </td>
         <td><strong style="color:var(--clr-gold);">${p.elo || 1200}</strong></td>
         <td style="color:var(--clr-gold);font-weight:bold;">${p.gold || 0}</td>
         <td style="color:var(--clr-silver);">${p.silver || 0}</td>
         <td style="color:var(--clr-bronze);">${p.bronze || 0}</td>
         <td>${total}</td>
-        <td style="color:var(--clr-green);">${p.won}</td>
-        <td style="color:var(--clr-red);">${p.lost}</td>
+        <td style="color:var(--clr-green);">${p.won || 0}</td>
+        <td style="color:var(--clr-red);">${p.lost || 0}</td>
         <td style="font-weight:bold;">${rate}%</td>
-        <td style="color:${p.ptsDiff >= 0 ? 'var(--clr-green)' : 'var(--clr-red)'};">${p.ptsDiff > 0 ? '+' : ''}${p.ptsDiff}</td>
+        <td style="color:${(p.ptsDiff || 0) >= 0 ? 'var(--clr-green)' : 'var(--clr-red)'};font-weight:700;">${(p.ptsDiff || 0) > 0 ? '+' : ''}${p.ptsDiff || 0}</td>
         <td>
           <button class="btn btn-ghost btn-xs" onclick="openH2HModal('${p.name}', '${opponent}')">Compare</button>
         </td>

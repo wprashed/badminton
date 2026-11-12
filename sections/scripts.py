@@ -377,6 +377,7 @@ function saveChallengesDB(list) {
 }
 
 function openNewChallengeModal() {
+  if (!requireAuthUser('create or accept challenges')) return;
   document.getElementById('challengeCreatorName').value = currentUser ? currentUser.name : '';
   document.getElementById('newChallengeModal').showModal();
 }
@@ -1218,32 +1219,79 @@ function logoutUser() {
   showToast('Logged out.');
 }
 
+function handleUserAvatarClick() {
+  if (currentUser) {
+    showScreen('playerHubScreen');
+  } else {
+    openAuthModal();
+  }
+}
+
+function handleAuthBtnClick() {
+  if (currentUser) {
+    logoutUser();
+  } else {
+    openAuthModal();
+  }
+}
+
 function updateUserUI() {
   updateRoleVisibility();
   const nameLabel = document.getElementById('headerUsername');
   const roleBadge = document.getElementById('headerUserRole');
   const avatar = document.getElementById('headerAvatar');
   const authBtn = document.getElementById('authBtn');
+  const userInfo = document.getElementById('headerUserInfo');
   const navHub = document.getElementById('navPlayerHubBtn');
   const tabHub = document.getElementById('tabNavPlayerHub');
+  const mobHub = document.getElementById('mobNavPlayerHub');
 
   if (currentUser) {
-    nameLabel.textContent = currentUser.name;
-    avatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
-    avatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
-    roleBadge.style.display = 'inline-block';
-    roleBadge.textContent = currentUser.role.toUpperCase();
-    authBtn.textContent = 'Sign Out';
+    if (nameLabel) {
+      nameLabel.textContent = currentUser.name;
+      nameLabel.style.display = 'inline-block';
+    }
+    if (userInfo) userInfo.style.display = 'flex';
+    if (avatar) {
+      avatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
+      avatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+      avatar.style.color = '#ffffff';
+    }
+    if (roleBadge) {
+      roleBadge.style.display = 'inline-block';
+      roleBadge.textContent = (currentUser.role || 'PLAYER').toUpperCase();
+      roleBadge.style.color = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+    }
+    if (authBtn) {
+      authBtn.textContent = 'Sign Out';
+      authBtn.className = 'btn btn-ghost btn-xs';
+      authBtn.title = 'Sign Out of Badminton Cup';
+    }
     if (navHub) navHub.style.display = 'inline-flex';
     if (tabHub) tabHub.style.display = 'inline-flex';
+    if (mobHub) mobHub.style.display = 'inline-flex';
   } else {
-    nameLabel.textContent = 'Guest Player';
-    avatar.textContent = '?';
-    avatar.style.background = 'var(--clr-green)';
-    roleBadge.style.display = 'none';
-    authBtn.textContent = 'Sign In';
+    if (nameLabel) {
+      nameLabel.textContent = 'Guest';
+      nameLabel.style.display = 'none';
+    }
+    if (userInfo) userInfo.style.display = 'none';
+    if (avatar) {
+      avatar.textContent = '?';
+      avatar.style.background = 'rgba(255, 255, 255, 0.1)';
+      avatar.style.color = 'var(--clr-text-muted)';
+    }
+    if (roleBadge) {
+      roleBadge.style.display = 'none';
+    }
+    if (authBtn) {
+      authBtn.textContent = 'Sign In';
+      authBtn.className = 'btn btn-primary btn-xs';
+      authBtn.title = 'Sign In to Badminton Cup';
+    }
     if (navHub) navHub.style.display = 'none';
     if (tabHub) tabHub.style.display = 'none';
+    if (mobHub) mobHub.style.display = 'none';
   }
 }
 
@@ -1644,43 +1692,263 @@ function confirmPlayerPickerSelection() {
    PERSONALIZED PLAYER HUB (ITEM 13)
 ═══════════════════════════════════════════════════ */
 
-function openProfileSettingsModal() {
-  if (!currentUser) return;
-  const newHand = prompt('Dominant Hand (Right-Handed / Left-Handed):', currentUser.dominantHand || 'Right-Handed');
-  if (newHand) {
-    currentUser.dominantHand = newHand;
-    const users = getUsersDB();
-    const u = users.find(x => x.id === currentUser.id);
-    if (u) {
-      u.dominantHand = newHand;
-      saveUsersDB(users);
-    }
-    renderPlayerHub();
-    showToast('Profile updated!');
+function updateProfileAvatarPreview(val) {
+  const preview = document.getElementById('profileEditAvatarPreview');
+  if (preview) {
+    preview.textContent = (val.trim() || '?').charAt(0).toUpperCase();
   }
 }
 
-function renderPlayerHub() {
+function openProfileSettingsModal() {
+  if (!currentUser) {
+    showToast('Please sign in to update your profile.', 'warning');
+    openAuthModal();
+    return;
+  }
+  const modal = document.getElementById('userProfileSettingsModal');
+  if (!modal) return;
+
+  const editAvatar = document.getElementById('profileEditAvatar');
+  const editName = document.getElementById('profileEditName');
+  const editEmail = document.getElementById('profileEditEmail');
+  const editClub = document.getElementById('profileEditClub');
+  const editHand = document.getElementById('profileEditHand');
+  const editStyle = document.getElementById('profileEditStyle');
+  const editPass = document.getElementById('profileEditPasscode');
+  const avatarPreview = document.getElementById('profileEditAvatarPreview');
+
+  if (editAvatar) editAvatar.value = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
+  if (editName) editName.value = currentUser.name;
+  if (editEmail) editEmail.value = currentUser.email || '';
+  if (editClub) editClub.value = currentUser.club || '';
+  if (editHand) editHand.value = currentUser.dominantHand || 'Right-Handed';
+  if (editStyle) editStyle.value = currentUser.style || 'All-Rounder';
+  if (editPass) editPass.value = '';
+  if (avatarPreview) {
+    avatarPreview.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
+    avatarPreview.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+  }
+
+  modal.showModal();
+}
+
+function saveProfileSettings(e) {
+  if (e && e.preventDefault) e.preventDefault();
   if (!currentUser) return;
 
-  const titleSub = document.getElementById('playerHubSubtitle');
-  if (titleSub) titleSub.textContent = `${currentUser.name} (${currentUser.club || 'Club Athlete'}) · BWF SaaS Registered`;
+  const editName = document.getElementById('profileEditName');
+  const editEmail = document.getElementById('profileEditEmail');
+  const editClub = document.getElementById('profileEditClub');
+  const editHand = document.getElementById('profileEditHand');
+  const editStyle = document.getElementById('profileEditStyle');
+  const editAvatar = document.getElementById('profileEditAvatar');
+  const editPass = document.getElementById('profileEditPasscode');
 
+  const newName = (editName ? editName.value.trim() : '') || currentUser.name;
+  const oldName = currentUser.name;
+
+  currentUser.name = newName;
+  currentUser.email = editEmail ? editEmail.value.trim() : (currentUser.email || '');
+  currentUser.club = editClub ? editClub.value.trim() : (currentUser.club || '');
+  currentUser.dominantHand = editHand ? editHand.value : (currentUser.dominantHand || 'Right-Handed');
+  currentUser.style = editStyle ? editStyle.value : (currentUser.style || 'All-Rounder');
+  currentUser.avatar = (editAvatar && editAvatar.value.trim()) ? editAvatar.value.trim().toUpperCase() : newName.charAt(0).toUpperCase();
+
+  if (editPass && editPass.value.trim()) {
+    currentUser.passcode = editPass.value.trim();
+  }
+
+  // Update Users DB
+  const users = getUsersDB();
+  const uIdx = users.findIndex(u => u.id === currentUser.id || u.name.toLowerCase() === oldName.toLowerCase());
+  if (uIdx !== -1) {
+    users[uIdx] = { ...users[uIdx], ...currentUser };
+  } else {
+    users.push(currentUser);
+  }
+  saveUsersDB(users);
+
+  // If name changed, keep roster and match references in sync
+  if (oldName !== newName) {
+    if (state.players) state.players = state.players.map(p => p === oldName ? newName : p);
+    if (state.poolA) state.poolA = state.poolA.map(p => p === oldName ? newName : p);
+    if (state.poolB) state.poolB = state.poolB.map(p => p === oldName ? newName : p);
+    state.matches.forEach(m => {
+      if (m.a === oldName) m.a = newName;
+      if (m.b === oldName) m.b = newName;
+    });
+    saveState();
+  }
+
+  localStorage.setItem(STORAGE_KEY_AUTH, JSON.stringify(currentUser));
+  updateUserUI();
+  renderPlayerHub();
+  renderLeaderboard();
+
+  const modal = document.getElementById('userProfileSettingsModal');
+  if (modal) modal.close();
+  showToast('Profile updated successfully!', 'success');
+}
+
+function renderPlayerHub() {
+  if (!currentUser) {
+    const nextCard = document.getElementById('playerNextFixtureCard');
+    if (nextCard) {
+      nextCard.innerHTML = `
+        <div style="text-align:center;padding:24px;">
+          <div style="font-size:1.1rem;font-weight:700;color:var(--clr-text);margin-bottom:8px;">Sign in to view your personal hub</div>
+          <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:16px;">Track your Elo rating, upcoming matches, coin balance, and match records.</p>
+          <button class="btn btn-primary btn-sm" onclick="openAuthModal()">Sign In Now</button>
+        </div>
+      `;
+    }
+    return;
+  }
+
+  // Profile Header Elements
+  const pName = document.getElementById('playerHubName');
+  const pSubtitle = document.getElementById('playerHubSubtitle');
+  const pAvatar = document.getElementById('playerHubAvatarLarge');
+  const pRoleBadge = document.getElementById('playerHubRoleBadge');
+
+  if (pName) pName.textContent = currentUser.name;
+  if (pSubtitle) {
+    pSubtitle.textContent = `${currentUser.club || 'Independent Athlete'} · ${currentUser.dominantHand || 'Right-Handed'} · ${currentUser.style || 'All-Rounder'}`;
+  }
+  if (pAvatar) {
+    pAvatar.textContent = currentUser.avatar || currentUser.name.charAt(0).toUpperCase();
+    pAvatar.style.background = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'var(--clr-gold)' : 'var(--clr-green)';
+  }
+  if (pRoleBadge) {
+    pRoleBadge.textContent = (currentUser.role || 'PLAYER').toUpperCase();
+    pRoleBadge.className = (currentUser.role === 'admin' || currentUser.role === 'super_admin') ? 'badge badge-gold' : 'badge badge-green';
+  }
+
+  // 1. Elo Rating Stack
+  const eloVal = currentUser.elo || 1200;
   const eloEl = document.getElementById('playerHubElo');
-  if (eloEl) eloEl.textContent = currentUser.elo || 1200;
+  const tierBadge = document.getElementById('playerHubTierBadge');
+  const eloBar = document.getElementById('playerHubEloBar');
+  const eloSub = document.getElementById('playerHubEloSub');
+
+  let tier = 'SILVER';
+  let tierColor = 'var(--clr-silver)';
+  if (eloVal >= 1350) { tier = 'MASTER'; tierColor = 'var(--clr-red)'; }
+  else if (eloVal >= 1280) { tier = 'DIAMOND'; tierColor = 'var(--clr-blue)'; }
+  else if (eloVal >= 1200) { tier = 'GOLD'; tierColor = 'var(--clr-gold)'; }
+
+  if (eloEl) eloEl.textContent = eloVal;
+  if (tierBadge) {
+    tierBadge.textContent = tier;
+    tierBadge.style.color = tierColor;
+  }
+  if (eloBar) {
+    const pct = Math.min(100, Math.max(10, Math.round(((eloVal - 900) / 700) * 100)));
+    eloBar.style.width = `${pct}%`;
+    eloBar.style.background = tierColor;
+  }
 
   // Career match metrics for this player
   const myMatches = state.matches.filter(m => m.winner && (m.a === currentUser.name || m.b === currentUser.name));
   const wonCount = myMatches.filter(m => (m.winner === 'a' && m.a === currentUser.name) || (m.winner === 'b' && m.b === currentUser.name)).length;
   const lostCount = myMatches.length - wonCount;
-  const rate = myMatches.length > 0 ? Math.round((wonCount / myMatches.length) * 100) : 0;
+  const winRate = myMatches.length > 0 ? Math.round((wonCount / myMatches.length) * 100) : 0;
 
+  // 2. Match Records & Win Rate Stack
   const winRateEl = document.getElementById('playerHubWinRate');
-  if (winRateEl) winRateEl.textContent = `${rate}%`;
   const mCountEl = document.getElementById('playerHubMatchesCount');
-  if (mCountEl) mCountEl.textContent = `${myMatches.length} matches (${wonCount}W - ${lostCount}L)`;
+  const winRateBar = document.getElementById('playerHubWinRateBar');
+  const streakBadge = document.getElementById('playerHubStreakBadge');
 
-  // Form guide (last 5)
+  if (winRateEl) winRateEl.textContent = `${winRate}%`;
+  if (mCountEl) mCountEl.textContent = `${myMatches.length} played (${wonCount}W - ${lostCount}L)`;
+  if (winRateBar) winRateBar.style.width = `${winRate}%`;
+
+  // Streak calculation
+  let currentStreak = 0;
+  let streakType = '';
+  for (let i = myMatches.length - 1; i >= 0; i--) {
+    const m = myMatches[i];
+    const isWin = (m.winner === 'a' && m.a === currentUser.name) || (m.winner === 'b' && m.b === currentUser.name);
+    const type = isWin ? 'W' : 'L';
+    if (!streakType) {
+      streakType = type;
+      currentStreak = 1;
+    } else if (streakType === type) {
+      currentStreak++;
+    } else {
+      break;
+    }
+  }
+  if (streakBadge) {
+    if (streakType === 'W' && currentStreak > 1) {
+      streakBadge.textContent = `🔥 ${currentStreak}W Streak`;
+      streakBadge.style.background = 'rgba(34,197,94,0.18)';
+      streakBadge.style.color = 'var(--clr-green)';
+    } else if (streakType === 'L' && currentStreak > 1) {
+      streakBadge.textContent = `${currentStreak}L Cold`;
+      streakBadge.style.background = 'rgba(239,68,68,0.18)';
+      streakBadge.style.color = 'var(--clr-red)';
+    } else {
+      streakBadge.textContent = 'Active Contender';
+      streakBadge.style.background = 'rgba(255,255,255,0.08)';
+      streakBadge.style.color = 'var(--clr-text-muted)';
+    }
+  }
+
+  // 3. Points Differential Stack
+  let ptsScored = 0;
+  let ptsConceded = 0;
+  myMatches.forEach(m => {
+    (m.sets || []).forEach(s => {
+      const score = s.score || [0, 0];
+      if (m.a === currentUser.name) {
+        ptsScored += Number(score[0]) || 0;
+        ptsConceded += Number(score[1]) || 0;
+      } else {
+        ptsScored += Number(score[1]) || 0;
+        ptsConceded += Number(score[0]) || 0;
+      }
+    });
+  });
+  const netDiff = ptsScored - ptsConceded;
+  const pDiffEl = document.getElementById('playerHubPointDiff');
+  const pBreakdownEl = document.getElementById('playerHubPointBreakdown');
+  const pBar = document.getElementById('playerHubPointBar');
+
+  if (pDiffEl) {
+    pDiffEl.textContent = (netDiff > 0 ? `+${netDiff}` : `${netDiff}`);
+    pDiffEl.style.color = netDiff >= 0 ? 'var(--clr-green)' : 'var(--clr-red)';
+  }
+  if (pBreakdownEl) {
+    pBreakdownEl.textContent = `${ptsScored} pts scored · ${ptsConceded} conceded`;
+  }
+  if (pBar) {
+    const totalPts = ptsScored + ptsConceded;
+    const scoredPct = totalPts > 0 ? Math.round((ptsScored / totalPts) * 100) : 50;
+    pBar.style.width = `${scoredPct}%`;
+    pBar.style.background = netDiff >= 0 ? 'var(--clr-green)' : 'var(--clr-red)';
+  }
+
+  // 4. Coins & Predictions Stack
+  const coinBal = getUserCoins();
+  const coinEl = document.getElementById('playerHubCoinWallet');
+  const betSub = document.getElementById('playerHubBettingSub');
+  const betBar = document.getElementById('playerHubBettingBar');
+
+  const bets = getBetsHistory();
+  const userBets = bets.filter(b => b.userId === currentUser.id || !b.userId);
+  const finishedBets = userBets.filter(b => b.status === 'won' || b.status === 'lost');
+  const wonBets = finishedBets.filter(b => b.status === 'won').length;
+  const betAccuracy = finishedBets.length > 0 ? Math.round((wonBets / finishedBets.length) * 100) : 0;
+
+  if (coinEl) coinEl.textContent = coinBal.toLocaleString();
+  if (betSub) {
+    betSub.textContent = `${userBets.length} wagers · ${betAccuracy}% win accuracy`;
+  }
+  if (betBar) betBar.style.width = `${betAccuracy}%`;
+
+  // 5. Form Guide Stack (last 5)
   const formGuideEl = document.getElementById('playerHubFormGuide');
   if (formGuideEl) {
     if (!myMatches.length) {
@@ -1688,9 +1956,30 @@ function renderPlayerHub() {
     } else {
       formGuideEl.innerHTML = myMatches.slice(-5).map(m => {
         const isWin = (m.winner === 'a' && m.a === currentUser.name) || (m.winner === 'b' && m.b === currentUser.name);
-        return `<span style="color:${isWin ? 'var(--clr-green)' : 'var(--clr-red)'};margin:0 2px;">${isWin ? 'W' : 'L'}</span>`;
+        return `<span style="display:inline-block;padding:2px 7px;border-radius:4px;font-weight:800;font-size:0.85rem;margin:0 2px;background:${isWin ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)'};color:${isWin ? 'var(--clr-green)' : 'var(--clr-red)'};border:1px solid ${isWin ? 'rgba(34,197,94,0.35)' : 'rgba(239,68,68,0.35)'};">${isWin ? 'W' : 'L'}</span>`;
       }).join(' ');
     }
+  }
+
+  // 6. Medals Stack
+  const lbDb = getLeaderboardDB();
+  const myLb = lbDb[currentUser.name] || {};
+  const goldCount = myLb.gold || 0;
+  const silverCount = myLb.silver || 0;
+  const bronzeCount = myLb.bronze || 0;
+
+  const gEl = document.getElementById('playerHubGoldCount');
+  const sEl = document.getElementById('playerHubSilverCount');
+  const bEl = document.getElementById('playerHubBronzeCount');
+  if (gEl) gEl.textContent = goldCount;
+  if (sEl) sEl.textContent = silverCount;
+  if (bEl) bEl.textContent = bronzeCount;
+
+  // Rank in tournament
+  const allPlayersSorted = Object.values(lbDb).sort((x, y) => (y.gold || 0) - (x.gold || 0) || (y.won || 0) - (x.won || 0) || (y.ptsDiff || 0) - (x.ptsDiff || 0));
+  const myRankIdx = allPlayersSorted.findIndex(p => p.name === currentUser.name);
+  if (eloSub) {
+    eloSub.textContent = `BWF SaaS Rating · Rank #${myRankIdx !== -1 ? myRankIdx + 1 : '--'}`;
   }
 
   // Next scheduled match
@@ -1704,45 +1993,53 @@ function renderPlayerHub() {
         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
           <div>
             <div style="font-size:1.3rem;font-weight:900;">${currentUser.name} <span style="font-size:0.9rem;color:var(--clr-text-muted);">vs</span> ${opp}</div>
-            <div style="font-size:0.85rem;color:var(--clr-text-muted);">Stage: Pool ${nextMatch.pool} · Assigned to <strong>Court ${nextMatch.court || 1}</strong></div>
+            <div style="font-size:0.85rem;color:var(--clr-text-muted);margin-top:2px;">Stage: Pool ${nextMatch.pool || 'A'} · Assigned to <strong>Court ${nextMatch.court || 1}</strong></div>
           </div>
-          <div>
-            <button class="btn btn-primary" onclick="startUmpireMatch('${nextMatch.id}')">Start Match Live &rarr;</button>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-primary btn-sm" onclick="startUmpireMatch('${nextMatch.id}')">Start Match Live &rarr;</button>
           </div>
         </div>
       `;
     } else {
       nextCard.innerHTML = `
-        <div style="text-align:center;padding:10px;color:var(--clr-text-muted);">
-          No upcoming scheduled fixtures for ${currentUser.name} right now. Check back when the next round is seeded.
+        <div style="text-align:center;padding:12px;color:var(--clr-text-muted);font-size:0.86rem;">
+          No active fixtures scheduled for <strong>${currentUser.name}</strong> right now. Check back when the next round is seeded!
         </div>
       `;
     }
   }
 
-  // Match History Table
+  // Complete Match History Table
   const tbody = document.getElementById('playerHubMatchesTableBody');
   if (tbody) {
     if (!myMatches.length) {
-      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:16px;color:var(--clr-text-muted);">No completed matches yet.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--clr-text-muted);">No completed matches yet. Play matches or referee fixtures to record scores!</td></tr>`;
     } else {
-      tbody.innerHTML = myMatches.reverse().map(m => {
+      tbody.innerHTML = myMatches.slice().reverse().map(m => {
         const isWin = (m.winner === 'a' && m.a === currentUser.name) || (m.winner === 'b' && m.b === currentUser.name);
         const opp = (m.a === currentUser.name) ? m.b : m.a;
-        const scoreStr = m.sets.map(s => `${s.score[0]}-${s.score[1]}`).join(' | ');
+        const scoreStr = (m.sets || []).map(s => `${s.score[0]}-${s.score[1]}`).join(' | ');
         return `
           <tr>
-            <td>Pool ${m.pool}</td>
+            <td>Pool ${m.pool || 'A'}</td>
             <td><strong>${opp}</strong></td>
-            <td><span style="font-family:monospace;color:var(--clr-gold);">${scoreStr}</span></td>
-            <td><span style="font-weight:bold;color:${isWin ? 'var(--clr-green)' : 'var(--clr-red)'};">${isWin ? 'VICTORY' : 'DEFEAT'}</span></td>
+            <td><span style="font-family:monospace;color:var(--clr-gold);font-weight:700;">${scoreStr || '—'}</span></td>
+            <td>
+              <span style="display:inline-block;padding:2px 8px;border-radius:4px;font-weight:800;font-size:0.75rem;background:${isWin ? 'rgba(34,197,94,0.18)' : 'rgba(239,68,68,0.18)'};color:${isWin ? 'var(--clr-green)' : 'var(--clr-red)'};">
+                ${isWin ? 'VICTORY' : 'DEFEAT'}
+              </span>
+            </td>
             <td>Court ${m.court || 1}</td>
+            <td>
+              <button class="btn btn-ghost btn-xs" onclick="openScorecardModal('${m.id}')">View</button>
+            </td>
           </tr>
         `;
       }).join('');
     }
   }
 }
+
 
 /* ═══════════════════════════════════════════════════
    STADIUM ARENA MULTI-COURT TV (ITEM 28)
@@ -2665,11 +2962,35 @@ function renderAnalyticsScreen() {
   const selB = document.getElementById('analyticsPlayerBSelect');
   if (!selA || !selB) return;
 
+  // 1. Tournament Overview KPIs
+  const totalMatches = state.matches.length;
+  const completedMatches = state.matches.filter(m => !!m.winner).length;
+  const pctCompleted = totalMatches > 0 ? Math.round((completedMatches / totalMatches) * 100) : 0;
+
+  let totalPts = 0;
+  state.matches.forEach(m => {
+    (m.sets || []).forEach(s => {
+      totalPts += (Number(s.score[0]) || 0) + (Number(s.score[1]) || 0);
+    });
+  });
+
+  const kpiMatches = document.getElementById('analyticsKpiMatches');
+  const kpiMatchesSub = document.getElementById('analyticsKpiMatchesSub');
+  const kpiPoints = document.getElementById('analyticsKpiPoints');
+  const kpiPlayers = document.getElementById('analyticsKpiPlayers');
+
+  if (kpiMatches) kpiMatches.textContent = `${completedMatches} / ${totalMatches}`;
+  if (kpiMatchesSub) kpiMatchesSub.textContent = `${pctCompleted}% fixtures completed`;
+  if (kpiPoints) kpiPoints.textContent = `${totalPts} pts`;
+  if (kpiPlayers) kpiPlayers.textContent = `${state.players ? state.players.length : 16}`;
+
+  // 2. Dropdowns Roster
   const db = getLeaderboardDB();
   const allNames = Array.from(new Set([
     ...Object.keys(db),
-    ...state.poolA,
-    ...state.poolB
+    ...(state.poolA || []),
+    ...(state.poolB || []),
+    ...(state.players || [])
   ])).filter(n => n && n !== 'BYE');
 
   if (!allNames.length) {
@@ -2730,65 +3051,86 @@ function runAnalyticsComparison() {
 
   resultDiv.innerHTML = `
     <!-- Top Level Scorecard -->
-    <div style="display:grid;grid-template-columns:1fr 140px 1fr;align-items:center;background:rgba(0,0,0,0.3);border-radius:var(--radius-md);padding:24px;margin-bottom:20px;border:1px solid var(--clr-border);">
+    <div style="display:grid;grid-template-columns:1fr 140px 1fr;align-items:center;background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:20px;margin-bottom:20px;">
       <div style="text-align:center;">
-        <div style="font-size:1.3rem;font-weight:900;color:#60a5fa;">${pA}</div>
-        <div style="font-family:'Anton',sans-serif;font-size:3rem;color:var(--clr-gold);">${winsA}</div>
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:700;">H2H VICTORIES</div>
+        <div style="width:48px;height:48px;border-radius:50%;background:var(--clr-green);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;margin-bottom:8px;">${pA.charAt(0).toUpperCase()}</div>
+        <div style="font-size:1.15rem;font-weight:900;color:var(--clr-text);">${pA}</div>
+        <div style="font-size:0.8rem;color:var(--clr-gold);font-weight:700;">${eloA} Elo Rating</div>
+        <div style="font-size:1.6rem;font-weight:900;color:var(--clr-green);margin-top:6px;">${winsA}</div>
+        <div style="font-size:0.72rem;color:var(--clr-text-muted);text-transform:uppercase;">H2H Wins</div>
+      </div>
+
+      <div style="text-align:center;border-left:1px solid var(--clr-border);border-right:1px solid var(--clr-border);padding:0 12px;">
+        <div style="font-size:0.75rem;font-weight:800;color:var(--clr-text-muted);text-transform:uppercase;">Direct Meetings</div>
+        <div style="font-family:var(--font-display);font-size:2rem;font-weight:900;color:var(--clr-gold);">${h2hMatches.length}</div>
+        <div style="font-size:0.75rem;color:var(--clr-text-muted);">Matches Played</div>
       </div>
 
       <div style="text-align:center;">
-        <div style="font-size:0.8rem;color:var(--clr-text-muted);font-weight:bold;">TOTAL MEETINGS</div>
-        <div style="font-family:'Anton',sans-serif;font-size:2rem;color:#ffffff;">${h2hMatches.length}</div>
-        <div style="font-size:0.75rem;color:var(--clr-gold);">${winsA > winsB ? `${pA} leads` : (winsB > winsA ? `${pB} leads` : 'Tied')}</div>
-      </div>
-
-      <div style="text-align:center;">
-        <div style="font-size:1.3rem;font-weight:900;color:#f87171;">${pB}</div>
-        <div style="font-family:'Anton',sans-serif;font-size:3rem;color:var(--clr-gold);">${winsB}</div>
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:700;">H2H VICTORIES</div>
+        <div style="width:48px;height:48px;border-radius:50%;background:var(--clr-blue);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:900;margin-bottom:8px;">${pB.charAt(0).toUpperCase()}</div>
+        <div style="font-size:1.15rem;font-weight:900;color:var(--clr-text);">${pB}</div>
+        <div style="font-size:0.8rem;color:var(--clr-gold);font-weight:700;">${eloB} Elo Rating</div>
+        <div style="font-size:1.6rem;font-weight:900;color:var(--clr-blue);margin-top:6px;">${winsB}</div>
+        <div style="font-size:0.72rem;color:var(--clr-text-muted);text-transform:uppercase;">H2H Wins</div>
       </div>
     </div>
 
-    <!-- Comparative Metric Bars -->
-    <div style="display:flex;flex-direction:column;gap:16px;">
-      <!-- Elo -->
-      <div>
-        <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:bold;margin-bottom:4px;">
-          <span style="color:#60a5fa;">${pA}: ${eloA} Elo</span>
-          <span style="color:var(--clr-text-muted);">Skill Rating (Elo)</span>
-          <span style="color:#f87171;">${pB}: ${eloB} Elo</span>
+    <!-- Comparative Metric Gauges -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
+      <div class="card" style="padding:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:0.75rem;font-weight:700;margin-bottom:6px;">
+          <span>${winRateA}% Win Rate</span>
+          <span style="color:var(--clr-text-muted);">Career Win %</span>
+          <span>${winRateB}% Win Rate</span>
         </div>
-        <div style="background:rgba(255,255,255,0.1);height:8px;border-radius:var(--radius-full);overflow:hidden;display:flex;">
-          <div style="width:${eloPctA}%;background:#3b82f6;"></div>
-          <div style="width:${100 - eloPctA}%;background:#ef4444;"></div>
-        </div>
-      </div>
-
-      <!-- Win Rate -->
-      <div>
-        <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:bold;margin-bottom:4px;">
-          <span style="color:#60a5fa;">${winRateA}% (${statsA.won}W / ${statsA.lost}L)</span>
-          <span style="color:var(--clr-text-muted);">Tournament Win Rate</span>
-          <span style="color:#f87171;">${winRateB}% (${statsB.won}W / ${statsB.lost}L)</span>
-        </div>
-        <div style="background:rgba(255,255,255,0.1);height:8px;border-radius:var(--radius-full);overflow:hidden;display:flex;">
-          <div style="width:${winRateA + winRateB > 0 ? Math.round((winRateA / (winRateA + winRateB)) * 100) : 50}%;background:#3b82f6;"></div>
-          <div style="width:${winRateA + winRateB > 0 ? 100 - Math.round((winRateA / (winRateA + winRateB)) * 100) : 50}%;background:#ef4444;"></div>
+        <div style="height:8px;background:rgba(255,255,255,0.08);border-radius:999px;overflow:hidden;display:flex;">
+          <div style="width:${winRateA + winRateB > 0 ? (winRateA / (winRateA + winRateB)) * 100 : 50}%;background:var(--clr-green);"></div>
+          <div style="flex:1;background:var(--clr-blue);"></div>
         </div>
       </div>
 
-      <!-- Total Points -->
-      <div>
-        <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:bold;margin-bottom:4px;">
-          <span style="color:#60a5fa;">${statsA.totalPts || 0} pts</span>
-          <span style="color:var(--clr-text-muted);">Total Points Scored</span>
-          <span style="color:#f87171;">${statsB.totalPts || 0} pts</span>
+      <div class="card" style="padding:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:0.75rem;font-weight:700;margin-bottom:6px;">
+          <span>${statsA.ptsDiff >= 0 ? '+' : ''}${statsA.ptsDiff || 0} Diff</span>
+          <span style="color:var(--clr-text-muted);">Points Differential</span>
+          <span>${statsB.ptsDiff >= 0 ? '+' : ''}${statsB.ptsDiff || 0} Diff</span>
+        </div>
+        <div style="height:8px;background:rgba(255,255,255,0.08);border-radius:999px;overflow:hidden;display:flex;">
+          <div style="width:${eloPctA}%;background:var(--clr-gold);"></div>
+          <div style="flex:1;background:rgba(255,255,255,0.2);"></div>
         </div>
       </div>
+    </div>
+
+    <!-- Historical Direct Encounters -->
+    <div>
+      <div style="font-size:0.8rem;font-weight:800;color:var(--clr-text);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:10px;">Encounter Logs (${pA} vs ${pB})</div>
+      ${!h2hMatches.length ? `
+        <div style="text-align:center;padding:16px;background:rgba(255,255,255,0.02);border:1px dashed var(--clr-border);border-radius:var(--radius-sm);color:var(--clr-text-muted);font-size:0.82rem;">
+          No previous direct head-to-head matches on record between these two athletes yet.
+        </div>
+      ` : `
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${h2hMatches.map(m => {
+            const winnerName = m.winner === 'a' ? m.a : m.b;
+            const scoreStr = (m.sets || []).map(s => `${s.score[0]}-${s.score[1]}`).join(' | ');
+            return `
+              <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:10px 14px;flex-wrap:wrap;gap:8px;">
+                <div>
+                  <span style="font-weight:800;color:${winnerName === pA ? 'var(--clr-green)' : 'var(--clr-blue)'};">${winnerName} won</span>
+                  <span style="font-size:0.75rem;color:var(--clr-text-muted);margin-left:8px;">Pool ${m.pool || 'A'} · Court ${m.court || 1}</span>
+                </div>
+                <div style="font-family:monospace;font-size:0.9rem;font-weight:700;color:var(--clr-gold);">${scoreStr}</div>
+                <button class="btn btn-ghost btn-xs" onclick="openScorecardModal('${m.id}')">Scorecard</button>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `}
     </div>
   `;
 }
+
 
 /* ═══════════════════════════════════════════════════
    BWF RULES INTERACTIVE SERVICE COURT TESTER
@@ -2941,51 +3283,21 @@ function handleResetNav() {
 }
 
 function quickSwitchToAdmin() {
-  const users = getUsersDB();
-  let admin = users.find(u => u.name.toLowerCase() === 'rashed');
-  if (!admin) {
-    admin = {
-      id: 1001,
-      name: 'Rashed',
-      email: 'rashed@badminton.local',
-      role: 'admin',
-      status: 'active',
-      avatar: 'R',
-      club: 'Tournament Director',
-      elo: 1650,
-      createdAt: new Date().toLocaleDateString()
-    };
-    users.unshift(admin);
-    saveUsersDB(users);
-  } else {
-    admin.role = 'admin';
-    saveUsersDB(users);
-  }
-  setCurrentUser(admin);
   const guardModal = document.getElementById('adminAuthGuardModal');
   if (guardModal && guardModal.open) guardModal.close();
-  showToast('Signed in as Rashed (Admin & Tournament Director)!', 'success');
+  showToast('Please sign in with Director credentials.');
+  openAuthModal();
 }
 
 function quickSwitchToGeneralUser() {
-  const player = {
-    id: 10001,
-    name: 'Player User',
-    email: 'player@badminton.local',
-    role: 'player',
-    status: 'active',
-    avatar: 'P',
-    createdAt: new Date().toLocaleDateString()
-  };
-  setCurrentUser(player);
-  showToast('Switched to General User mode (Open challenges, betting, play).', 'info');
+  logoutUser();
 }
 
 function toggleRoleDemo() {
   if (isAdminUser()) {
-    quickSwitchToGeneralUser();
+    logoutUser();
   } else {
-    quickSwitchToAdmin();
+    openAuthModal();
   }
 }
 
@@ -3064,6 +3376,7 @@ function showScreen(screenId) {
   if (screenId === 'scorecardsScreen') renderScorecardsScreen();
   if (screenId === 'challengesScreen') renderChallengesBoard();
   if (screenId === 'groupsScreen') renderGroups();
+  if (screenId === 'leaderboardScreen') renderLeaderboard();
 }
 
 function updateTournamentTitle(val) {
@@ -4593,39 +4906,172 @@ function recordTournamentChampion() {
   saveLeaderboardDB(db);
 }
 
+let currentLeaderboardFilter = 'all';
+
+function setLeaderboardFilter(filter) {
+  currentLeaderboardFilter = filter;
+  ['all', 'poolA', 'poolB', 'elo', 'winrate', 'predictors'].forEach(f => {
+    const btn = document.getElementById(`lbFilter${f.charAt(0).toUpperCase() + f.slice(1)}`);
+    if (btn) btn.classList.toggle('active', f === filter);
+  });
+  renderLeaderboard();
+}
+
 function renderLeaderboard() {
   const db = getLeaderboardDB();
   const tbody = document.getElementById('globalLeaderboardTableBody');
+  const podiumContainer = document.getElementById('leaderboardPodiumContainer');
   if (!tbody) return;
 
-  const players = Object.values(db).sort((x, y) => {
-    if (y.gold !== x.gold) return y.gold - x.gold;
-    if (y.won !== x.won) return y.won - x.won;
-    return y.ptsDiff - x.ptsDiff;
+  // Gather all players
+  let players = Object.values(db);
+
+  // If DB is sparse, ensure pool A & pool B players exist
+  const existingNames = new Set(players.map(p => p.name));
+  (state.poolA || []).forEach(name => {
+    if (name && name !== 'BYE' && !existingNames.has(name)) {
+      players.push({ name, elo: 1200, gold: 0, silver: 0, bronze: 0, won: 0, lost: 0, totalPts: 0, ptsDiff: 0, pool: 'A' });
+      existingNames.add(name);
+    }
+  });
+  (state.poolB || []).forEach(name => {
+    if (name && name !== 'BYE' && !existingNames.has(name)) {
+      players.push({ name, elo: 1200, gold: 0, silver: 0, bronze: 0, won: 0, lost: 0, totalPts: 0, ptsDiff: 0, pool: 'B' });
+      existingNames.add(name);
+    }
   });
 
+  // Assign pool tags
+  players.forEach(p => {
+    if (!p.pool) {
+      if ((state.poolA || []).includes(p.name)) p.pool = 'A';
+      else if ((state.poolB || []).includes(p.name)) p.pool = 'B';
+    }
+  });
+
+  // Apply Filter
+  if (currentLeaderboardFilter === 'poolA') {
+    players = players.filter(p => p.pool === 'A');
+  } else if (currentLeaderboardFilter === 'poolB') {
+    players = players.filter(p => p.pool === 'B');
+  }
+
+  // Sorting
+  if (currentLeaderboardFilter === 'elo') {
+    players.sort((x, y) => (y.elo || 1200) - (x.elo || 1200));
+  } else if (currentLeaderboardFilter === 'winrate') {
+    players.sort((x, y) => {
+      const tx = (x.won || 0) + (x.lost || 0);
+      const ty = (y.won || 0) + (y.lost || 0);
+      const rx = tx > 0 ? (x.won / tx) : 0;
+      const ry = ty > 0 ? (y.won / ty) : 0;
+      return ry - rx || (y.won || 0) - (x.won || 0);
+    });
+  } else {
+    // Default 'all' or by championships / wins
+    players.sort((x, y) => {
+      if ((y.gold || 0) !== (x.gold || 0)) return (y.gold || 0) - (x.gold || 0);
+      if ((y.won || 0) !== (x.won || 0)) return (y.won || 0) - (x.won || 0);
+      if ((y.ptsDiff || 0) !== (x.ptsDiff || 0)) return (y.ptsDiff || 0) - (x.ptsDiff || 0);
+      return (y.elo || 1200) - (x.elo || 1200);
+    });
+  }
+
+  // Render Podium for Top 3
+  if (podiumContainer) {
+    if (players.length >= 3) {
+      const first = players[0];
+      const second = players[1];
+      const third = players[2];
+
+      const getPodiumRate = p => {
+        const t = (p.won || 0) + (p.lost || 0);
+        return t > 0 ? Math.round((p.won / t) * 100) : 0;
+      };
+
+      podiumContainer.innerHTML = `
+        <!-- 2nd Place: Silver -->
+        <div class="podium-card podium-silver">
+          <div style="font-size:0.75rem;font-weight:800;color:var(--clr-silver);text-transform:uppercase;margin-bottom:8px;">🥈 2nd Place</div>
+          <div class="podium-avatar">${(second.name || 'P').charAt(0).toUpperCase()}</div>
+          <div style="font-size:1.1rem;font-weight:800;color:var(--clr-text);">${second.name}</div>
+          <div style="font-size:0.78rem;color:var(--clr-text-muted);margin:4px 0;">${second.elo || 1200} Elo · ${getPodiumRate(second)}% Win</div>
+          <div style="font-size:0.72rem;color:var(--clr-silver);font-weight:700;">${second.won || 0}W - ${second.lost || 0}L (${second.ptsDiff >= 0 ? '+' : ''}${second.ptsDiff || 0})</div>
+        </div>
+
+        <!-- 1st Place: Gold -->
+        <div class="podium-card podium-gold">
+          <div style="font-size:0.8rem;font-weight:900;color:var(--clr-gold);text-transform:uppercase;margin-bottom:6px;">👑 1st Champion</div>
+          <div class="podium-avatar">${(first.name || 'P').charAt(0).toUpperCase()}</div>
+          <div style="font-size:1.25rem;font-weight:900;color:var(--clr-text);">${first.name}</div>
+          <div style="font-size:0.82rem;color:var(--clr-gold);font-weight:700;margin:4px 0;">${first.elo || 1200} Elo · ${getPodiumRate(first)}% Win</div>
+          <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:600;">${first.won || 0}W - ${first.lost || 0}L (${first.ptsDiff >= 0 ? '+' : ''}${first.ptsDiff || 0} Diff)</div>
+        </div>
+
+        <!-- 3rd Place: Bronze -->
+        <div class="podium-card podium-bronze">
+          <div style="font-size:0.75rem;font-weight:800;color:var(--clr-bronze);text-transform:uppercase;margin-bottom:8px;">🥉 3rd Place</div>
+          <div class="podium-avatar">${(third.name || 'P').charAt(0).toUpperCase()}</div>
+          <div style="font-size:1.1rem;font-weight:800;color:var(--clr-text);">${third.name}</div>
+          <div style="font-size:0.78rem;color:var(--clr-text-muted);margin:4px 0;">${third.elo || 1200} Elo · ${getPodiumRate(third)}% Win</div>
+          <div style="font-size:0.72rem;color:var(--clr-bronze);font-weight:700;">${third.won || 0}W - ${third.lost || 0}L (${third.ptsDiff >= 0 ? '+' : ''}${third.ptsDiff || 0})</div>
+        </div>
+      `;
+    } else {
+      podiumContainer.innerHTML = '';
+    }
+  }
+
+  // Update Golden Racket / Iron Net Awards
+  const topAttacker = players.slice().sort((a, b) => (b.totalPts || 0) - (a.totalPts || 0))[0];
+  const gRacketLead = document.getElementById('goldenRacketLeader');
+  const gRacketStats = document.getElementById('goldenRacketStats');
+  if (gRacketLead && topAttacker) {
+    gRacketLead.textContent = `Leader: ${topAttacker.name}`;
+    if (gRacketStats) gRacketStats.textContent = `${topAttacker.totalPts || 0} points scored`;
+  }
+
+  const topDefender = players.slice().filter(p => (p.won || 0) + (p.lost || 0) > 0).sort((a, b) => (b.ptsDiff || 0) - (a.ptsDiff || 0))[0];
+  const gGloveLead = document.getElementById('goldenGloveLeader');
+  const gGloveStats = document.getElementById('goldenGloveStats');
+  if (gGloveLead && topDefender) {
+    gGloveLead.textContent = `Leader: ${topDefender.name}`;
+    if (gGloveStats) gGloveStats.textContent = `+${topDefender.ptsDiff || 0} point differential`;
+  }
+
   if (!players.length) {
-    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--clr-text-muted);">No tournament records yet. Complete fixtures to populate the Hall of Fame.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="12" style="text-align:center;padding:24px;color:var(--clr-text-muted);">No athlete records match the selected filter.</td></tr>`;
     return;
   }
 
   tbody.innerHTML = players.map((p, idx) => {
-    const total = p.won + p.lost;
+    const total = (p.won || 0) + (p.lost || 0);
     const rate = total > 0 ? Math.round((p.won / total) * 100) : 0;
     const opponent = players[idx === 0 ? 1 : 0]?.name || p.name;
+    const rankBadge = idx === 0 ? '🥇 1' : (idx === 1 ? '🥈 2' : (idx === 2 ? '🥉 3' : `#${idx + 1}`));
     return `
       <tr>
-        <td style="font-weight:900;color:${idx === 0 ? 'var(--clr-gold)' : (idx === 1 ? 'var(--clr-silver)' : (idx === 2 ? 'var(--clr-bronze)' : 'inherit'))};">${idx + 1}</td>
-        <td><strong>${p.name}</strong></td>
+        <td style="font-weight:900;color:${idx === 0 ? 'var(--clr-gold)' : (idx === 1 ? 'var(--clr-silver)' : (idx === 2 ? 'var(--clr-bronze)' : 'inherit'))};">${rankBadge}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:26px;height:26px;border-radius:4px;background:var(--clr-surface-hi);color:var(--clr-text);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;border:1px solid var(--clr-border);">
+              ${(p.name || 'P').charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <strong>${p.name}</strong>
+              ${p.pool ? `<span style="font-size:0.7rem;color:var(--clr-text-muted);margin-left:4px;">(Pool ${p.pool})</span>` : ''}
+            </div>
+          </div>
+        </td>
         <td><strong style="color:var(--clr-gold);">${p.elo || 1200}</strong></td>
         <td style="color:var(--clr-gold);font-weight:bold;">${p.gold || 0}</td>
         <td style="color:var(--clr-silver);">${p.silver || 0}</td>
         <td style="color:var(--clr-bronze);">${p.bronze || 0}</td>
         <td>${total}</td>
-        <td style="color:var(--clr-green);">${p.won}</td>
-        <td style="color:var(--clr-red);">${p.lost}</td>
+        <td style="color:var(--clr-green);">${p.won || 0}</td>
+        <td style="color:var(--clr-red);">${p.lost || 0}</td>
         <td style="font-weight:bold;">${rate}%</td>
-        <td style="color:${p.ptsDiff >= 0 ? 'var(--clr-green)' : 'var(--clr-red)'};">${p.ptsDiff > 0 ? '+' : ''}${p.ptsDiff}</td>
+        <td style="color:${(p.ptsDiff || 0) >= 0 ? 'var(--clr-green)' : 'var(--clr-red)'};font-weight:700;">${(p.ptsDiff || 0) > 0 ? '+' : ''}${p.ptsDiff || 0}</td>
         <td>
           <button class="btn btn-ghost btn-xs" onclick="openH2HModal('${p.name}', '${opponent}')">Compare</button>
         </td>

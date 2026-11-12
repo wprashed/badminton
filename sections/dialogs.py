@@ -729,6 +729,17 @@ DIALOGS_CONTENT = """
         </div>
       </button>
 
+      <!-- Athlete Profile & Stacks -->
+      <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();if(currentUser){showScreen('playerHubScreen');}else{openAuthModal();}">
+        <div class="more-card-icon" style="color:var(--clr-green);">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div class="more-card-text">
+          <span class="more-card-title">My Profile & Stacks</span>
+          <span class="more-card-desc">Personal stats, Elo rating & settings</span>
+        </div>
+      </button>
+
       <!-- Coin Wallet & Betting -->
       <button class="more-card-item" onclick="document.getElementById('moreMenuModal').close();openCoinBalanceModal();">
         <div class="more-card-icon" style="color:var(--clr-gold);">
@@ -920,11 +931,9 @@ DIALOGS_CONTENT = """
       </div>
 
       <div style="display:flex;flex-direction:column;gap:10px;">
-        <button class="btn btn-primary" onclick="quickSwitchToAdmin()" style="width:100%;min-height:44px;font-weight:700;font-size:0.92rem;display:flex;align-items:center;justify-content:center;gap:8px;">
-          <span>⚡ Switch to Admin Mode (Instant Access)</span>
-        </button>
-        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('adminAuthGuardModal').close();openAuthModal();" style="width:100%;min-height:38px;">
-          Sign In with Director Credentials
+        <button class="btn btn-primary" onclick="document.getElementById('adminAuthGuardModal').close();openAuthModal();" style="width:100%;min-height:44px;font-weight:700;font-size:0.92rem;display:flex;align-items:center;justify-content:center;gap:8px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Sign In with Director Credentials</span>
         </button>
       </div>
     </div>
@@ -1020,6 +1029,81 @@ DIALOGS_CONTENT = """
       <button type="button" class="btn btn-ghost btn-sm" id="appPromptCancelBtn">Cancel</button>
       <button type="button" class="btn btn-primary btn-sm" id="appPromptOkBtn">Submit</button>
     </div>
+  </div>
+</dialog>
+
+
+<!-- User Profile Settings Modal -->
+<dialog id="userProfileSettingsModal" class="modal" aria-labelledby="profileSettingsTitle">
+  <div class="modal-box" style="max-width:520px;max-height:90vh;overflow-y:auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--clr-border);padding-bottom:12px;margin-bottom:16px;">
+      <h3 id="profileSettingsTitle" style="font-family:var(--font-display);font-size:1.2rem;font-weight:700;display:flex;align-items:center;gap:8px;margin:0;color:var(--clr-text);">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" style="color:var(--clr-green);"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Athlete Profile Settings</span>
+      </h3>
+      <button class="modal-close" onclick="document.getElementById('userProfileSettingsModal').close()" aria-label="Close" style="background:transparent!important;border:none!important;color:var(--clr-text-muted);cursor:pointer;padding:0;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;outline:none;">
+        <svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;stroke-width:2.2;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+
+    <form id="profileSettingsForm" onsubmit="saveProfileSettings(event)">
+      <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:16px;">
+        <div id="profileEditAvatarPreview" style="width:48px;height:48px;border-radius:var(--radius-sm);background:var(--clr-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.35rem;font-weight:900;flex-shrink:0;">R</div>
+        <div style="flex:1;">
+          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Avatar Initial / Badge</label>
+          <input type="text" id="profileEditAvatar" maxlength="2" class="modal-input" style="width:80px;text-align:center;font-weight:900;text-transform:uppercase;" oninput="updateProfileAvatarPreview(this.value)">
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Full Name *</label>
+          <input type="text" id="profileEditName" required class="modal-input" style="width:100%;">
+        </div>
+        <div>
+          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Email</label>
+          <input type="email" id="profileEditEmail" class="modal-input" style="width:100%;">
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Club / Team Affiliation</label>
+        <input type="text" id="profileEditClub" placeholder="e.g. Dhaka Smashers, National Academy" class="modal-input" style="width:100%;">
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+        <div>
+          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Dominant Hand</label>
+          <select id="profileEditHand" class="modal-input" style="width:100%;">
+            <option value="Right-Handed">Right-Handed</option>
+            <option value="Left-Handed">Left-Handed</option>
+            <option value="Ambidextrous">Ambidextrous</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Playing Style</label>
+          <select id="profileEditStyle" class="modal-input" style="width:100%;">
+            <option value="Attacking / Smasher">Attacking / Smasher</option>
+            <option value="Defensive / Counter">Defensive / Counter</option>
+            <option value="Tactical / Playmaker">Tactical / Playmaker</option>
+            <option value="Speed & Net Play">Speed & Net Play</option>
+            <option value="All-Rounder">All-Rounder</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-bottom:18px;">
+        <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Change Passcode / PIN (Leave blank to keep current)</label>
+        <input type="password" id="profileEditPasscode" placeholder="New 4-digit PIN or password" class="modal-input" style="width:100%;">
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--clr-border);padding-top:14px;">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('userProfileSettingsModal').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm" style="display:inline-flex;align-items:center;gap:6px;">
+          <span>Save Changes</span>
+        </button>
+      </div>
+    </form>
   </div>
 </dialog>
 

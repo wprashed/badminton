@@ -55,11 +55,14 @@ SCREENS_CONTENT = """
       <span data-i18n="navMore">Menu</span>
     </button>
 
-    <!-- User Panel / Sign In -->
+    <!-- User Panel / Profile & Auth -->
     <div class="user-panel" id="userStatusPanel">
-      <div class="user-avatar" id="headerAvatar">?</div>
-      <span class="user-name-label" id="headerUsername" style="display:none;">Guest</span>
-      <button class="btn btn-primary btn-xs" id="authBtn" onclick="openAuthModal()">Sign In</button>
+      <div class="user-avatar" id="headerAvatar" onclick="handleUserAvatarClick()" title="View Athlete Profile" style="cursor:pointer;">?</div>
+      <div id="headerUserInfo" onclick="handleUserAvatarClick()" style="display:none;cursor:pointer;flex-direction:column;line-height:1.15;" title="View Athlete Profile">
+        <span class="user-name-label" id="headerUsername" style="font-weight:700;font-size:0.8rem;color:var(--clr-text);max-width:90px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Guest</span>
+        <span id="headerUserRole" style="font-size:0.65rem;font-weight:800;letter-spacing:0.04em;color:var(--clr-gold);text-transform:uppercase;">GUEST</span>
+      </div>
+      <button class="btn btn-primary btn-xs" id="authBtn" onclick="handleAuthBtnClick()">Sign In</button>
     </div>
   </div>
 </header>
@@ -277,14 +280,17 @@ SCREENS_CONTENT = """
     <!-- Navigation & Action bar -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
       <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-        <h2 style="font-family:var(--font-display);font-size:1.45rem;font-weight:800;color:var(--clr-text);letter-spacing:-0.01em;margin:0;">Group Stage & Standings</h2>
-        <select id="groupCourtFilter" style="padding:6px 14px;font-size:0.82rem;font-weight:600;background:rgba(255,255,255,0.05);border:1px solid var(--clr-border);border-radius:var(--radius-sm);color:var(--clr-text);font-family:inherit;cursor:pointer;" onchange="renderGroupMatches()">
-          <option value="all">Court: All Courts</option>
-          <option value="1">Court 1</option>
-          <option value="2">Court 2</option>
-          <option value="3">Court 3</option>
-          <option value="4">Court 4</option>
-        </select>
+        <h2 style="font-family:var(--font-display);font-size:1.35rem;font-weight:800;color:var(--clr-text);letter-spacing:-0.01em;margin:0;">Group Stage & Standings</h2>
+        <div style="display:inline-flex;align-items:center;background:var(--clr-surface-card);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:2px 8px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24" style="color:var(--clr-text-muted);margin-right:4px;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+          <select id="groupCourtFilter" style="padding:4px 8px;font-size:0.82rem;font-weight:600;background:transparent;border:none;color:var(--clr-text);font-family:inherit;cursor:pointer;outline:none;" onchange="renderGroupMatches()">
+            <option value="all">All Courts</option>
+            <option value="1">Court 1</option>
+            <option value="2">Court 2</option>
+            <option value="3">Court 3</option>
+            <option value="4">Court 4</option>
+          </select>
+        </div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-ghost btn-sm" onclick="showScreen('scheduleScreen')"><svg class="icon icon-xs" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Match Schedule</button>
@@ -550,25 +556,61 @@ SCREENS_CONTENT = """
   <!-- ═══════════════════════════════════════════════════
        6. ANALYTICS & HEAD-TO-HEAD (H2H) SCREEN
   ═══════════════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════════
+       TOURNAMENT ANALYSIS & H2H EXPLORER SCREEN
+  ═══════════════════════════════════════════════════ -->
   <section id="analyticsScreen" class="screen">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
       <div>
-        <h2 style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM7 21h10M12 3v18M3 7h18"/></svg> Head-to-Head & Player Analytics</h2>
-        <p style="color:var(--clr-text-muted);font-size:0.85rem;">Compare athlete records, Elo ratings, point differential, and historical matchups.</p>
+        <h2 style="font-family:var(--font-display);font-size:1.35rem;font-weight:800;color:var(--clr-text);display:flex;align-items:center;gap:8px;margin:0;">
+          <svg class="icon icon-md" viewBox="0 0 24 24" style="color:var(--clr-green);"><path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM7 21h10M12 3v18M3 7h18"/></svg>
+          <span>Tournament Analytics & Head-to-Head Explorer</span>
+        </h2>
+        <p style="color:var(--clr-text-muted);font-size:0.82rem;margin:2px 0 0;">Compare athlete records, Elo ratings, head-to-head match encounters, and scoring efficiency.</p>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn btn-ghost btn-sm" onclick="exportStandingsCSV()" title="Download pool standings as CSV"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV</button>
-        <button class="btn btn-ghost btn-sm" onclick="showScreen('leaderboardScreen')"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg> View Hall of Fame</button>
+        <button class="btn btn-ghost btn-sm" onclick="showScreen('groupsScreen')">&larr; Back to Tournament</button>
+        <button class="btn btn-ghost btn-sm" onclick="showScreen('leaderboardScreen')"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg> View Leaderboard</button>
+        <button class="btn btn-primary btn-sm" onclick="exportStandingsCSV()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV</button>
       </div>
     </div>
 
+    <!-- Tournament Overview KPIs -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr));gap:14px;margin-bottom:24px;">
+      <div class="card" style="padding:16px;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Tournament Progress</div>
+        <div id="analyticsKpiMatches" style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--clr-green);margin:4px 0;">0 / 0</div>
+        <div id="analyticsKpiMatchesSub" style="font-size:0.75rem;color:var(--clr-text-muted);">0% fixtures completed</div>
+      </div>
+      <div class="card" style="padding:16px;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Total Points Scored</div>
+        <div id="analyticsKpiPoints" style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--clr-gold);margin:4px 0;">0 pts</div>
+        <div id="analyticsKpiPointsSub" style="font-size:0.75rem;color:var(--clr-text-muted);">Across all courts & sets</div>
+      </div>
+      <div class="card" style="padding:16px;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Avg Match Duration</div>
+        <div id="analyticsKpiDuration" style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--clr-blue);margin:4px 0;">22 min</div>
+        <div style="font-size:0.75rem;color:var(--clr-text-muted);">BWF 21-pt format pacing</div>
+      </div>
+      <div class="card" style="padding:16px;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Active Contenders</div>
+        <div id="analyticsKpiPlayers" style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--clr-text);margin:4px 0;">16</div>
+        <div style="font-size:0.75rem;color:var(--clr-text-muted);">Pool A & Pool B seeds</div>
+      </div>
+    </div>
+
+    <!-- Interactive Head-to-Head Explorer -->
     <div class="card" style="margin-bottom:24px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h3 class="card-title" style="margin:0;">Head-to-Head Athlete Faceoff</h3>
+        <span style="font-size:0.78rem;color:var(--clr-text-muted);">Instant statistical comparison</span>
+      </div>
       <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;margin-bottom:20px;">
         <div>
           <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Select Athlete A</label>
           <select id="analyticsPlayerASelect" class="modal-input" onchange="runAnalyticsComparison()"></select>
         </div>
-        <div style="font-family:var(--font-display);font-size:1.6rem;color:var(--clr-gold);text-align:center;padding-top:16px;">VS</div>
+        <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:900;color:var(--clr-gold);text-align:center;padding-top:16px;">VS</div>
         <div>
           <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Select Athlete B</label>
           <select id="analyticsPlayerBSelect" class="modal-input" onchange="runAnalyticsComparison()"></select>
@@ -955,16 +997,41 @@ SCREENS_CONTENT = """
   <!-- ═══════════════════════════════════════════════════
        8. GLOBAL LEADERBOARD & HALL OF FAME
   ═══════════════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════════
+       PRO LEADERBOARD & HALL OF FAME SCREEN
+  ═══════════════════════════════════════════════════ -->
   <section id="leaderboardScreen" class="screen">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:12px;">
       <div>
-        <h2 style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg> Global Hall of Fame & Rankings</h2>
-        <p style="color:var(--clr-text-muted);font-size:0.85rem;">All-time match records, medals, win percentages, Elo ratings, and point differentials.</p>
+        <h2 style="font-family:var(--font-display);font-size:1.35rem;font-weight:800;color:var(--clr-text);display:flex;align-items:center;gap:8px;margin:0;">
+          <svg class="icon icon-md" viewBox="0 0 24 24" style="color:var(--clr-gold);"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg>
+          <span>Tournament Leaderboard & Hall of Fame</span>
+        </h2>
+        <p style="color:var(--clr-text-muted);font-size:0.82rem;margin:2px 0 0;">Official BWF tiebreaker standings, dynamic Elo ratings, win percentages, and podium trophies.</p>
       </div>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-ghost btn-sm" onclick="showScreen('groupsScreen')">&larr; Back to Tournament</button>
+        <button class="btn btn-ghost btn-sm" onclick="showScreen('analyticsScreen')">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1zM7 21h10M12 3v18M3 7h18"/></svg>
+          <span>H2H Analytics</span>
+        </button>
         <button class="btn btn-primary btn-sm" onclick="exportStandingsCSV()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export CSV</button>
       </div>
+    </div>
+
+    <!-- Filter Bar Pills -->
+    <div class="leaderboard-filter-bar">
+      <button class="filter-pill-btn active" id="lbFilterAll" onclick="setLeaderboardFilter('all')">All Athletes</button>
+      <button class="filter-pill-btn" id="lbFilterPoolA" onclick="setLeaderboardFilter('poolA')">Pool A</button>
+      <button class="filter-pill-btn" id="lbFilterPoolB" onclick="setLeaderboardFilter('poolB')">Pool B</button>
+      <button class="filter-pill-btn" id="lbFilterElo" onclick="setLeaderboardFilter('elo')">By Elo Rating</button>
+      <button class="filter-pill-btn" id="lbFilterWinRate" onclick="setLeaderboardFilter('winrate')">By Win Rate</button>
+      <button class="filter-pill-btn" id="lbFilterPredictors" onclick="setLeaderboardFilter('predictors')">Top Tipsters / Predictors</button>
+    </div>
+
+    <!-- Top 3 Podium Showcase -->
+    <div id="leaderboardPodiumContainer" class="podium-grid"></div>
+
     <!-- Special Awards & Records -->
     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 260px), 1fr));gap:14px;margin-bottom:20px;">
       <div class="card" style="display:flex;align-items:center;gap:14px;padding:14px;border-left:3px solid var(--clr-gold);">
@@ -989,8 +1056,7 @@ SCREENS_CONTENT = """
       </div>
     </div>
 
-    </div>
-
+    <!-- Full Rankings Table -->
     <div class="card">
       <div class="data-table-container">
         <table class="data-table">
@@ -1019,57 +1085,135 @@ SCREENS_CONTENT = """
   <!-- ═══════════════════════════════════════════════════
        9. PERSONALIZED PLAYER HUB (ITEM 13)
   ═══════════════════════════════════════════════════ -->
+    <!-- ═══════════════════════════════════════════════════
+       ATHLETE PERSONAL PROFILE & DATA STACKS SCREEN
+  ═══════════════════════════════════════════════════ -->
   <section id="playerHubScreen" class="screen">
+    <!-- Top Nav Action Bar -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-      <div>
-        <h2 style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Athlete Personal Tournament Hub</h2>
-        <p id="playerHubSubtitle" style="color:var(--clr-text-muted);font-size:0.85rem;">Personal upcoming fixtures, assigned courts, rating, and match history.</p>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div id="playerHubAvatarLarge" style="width:54px;height:54px;border-radius:var(--radius-sm);background:var(--clr-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;border:2px solid var(--clr-border);">R</div>
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <h2 id="playerHubName" style="font-family:var(--font-display);font-size:1.35rem;font-weight:800;color:var(--clr-text);margin:0;">Athlete Name</h2>
+            <span id="playerHubRoleBadge" class="badge badge-gold" style="font-size:0.7rem;text-transform:uppercase;">PLAYER</span>
+          </div>
+          <p id="playerHubSubtitle" style="color:var(--clr-text-muted);font-size:0.82rem;margin:2px 0 0;">Club Athlete · BWF Registered</p>
+        </div>
       </div>
-      <div style="display:flex;gap:8px;">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-ghost btn-sm" onclick="showScreen('groupsScreen')">&larr; Back to Tournament</button>
-        <button class="btn btn-primary btn-sm" onclick="openProfileSettingsModal()">Edit My Profile</button>
+        <button class="btn btn-ghost btn-sm" onclick="openCoinBalanceModal()" style="color:var(--clr-gold);">
+          <span>🪙 Wallet</span>
+        </button>
+        <button class="btn btn-primary btn-sm" onclick="openProfileSettingsModal()" style="display:inline-flex;align-items:center;gap:6px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          <span>Edit Profile Settings</span>
+        </button>
       </div>
     </div>
 
-    <!-- Next Fixture Callout Card -->
-    <div id="playerNextFixtureCard" class="card" style="background:linear-gradient(135deg, rgba(34,197,94,0.15), rgba(13,31,45,0.8));border-color:var(--clr-green);margin-bottom:24px;"></div>
+    <!-- Next Scheduled Fixture Callout Card -->
+    <div id="playerNextFixtureCard" class="card" style="background:linear-gradient(135deg, rgba(34,197,94,0.12), rgba(13,31,45,0.7));border-color:var(--clr-green);margin-bottom:20px;"></div>
 
-    <!-- Career Dossier Stats -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr));gap:16px;margin-bottom:24px;">
-      <div class="card" style="padding:16px;text-align:center;">
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:700;">PLAYER SKILL RATING</div>
-        <div id="playerHubElo" style="font-family:var(--font-display);font-size:2.2rem;color:var(--clr-gold);">1200</div>
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);">BWF SaaS Elo</div>
+    <!-- Athlete All Data & Stacks Grid -->
+    <div class="profile-stacks-grid">
+      <!-- 1. Elo & Skill Tier Stack -->
+      <div class="stack-card">
+        <div class="stack-header">
+          <span class="stack-title">Skill & Elo Rating</span>
+          <span id="playerHubTierBadge" class="badge" style="font-size:0.7rem;background:rgba(245,158,11,0.15);color:var(--clr-gold);border:1px solid rgba(245,158,11,0.3);">PRO TIER</span>
+        </div>
+        <div class="stack-value" id="playerHubElo" style="color:var(--clr-gold);">1200</div>
+        <div class="stack-sublabel" id="playerHubEloSub">BWF SaaS Dynamic Rating · Rank #--</div>
+        <div class="stack-progress-bg">
+          <div id="playerHubEloBar" class="stack-progress-fill" style="width:65%;background:var(--clr-gold);"></div>
+        </div>
       </div>
-      <div class="card" style="padding:16px;text-align:center;">
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:700;">WIN PERCENTAGE</div>
-        <div id="playerHubWinRate" style="font-family:var(--font-display);font-size:2.2rem;color:var(--clr-green);">0%</div>
-        <div id="playerHubMatchesCount" style="font-size:0.75rem;color:var(--clr-text-muted);">0 matches played</div>
+
+      <!-- 2. Match Records & Win Rate Stack -->
+      <div class="stack-card">
+        <div class="stack-header">
+          <span class="stack-title">Match Records</span>
+          <span id="playerHubStreakBadge" class="badge" style="font-size:0.7rem;background:rgba(34,197,94,0.15);color:var(--clr-green);">Active</span>
+        </div>
+        <div class="stack-value" id="playerHubWinRate" style="color:var(--clr-green);">0%</div>
+        <div class="stack-sublabel" id="playerHubMatchesCount">0 matches played (0W - 0L)</div>
+        <div class="stack-progress-bg">
+          <div id="playerHubWinRateBar" class="stack-progress-fill" style="width:0%;background:var(--clr-green);"></div>
+        </div>
       </div>
-      <div class="card" style="padding:16px;text-align:center;">
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:700;">MEDALS WON</div>
-        <div id="playerHubMedals" style="font-size:0.95rem;font-weight:600;margin:6px 0;color:var(--clr-text-muted);">Gold: 0 · Silver: 0 · Bronze: 0</div>
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);">Tournament Podiums</div>
+
+      <!-- 3. Points Differential Stack -->
+      <div class="stack-card">
+        <div class="stack-header">
+          <span class="stack-title">Scoring Differential</span>
+          <span class="stack-title" style="color:var(--clr-blue);">Net Diff</span>
+        </div>
+        <div class="stack-value" id="playerHubPointDiff" style="color:var(--clr-blue);">+0</div>
+        <div class="stack-sublabel" id="playerHubPointBreakdown">0 pts scored · 0 conceded</div>
+        <div class="stack-progress-bg">
+          <div id="playerHubPointBar" class="stack-progress-fill" style="width:50%;background:var(--clr-blue);"></div>
+        </div>
       </div>
-      <div class="card" style="padding:16px;text-align:center;">
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);font-weight:700;">FORM GUIDE</div>
-        <div id="playerHubFormGuide" style="font-weight:900;font-size:1.2rem;margin:8px 0;letter-spacing:0.1em;">—</div>
-        <div style="font-size:0.75rem;color:var(--clr-text-muted);">Last 5 Matches</div>
+
+      <!-- 4. Virtual Coins & Prediction Stacks -->
+      <div class="stack-card">
+        <div class="stack-header">
+          <span class="stack-title">Predictions & Coins</span>
+          <span style="font-size:0.85rem;">🪙</span>
+        </div>
+        <div class="stack-value" id="playerHubCoinWallet" style="color:var(--clr-gold);">100</div>
+        <div class="stack-sublabel" id="playerHubBettingSub">0 predictions · 0% accuracy</div>
+        <div class="stack-progress-bg">
+          <div id="playerHubBettingBar" class="stack-progress-fill" style="width:50%;background:var(--clr-gold);"></div>
+        </div>
+      </div>
+
+      <!-- 5. Form Guide Stack -->
+      <div class="stack-card">
+        <div class="stack-header">
+          <span class="stack-title">Form Guide</span>
+          <span class="stack-title">Last 5 Matches</span>
+        </div>
+        <div class="stack-value" id="playerHubFormGuide" style="letter-spacing:0.12em;font-size:1.6rem;padding-top:4px;">—</div>
+        <div class="stack-sublabel" id="playerHubFormSub">Recent tournament performance</div>
+      </div>
+
+      <!-- 6. Medals & Podiums Stack -->
+      <div class="stack-card">
+        <div class="stack-header">
+          <span class="stack-title">Podiums & Medals</span>
+          <span style="font-size:0.85rem;">🏆</span>
+        </div>
+        <div class="stack-value" id="playerHubMedalsSummary" style="font-size:1.45rem;display:flex;gap:10px;align-items:center;">
+          <span>🥇 <span id="playerHubGoldCount" style="color:var(--clr-gold);">0</span></span>
+          <span>🥈 <span id="playerHubSilverCount" style="color:var(--clr-silver);">0</span></span>
+          <span>🥉 <span id="playerHubBronzeCount" style="color:var(--clr-bronze);">0</span></span>
+        </div>
+        <div class="stack-sublabel" id="playerHubMedalsSub">Championship finishes</div>
       </div>
     </div>
 
-    <!-- Personal Matches History -->
+    <!-- Complete Personal Matches History Table -->
     <div class="card">
-      <h3 class="card-title" style="margin-bottom:14px;">My Tournament Encounters</h3>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+        <h3 class="card-title" style="margin:0;display:flex;align-items:center;gap:8px;">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>Tournament Match Records</span>
+        </h3>
+        <span style="font-size:0.78rem;color:var(--clr-text-muted);">Official BWF Record Sheet</span>
+      </div>
       <div class="data-table-container">
         <table class="data-table">
           <thead>
             <tr>
-              <th>Stage</th>
+              <th>Stage / Pool</th>
               <th>Opponent</th>
-              <th>Score (Sets)</th>
+              <th>Scores per Set</th>
               <th>Result</th>
               <th>Court</th>
+              <th>Scorecard</th>
             </tr>
           </thead>
           <tbody id="playerHubMatchesTableBody"></tbody>

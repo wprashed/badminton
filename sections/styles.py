@@ -2428,5 +2428,177 @@ body.theme-light tbody tr:hover {
   background: #f8fafc;
 }
 
+
+/* Leaderboard Filter Pills & Podium */
+.leaderboard-filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.filter-pill-btn {
+  background: var(--clr-surface-card);
+  border: 1px solid var(--clr-border);
+  color: var(--clr-text-muted);
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 140ms ease;
+}
+.filter-pill-btn:hover {
+  color: var(--clr-text);
+  border-color: var(--clr-text-muted);
+}
+.filter-pill-btn.active {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: var(--clr-green);
+  color: var(--clr-green);
+  font-weight: 700;
+}
+body.theme-light .filter-pill-btn.active {
+  background: #ecfdf5;
+  border-color: #059669;
+  color: #059669;
+}
+
+/* Podium Showcase */
+.podium-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr 1fr;
+  gap: 14px;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+@media (max-width: 640px) {
+  .podium-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.podium-card {
+  background: var(--clr-surface-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  text-align: center;
+  position: relative;
+  transition: transform 140ms ease;
+}
+.podium-card:hover {
+  transform: translateY(-2px);
+}
+.podium-gold {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, var(--clr-surface-card) 100%);
+  padding: 22px 16px;
+  order: 2;
+}
+.podium-silver {
+  border-color: rgba(148, 163, 184, 0.4);
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.06) 0%, var(--clr-surface-card) 100%);
+  order: 1;
+}
+.podium-bronze {
+  border-color: rgba(217, 119, 6, 0.35);
+  background: linear-gradient(180deg, rgba(217, 119, 6, 0.05) 0%, var(--clr-surface-card) 100%);
+  order: 3;
+}
+@media (max-width: 640px) {
+  .podium-gold { order: 1; }
+  .podium-silver { order: 2; }
+  .podium-bronze { order: 3; }
+}
+
+.podium-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+}
+.podium-gold .podium-avatar {
+  width: 60px;
+  height: 60px;
+  font-size: 1.55rem;
+  border: 3px solid var(--clr-gold);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+.podium-silver .podium-avatar {
+  border: 2px solid #94a3b8;
+  background: linear-gradient(135deg, #94a3b8, #64748b);
+}
+.podium-bronze .podium-avatar {
+  border: 2px solid #d97706;
+  background: linear-gradient(135deg, #b45309, #78350f);
+}
+
+/* Athlete Profile Stacks */
+.profile-stacks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.stack-card {
+  background: var(--clr-surface-card);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.stack-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.stack-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--clr-text-muted);
+}
+.stack-value {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--clr-text);
+  margin-bottom: 4px;
+}
+.stack-sublabel {
+  font-size: 0.76rem;
+  color: var(--clr-text-muted);
+}
+.stack-progress-bg {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+body.theme-light .stack-progress-bg {
+  background: #e2e8f0;
+}
+.stack-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 300ms ease;
+}
+
 </style>
 """
