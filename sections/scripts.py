@@ -1,4 +1,136 @@
 SCRIPTS_CONTENT = r"""<script>
+/* Refund pending bets when a match is cancelled or ends in walkover */
+function refundMatchBets(matchId) {
+  try {
+    const bets = getBetsDB();
+    const pendingBets = bets.filter(b => b.matchId === matchId && !b.settled);
+    if (!pendingBets.length) return;
+
+    const wallets = getWalletsDB();
+    const txs = getTransactionsDB();
+
+    pendingBets.forEach(b => {
+      if (!wallets[b.username]) wallets[b.username] = { balance: 100, earned: 0, spent: 0 };
+      wallets[b.username].balance += b.amount;
+      b.settled = true;
+      b.refunded = true;
+      txs.unshift({
+        id: 'tx_ref_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 4),
+        username: b.username,
+        amount: b.amount,
+        type: 'refund',
+        desc: `Bet refund (Match cancelled/walkover)`,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+    });
+
+    saveBetsDB(bets);
+    saveWalletsDB(wallets);
+    saveTransactionsDB(txs);
+    updateCoinBalanceUI();
+  } catch (e) {
+    console.error('Error refunding bets:', e);
+  }
+}
+
+/* Quick referee fault calls in live scoreboard */
+function awardFaultPoint(faultType) {
+  const match = state.matches.find(m => m.id === state.currentMatchId);
+  if (!match || match.winner) return;
+
+  const offendingSide = state.servingSide;
+  const receivingSide = offendingSide === 'a' ? 'b' : 'a';
+  const label = faultType === 'service' ? 'Service Fault' : (faultType === 'net' ? 'Net Touch Fault' : 'Shuttle Out Fault');
+
+  showToast(`⚠️ ${label} called on ${offendingSide === 'a' ? match.a : match.b}! Point awarded to ${receivingSide === 'a' ? match.a : match.b}.`, 'warning');
+  scorePoint(receivingSide);
+}
+
+/* Instant Rematch from Completed Challenge */
+function instantRematchChallenge(chalId) {
+  const list = getChallengesDB();
+  const oldChal = list.find(c => c.id === chalId);
+  if (!oldChal) return;
+
+  const newChal = {
+    id: 'ch_' + Date.now().toString(36),
+    creator: oldChal.opponent || oldChal.creator,
+    opponent: oldChal.opponent ? oldChal.creator : null,
+    category: oldChal.category || 'singles',
+    points: oldChal.points || 15,
+    note: 'Rematch: ' + (oldChal.note || 'Court 1'),
+    status: oldChal.opponent ? 'accepted' : 'open',
+    createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  };
+
+  list.unshift(newChal);
+  saveChallengesDB(list);
+
+  if (newChal.status === 'accepted') {
+    const newMatch = createMatchObj(newChal.creator, newChal.opponent, 'CHALLENGE');
+    newChal.matchId = newMatch.id;
+    state.matches.push(newMatch);
+    saveState();
+  }
+
+  renderChallengesBoard();
+  showToast('⚡ Rematch created! Jump right back in.', 'success');
+}
+
+/* WhatsApp Match Invitation Generator */
+function shareChallengeWhatsApp(chalId) {
+  const list = getChallengesDB();
+  const chal = list.find(c => c.id === chalId);
+  if (!chal) return;
+
+  const url = window.location.origin + window.location.pathname + '#challenge=' + chal.id;
+  const text = `🏸 Badminton Cup Challenge!
+${chal.creator} invites you to a ${chal.category || 'singles'} match to ${chal.points || 15} points at ${chal.note || 'Court 1'}.
+
+Accept challenge here: ${url}`;
+  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+}
+
+/* Update Live Tournament Progress Bar */
+function updateTournamentProgressUI() {
+  const textEl = document.getElementById('tournamentProgressText');
+  const fillEl = document.getElementById('tournamentProgressBarFill');
+  if (!textEl || !fillEl) return;
+
+  const matches = (state.matches || []).filter(m => m.pool === 'A' || m.pool === 'B');
+  if (!matches.length) {
+    textEl.textContent = '0 / 0 Matches Completed (0%)';
+    fillEl.style.width = '0%';
+    return;
+  }
+
+  const completed = matches.filter(m => m.winner).length;
+  const pct = Math.round((completed / matches.length) * 100);
+  textEl.textContent = `${completed} / ${matches.length} Matches Completed (${pct}%)`;
+  fillEl.style.width = `${pct}%`;
+}
+
+/* Safe LocalStorage with Quota Eviction Protection */
+function safeLocalStorageSet(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch (e) {
+    if (e.name === 'QuotaExceededError' || e.code === 22) {
+      console.warn('LocalStorage quota limit reached. Clearing temporary caches...');
+      try {
+        localStorage.removeItem('badminton_cup_theme_pref');
+        localStorage.setItem(key, value);
+        return true;
+      } catch (inner) {
+        showToast('Device storage limit reached. Please clear older completed matches.', 'warning');
+        return false;
+      }
+    }
+    return false;
+  }
+}
+
 /* ═══════════════════════════════════════════════════
    GLOBAL UTILITIES & RESILIENCE HELPERS
 ═══════════════════════════════════════════════════ */
@@ -369,7 +501,7 @@ function getChallengesDB() {
 }
 
 function saveChallengesDB(list) {
-  localStorage.setItem(STORAGE_KEY_CHALLENGES, JSON.stringify(list));
+  safeLocalStorageSet(STORAGE_KEY_CHALLENGES, JSON.stringify(list));
 }
 
 function openNewChallengeModal() {
@@ -527,6 +659,7 @@ async function cancelChallenge(chalId) {
   const confirmed = await appConfirm(`Cancel challenge between ${chal.creator}${chal.opponent ? ' and ' + chal.opponent : ''}?`, 'Cancel Challenge', 'Cancel Match', true);
   if (!confirmed) return;
 
+  if (chal.matchId) refundMatchBets(chal.matchId);
   const updatedList = list.filter(c => c.id !== chalId);
   saveChallengesDB(updatedList);
 
@@ -597,6 +730,15 @@ function renderChallengesBoard() {
   document.getElementById('chalCountAccepted').textContent = list.filter(c => c.status === 'accepted').length;
 
   let filtered = list;
+  const searchInput = document.getElementById('challengeSearchInput');
+  const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
+  if (query) {
+    filtered = filtered.filter(c =>
+      (c.creator && c.creator.toLowerCase().includes(query)) ||
+      (c.opponent && c.opponent.toLowerCase().includes(query)) ||
+      (c.note && c.note.toLowerCase().includes(query))
+    );
+  }
   if (activeChallengeFilter === 'open') filtered = list.filter(c => c.status === 'open');
   if (activeChallengeFilter === 'accepted') filtered = list.filter(c => c.status === 'accepted');
 
@@ -726,6 +868,8 @@ function renderChallengesBoard() {
               <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
               <span>View Scorecard</span>
             </button>
+            <button class="btn btn-primary btn-sm" style="gap:6px;" onclick="instantRematchChallenge('${c.id}')" title="Play an instant rematch">⚡ Rematch</button>
+            <button class="btn btn-ghost btn-sm" style="gap:6px;" onclick="shareChallengeWhatsApp('${c.id}')" title="Share via WhatsApp">💬 WhatsApp</button>
             <button class="btn btn-ghost btn-sm" style="gap:6px;" onclick="copyChallengeInviteLink('${c.id}')" title="Share Match Result">
               <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
               <span>Share</span>
@@ -1029,7 +1173,7 @@ function getUsersDB() {
 }
 function saveUsersDB(users) {
   try {
-    localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
+    safeLocalStorageSet(STORAGE_KEY_USERS, JSON.stringify(users));
   } catch (e) {}
 }
 
@@ -3868,6 +4012,7 @@ function computePoolStandings(poolPlayers, poolTag) {
 }
 
 function renderGroups() {
+  updateTournamentProgressUI();
   const standingsA = computePoolStandings(state.poolA, 'A');
   const standingsB = computePoolStandings(state.poolB, 'B');
 
@@ -6110,5 +6255,73 @@ function checkWelcomeBanner() {
     }
   } catch (e) {}
 }
+
+/* Deep-Link Challenge URL Handler */
+function handleUrlHashRouting() {
+  const hash = window.location.hash || '';
+  if (hash.startsWith('#challenge=') || hash.startsWith('#challenge-')) {
+    const chalId = hash.replace(/^#challenge[-=]/, '');
+    if (chalId) {
+      showScreen('challengesScreen');
+      setTimeout(() => {
+        const list = getChallengesDB();
+        const chal = list.find(c => c.id === chalId);
+        if (chal) {
+          filterChallenges('all');
+          const cards = document.querySelectorAll('.challenge-card');
+          cards.forEach(card => {
+            if (card.textContent.includes(chal.creator)) {
+              card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              card.style.outline = '3px solid var(--clr-gold)';
+              card.style.boxShadow = '0 0 24px rgba(245, 158, 11, 0.4)';
+              setTimeout(() => {
+                card.style.outline = '';
+                card.style.boxShadow = '';
+              }, 3500);
+            }
+          });
+          showToast(`Found challenge from ${chal.creator}!`, 'info');
+        }
+      }, 350);
+    }
+  }
+}
+window.addEventListener('hashchange', handleUrlHashRouting);
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(handleUrlHashRouting, 500);
+});
+
+/* Umpire Keyboard Hotkeys */
+window.addEventListener('keydown', (e) => {
+  const umpireScreen = document.getElementById('liveUmpireScreen');
+  if (!umpireScreen || umpireScreen.style.display === 'none') return;
+  const activeEl = document.activeElement;
+  if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT')) return;
+
+  if (e.code === 'Space') {
+    e.preventDefault();
+    if (e.shiftKey || e.altKey) {
+      scorePoint(state.servingSide === 'a' ? 'b' : 'a');
+    } else {
+      scorePoint(state.servingSide);
+    }
+  } else if (e.code === 'KeyU' || (e.ctrlKey && e.code === 'KeyZ')) {
+    e.preventDefault();
+    undoPoint();
+  } else if (e.code === 'KeyF') {
+    e.preventDefault();
+    toggleCourtFlip();
+  } else if (e.code === 'KeyI') {
+    e.preventDefault();
+    triggerIntervalTimer(60);
+  }
+});
+
+/* Visibility Change WakeLock Re-acquisition */
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && state.currentMatchId) {
+    if (typeof requestWakeLock === 'function') requestWakeLock();
+  }
+});
 </script>
 """

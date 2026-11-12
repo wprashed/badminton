@@ -3030,5 +3030,61 @@ body.theme-light .mfc-winner-banner {
 body.theme-light .data-table td {
   border-bottom: 1px solid #f1f5f9 !important;
 }
+
+/* ═══════════════════════════════════════════════════
+   OFFICIAL BWF PRINT SCORECARD STYLESHEET
+═══════════════════════════════════════════════════ */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  header, nav, .mobile-bottom-nav, #moreMenuModal, .btn, .modal-close, button, .app-header, #toastContainer {
+    display: none !important;
+  }
+  #scorecardModal {
+    position: static !important;
+    display: block !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .scorecard-print-area {
+    display: block !important;
+    border: 2px solid #000000 !important;
+    padding: 24px !important;
+    color: #000000 !important;
+  }
+}
+
+/* Safe Area Insets for Modern Mobile Displays */
+.app-header {
+  padding-top: max(12px, env(safe-area-inset-top));
+}
+.mobile-bottom-nav {
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+/* Fault Chips in Umpire Mode */
+.umpire-fault-chip {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+.umpire-fault-chip:hover {
+  background: rgba(239, 68, 68, 0.25);
+  transform: translateY(-1px);
+}
+
 </style>
 """

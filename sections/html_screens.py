@@ -28,6 +28,11 @@ SCREENS_CONTENT = """
       <span class="notify-badge-dot"></span>
     </button>
 
+    <!-- Global Audio Mute / Unmute Toggle -->
+    <button class="notify-btn" id="headerAudioBtn" onclick="toggleMuteAudio()" title="Toggle Sound & Announcements" aria-label="Toggle Sound">
+      <svg class="icon icon-xs" id="soundIconOn" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+      <svg class="icon icon-xs" id="soundIconOff" viewBox="0 0 24 24" style="display:none;color:#ef4444;"><line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/></svg>
+    </button>
     <!-- Theme Toggle (Light / Dark) -->
     <button class="notify-btn" id="headerThemeBtn" onclick="toggleThemeMode()" title="Toggle Light / Dark Mode" aria-label="Toggle Light / Dark Mode">
       <svg class="icon icon-xs" id="themeIconSun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
@@ -291,6 +296,20 @@ SCREENS_CONTENT = """
 
 
 
+    <!-- Live Tournament Progress Bar -->
+    <div id="tournamentProgressBarContainer" style="margin-bottom:18px;background:var(--clr-surface-card);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:10px 14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.78rem;font-weight:700;margin-bottom:6px;">
+        <span style="color:var(--clr-text);display:flex;align-items:center;gap:6px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24" style="color:var(--clr-green);"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Tournament Match Progress
+        </span>
+        <span id="tournamentProgressText" style="color:var(--clr-green);">0 / 0 Matches Completed (0%)</span>
+      </div>
+      <div style="width:100%;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+        <div id="tournamentProgressBarFill" style="width:0%;height:100%;background:linear-gradient(90deg, #10b981, #059669);border-radius:3px;transition:width 300ms ease;"></div>
+      </div>
+    </div>
+
     <!-- Streamlined Toolbar for Group Stage -->
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:14px;">
       <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
@@ -432,6 +451,13 @@ SCREENS_CONTENT = """
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
       <div class="diagonal-indicator" id="serviceCalloutText">Serving: Player A from RIGHT (Even) Court</div>
       <div id="serviceReceiverCallout" style="font-size:0.78rem;color:var(--clr-text-muted);font-weight:700;"></div>
+    </div>
+
+    <!-- Quick Referee Fault Calls -->
+    <div style="display:flex;justify-content:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <button class="umpire-fault-chip" onclick="awardFaultPoint('out')" title="Shuttle called out of bounds">🏸 Shuttle Out</button>
+      <button class="umpire-fault-chip" onclick="awardFaultPoint('service')" title="Service height or foot fault">⚠️ Service Fault</button>
+      <button class="umpire-fault-chip" onclick="awardFaultPoint('net')" title="Racket or player net touch">🚫 Net Fault</button>
     </div>
 
     <!-- Scoreboard Panels -->
@@ -1464,11 +1490,16 @@ SCREENS_CONTENT = """
         </div>
       </div>
 
-      <!-- Filter tabs -->
-      <div style="display:flex;gap:6px;margin-bottom:14px;border-bottom:1px solid var(--clr-border);padding-bottom:10px;">
-        <button class="btn btn-ghost btn-xs active" id="chalFilterAll" onclick="filterChallenges('all')">All Challenges (<span id="chalCountAll">0</span>)</button>
-        <button class="btn btn-ghost btn-xs" id="chalFilterOpen" onclick="filterChallenges('open')">Open / Waiting (<span id="chalCountOpen">0</span>)</button>
-        <button class="btn btn-ghost btn-xs" id="chalFilterAccepted" onclick="filterChallenges('accepted')">Accepted / In Progress (<span id="chalCountAccepted">0</span>)</button>
+      <!-- Instant Challenge Search & Filter bar -->
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;">
+        <div style="position:relative;flex:1;min-width:220px;">
+          <input type="text" id="challengeSearchInput" class="modal-input" placeholder="🔍 Search by player, court, or venue..." style="padding:7px 12px;font-size:0.84rem;margin:0;" oninput="renderChallengesBoard()">
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-xs active" id="chalFilterAll" onclick="filterChallenges('all')">All (<span id="chalCountAll">0</span>)</button>
+          <button class="btn btn-ghost btn-xs" id="chalFilterOpen" onclick="filterChallenges('open')">Open (<span id="chalCountOpen">0</span>)</button>
+          <button class="btn btn-ghost btn-xs" id="chalFilterAccepted" onclick="filterChallenges('accepted')">In Progress (<span id="chalCountAccepted">0</span>)</button>
+        </div>
       </div>
 
       <div class="challenge-grid" id="challengeBoardList"></div>
