@@ -116,156 +116,259 @@ SCREENS_CONTENT = """
        1. SETUP SCREEN (ENHANCED WITH REGISTERED USERS)
   ═══════════════════════════════════════════════════ -->
   <section id="setupScreen" class="screen">
-    <div class="card" style="max-width:880px;margin:0 auto;">
-      <div class="card-header">
+    <div class="setup-studio-card">
+      <!-- Studio Header -->
+      <div class="setup-studio-header">
         <div>
-          <h2 class="card-title"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg> Tournament Registration & Configuration</h2>
-          <p style="color:var(--clr-text-muted);font-size:0.88rem;margin-top:4px;">Multi-court scheduling, category formats, registered player selection, and fees.</p>
+          <div class="setup-studio-badge">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>
+            <span>Tournament Studio</span>
+          </div>
+          <h2 class="setup-studio-title">
+            Tournament Registration & Configuration
+          </h2>
+          <p class="setup-studio-sub">
+            Configure match rules, category mode, points buy-in, and team rosters for round-robin play.
+          </p>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn btn-primary btn-xs" onclick="openPlayerPickerModal()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Pick Registered Users</button>
-          <button class="btn btn-ghost btn-xs" onclick="openBulkRosterModal()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Bulk Roster</button>
-          <button class="btn btn-ghost btn-xs" onclick="clearRosters()"><svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Clear Rosters</button>
+        <div class="setup-studio-actions">
+          <button class="btn btn-ghost btn-xs" onclick="loadDemoData()" title="Quick load registered club members" style="gap:5px;">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Load Club Athletes</span>
+          </button>
+          <button class="btn btn-ghost btn-xs" onclick="openBulkRosterModal()" title="Paste list of players or pairs" style="gap:5px;">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+            <span>Bulk Paste</span>
+          </button>
+          <button class="btn btn-ghost btn-xs" onclick="clearRosters()" title="Clear Pool A and B textareas" style="gap:5px;color:var(--clr-text-muted);">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            <span>Clear Rosters</span>
+          </button>
         </div>
       </div>
 
-      <!-- Quick Roster Builder Banner -->
-      <div style="background:var(--clr-surface-card);border:1px solid var(--clr-border);border-left:3px solid var(--clr-green);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
-        <div>
-          <div style="font-weight:900;font-size:0.95rem;color:var(--clr-green);display:flex;align-items:center;gap:6px;">
-            <span><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
-            <span>Roster & Fixtures Builder</span>
-          </div>
-          <div style="font-size:0.8rem;color:var(--clr-text-muted);margin-top:2px;">
-            Type player names into Pool A and B below or load your registered club athletes.
-          </div>
+      <!-- Section 1: Tournament Essentials -->
+      <div class="setup-panel-block">
+        <div class="setup-panel-heading">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+          <span>Tournament Essentials</span>
         </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn btn-primary btn-xs" onclick="loadDemoData()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Load Registered Players</button>
-          <button class="btn btn-ghost btn-xs" onclick="openPlayerPickerModal('A')"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Pick Athletes</button>
-        </div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 240px), 1fr));gap:16px;margin-bottom:20px;">
-        <div>
-          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Tournament Name</label>
-          <input type="text" id="tournamentTitleInput" class="modal-input" value="The Badminton Cup 2026" oninput="updateTournamentTitle(this.value)">
-        </div>
-        <div>
-          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Category Mode</label>
-          <div style="display:flex;gap:8px;">
-            <button class="btn btn-ghost btn-sm active" id="btnCatSingles" onclick="selectCategory('singles')" style="flex:1;">Singles (1v1)</button>
-            <button class="btn btn-ghost btn-sm" id="btnCatDoubles" onclick="selectCategory('doubles')" style="flex:1;">Doubles (2v2)</button>
-          </div>
-        </div>
-        <div>
-          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Tournament Entry / Buy-in (Points)</label>
-          <input type="number" id="tournamentFeeInput" class="modal-input" value="50" min="0" step="5" placeholder="e.g. 50 Points">
-        </div>
-      </div>
-
-      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr));gap:16px;margin-bottom:20px;">
-        <div>
-          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Points to Win Set</label>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="btn btn-ghost btn-xs active" onclick="selectPoints(15)" id="ptsBtn15">15 pts (13 Hope · 14 Game · 15 Win)</button>
-            <button class="btn btn-ghost btn-xs" onclick="selectPoints(21)" id="ptsBtn21">21 pts (BWF Standard)</button>
-            <button class="btn btn-ghost btn-xs" onclick="selectPoints(11)" id="ptsBtn11">11 pts</button>
-            <button class="btn btn-ghost btn-xs" onclick="selectPoints(30)" id="ptsBtn30">30 pts</button>
-          </div>
-        </div>
-        <div>
-          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Match Format</label>
-          <div style="display:flex;gap:6px;">
-            <button class="btn btn-ghost btn-xs" onclick="selectBestOf(1)" id="bestOfBtn1">Best of 1</button>
-            <button class="btn btn-ghost btn-xs active" onclick="selectBestOf(3)" id="bestOfBtn3">Best of 3</button>
-            <button class="btn btn-ghost btn-xs" onclick="selectBestOf(5)" id="bestOfBtn5">Best of 5</button>
-          </div>
-        </div>
-        <div>
-          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Courts Available in Arena</label>
-          <select id="courtSelectInput" class="modal-input" onchange="selectCourtNum(this.value)">
-            <option value="1">1 Court (Centre Court)</option>
-            <option value="2">2 Courts Parallel</option>
-            <option value="3">3 Courts</option>
-            <option value="4">4 Courts Arena</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Nill Penalty System Config Card -->
-      <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.22);border-radius:var(--radius-sm);padding:14px;margin-bottom:18px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-          <label style="font-size:0.85rem;font-weight:800;color:var(--clr-text);display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;">
-            <input type="checkbox" id="nillSystemToggle" checked onchange="document.getElementById('nillConfigOptions').style.display = this.checked ? 'grid' : 'none';">
-            <span>⚡ Nill Penalty Rule (Shutout Whitewash)</span>
-          </label>
-          <span style="font-size:0.75rem;color:var(--clr-gold);font-weight:700;">🔥 Double Points apply on Open Challenges!</span>
-        </div>
-        <div id="nillConfigOptions" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 180px), 1fr));gap:14px;">
+        <div class="setup-form-grid-3">
           <div>
-            <label style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:4px;">Nill Trigger Threshold</label>
-            <select id="nillThresholdInput" class="modal-input" style="padding:6px 10px;">
-              <option value="10" selected>10 – 0 Points (Standard Nill)</option>
-              <option value="7">7 – 0 Points (Early Nill)</option>
-              <option value="11">11 – 0 Points (Express Game Nill)</option>
-              <option value="15">15 – 0 Points (Full Set Nill)</option>
-            </select>
+            <div class="setup-field-label">
+              <span>Tournament Name</span>
+            </div>
+            <div class="setup-input-group">
+              <span class="setup-input-icon">🏆</span>
+              <input type="text" id="tournamentTitleInput" class="modal-input setup-input-with-icon" value="The Badminton Cup 2026" oninput="updateTournamentTitle(this.value)" placeholder="Enter tournament name...">
+            </div>
           </div>
+
           <div>
-            <label style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:4px;">Tournament Penalty Points</label>
-            <input type="number" id="nillPenaltyInput" class="modal-input" value="10" min="1" step="5" placeholder="e.g. 10 PTS" style="padding:6px 10px;" oninput="updateNillPreview(this.value)">
+            <div class="setup-field-label">
+              <span>Category Mode</span>
+              <span class="setup-field-hint" id="categoryModeHint">Pairs (2v2)</span>
+            </div>
+            <div class="setup-segmented-bar">
+              <button type="button" class="setup-segmented-btn" id="btnCatSingles" onclick="selectCategory('singles')">
+                <span>🏸 Singles (1v1)</span>
+              </button>
+              <button type="button" class="setup-segmented-btn active" id="btnCatDoubles" onclick="selectCategory('doubles')">
+                <span>👥 Doubles (2v2)</span>
+              </button>
+            </div>
           </div>
-          <div style="display:flex;flex-direction:column;justify-content:center;background:rgba(0,0,0,0.18);padding:8px 12px;border-radius:6px;border:1px solid var(--clr-border);">
-            <div style="font-size:0.75rem;color:var(--clr-text);line-height:1.4;">
-              🏆 Tournament: <strong id="nillPreviewTourney" style="color:var(--clr-green);">10 PTS</strong> deducted & awarded.<br>
-              ⚡ Challenge Match: <strong id="nillPreviewChallenge" style="color:var(--clr-gold);">20 PTS (DOUBLE)</strong> deducted & earned!
+
+          <div>
+            <div class="setup-field-label">
+              <span>Entry / Buy-in Points</span>
+              <span class="setup-field-hint">Deducted per player</span>
+            </div>
+            <div class="setup-input-group">
+              <span class="setup-input-icon">💰</span>
+              <input type="number" id="tournamentFeeInput" class="modal-input setup-input-with-icon" value="50" min="0" step="5" placeholder="50" style="padding-right:54px;">
+              <span class="setup-input-suffix">PTS</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px;">
-        <div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-            <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);margin:0;">
-              <span id="playerPoolLabelA">Pool A Roster</span> (<span id="countA">0</span>)
-            </label>
-            <button class="btn btn-ghost btn-xs" onclick="openPlayerPickerModal('A')">+ Add Registered</button>
-          </div>
-          <textarea id="rosterAInput" class="modal-input" rows="7" placeholder="Enter player or pair names, one per line..." oninput="updatePlayerCounts()"></textarea>
+      <!-- Section 2: Match Rules & Arena Setup -->
+      <div class="setup-panel-block">
+        <div class="setup-panel-heading">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          <span>Scoring Rules & Match Configuration</span>
         </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-            <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);margin:0;">
-              <span id="playerPoolLabelB">Pool B Roster</span> (<span id="countB">0</span>)
-            </label>
-            <button class="btn btn-ghost btn-xs" onclick="openPlayerPickerModal('B')">+ Add Registered</button>
+        <div class="setup-form-grid-3">
+          <div>
+            <div class="setup-field-label">
+              <span>Points to Win Set</span>
+            </div>
+            <div class="setup-pts-grid">
+              <button type="button" class="setup-pts-btn active" onclick="selectPoints(15)" id="ptsBtn15">
+                <span>15 pts</span>
+                <span class="setup-pts-sub">13-14-15 Rule</span>
+              </button>
+              <button type="button" class="setup-pts-btn" onclick="selectPoints(21)" id="ptsBtn21">
+                <span>21 pts</span>
+                <span class="setup-pts-sub">BWF Standard</span>
+              </button>
+              <button type="button" class="setup-pts-btn" onclick="selectPoints(11)" id="ptsBtn11">
+                <span>11 pts</span>
+                <span class="setup-pts-sub">Express Match</span>
+              </button>
+              <button type="button" class="setup-pts-btn" onclick="selectPoints(30)" id="ptsBtn30">
+                <span>30 pts</span>
+                <span class="setup-pts-sub">Sudden Death</span>
+              </button>
+            </div>
           </div>
-          <textarea id="rosterBInput" class="modal-input" rows="7" placeholder="Enter player or pair names, one per line..." oninput="updatePlayerCounts()"></textarea>
+
+          <div>
+            <div class="setup-field-label">
+              <span>Match Format</span>
+            </div>
+            <div class="setup-segmented-bar" style="margin-top:2px;">
+              <button type="button" class="setup-segmented-btn" onclick="selectBestOf(1)" id="bestOfBtn1">Best of 1</button>
+              <button type="button" class="setup-segmented-btn active" onclick="selectBestOf(3)" id="bestOfBtn3">Best of 3</button>
+              <button type="button" class="setup-segmented-btn" onclick="selectBestOf(5)" id="bestOfBtn5">Best of 5</button>
+            </div>
+          </div>
+
+          <div>
+            <div class="setup-field-label">
+              <span>Courts in Arena</span>
+            </div>
+            <select id="courtSelectInput" class="modal-input" onchange="selectCourtNum(this.value)">
+              <option value="1">1 Court (Centre Court)</option>
+              <option value="2">2 Courts Parallel</option>
+              <option value="3">3 Courts Multi-Play</option>
+              <option value="4">4 Courts Arena</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      <!-- Real-Time Duplicate Player Validation Banner -->
-      <div id="rosterDuplicateWarning" style="display:none;background:rgba(239,68,68,0.12);border:1.5px solid rgba(239,68,68,0.4);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:18px;color:#f87171;font-size:0.86rem;font-weight:700;align-items:center;gap:10px;">
-        <span style="font-size:1.2rem;flex-shrink:0;">⚠️</span>
-        <span id="rosterDuplicateWarningText" style="line-height:1.4;"></span>
+      <!-- Section 3: Nill Shutout Penalty System -->
+      <div class="setup-nill-banner">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
+          <label style="font-size:0.86rem;font-weight:800;color:var(--clr-text);display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;">
+            <input type="checkbox" id="nillSystemToggle" checked onchange="document.getElementById('nillConfigOptions').style.display = this.checked ? 'grid' : 'none';">
+            <span>🛡️ Nill Shutout Penalty System (Whitewash Rule)</span>
+          </label>
+          <span class="badge" style="background:rgba(245,158,11,0.15);color:var(--clr-gold);font-size:0.75rem;font-weight:800;border:1px solid rgba(245,158,11,0.3);">
+            🔥 Double Points on Challenge Matches
+          </span>
+        </div>
+        <div id="nillConfigOptions" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr));gap:14px;">
+          <div>
+            <label style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:4px;">Shutout Trigger Threshold</label>
+            <select id="nillThresholdInput" class="modal-input" style="padding:6px 10px;">
+              <option value="10" selected>10 – 0 Points (Standard Nill)</option>
+              <option value="7">7 – 0 Points (Early Nill)</option>
+              <option value="11">11 – 0 Points (Express Nill)</option>
+              <option value="15">15 – 0 Points (Full Set Nill)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:4px;">Tournament Penalty Points</label>
+            <div class="setup-input-group">
+              <input type="number" id="nillPenaltyInput" class="modal-input" value="10" min="1" step="5" placeholder="10" style="padding:6px 10px;padding-right:48px;" oninput="updateNillPreview(this.value)">
+              <span class="setup-input-suffix" style="font-size:0.7rem;">PTS</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;justify-content:center;background:rgba(0,0,0,0.22);padding:10px 14px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);">
+            <div style="font-size:0.76rem;color:var(--clr-text);line-height:1.45;">
+              🏆 Tournament: <strong id="nillPreviewTourney" style="color:var(--clr-green);">10 PTS</strong> deducted & awarded.<br>
+              ⚡ Open Challenge: <strong id="nillPreviewChallenge" style="color:var(--clr-gold);">20 PTS (DOUBLE)</strong> deducted & earned!
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--clr-border);padding-top:16px;flex-wrap:wrap;gap:12px;">
-        <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-          <label style="font-size:0.82rem;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer;">
+      <!-- Section 4: Team Rosters & Stadium Pools Studio -->
+      <div style="margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+          <div class="setup-panel-heading" style="margin-bottom:0;">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span>Team & Athlete Rosters</span>
+          </div>
+          <div id="rosterFormatHint" style="font-size:0.76rem;color:var(--clr-text-muted);background:rgba(255,255,255,0.04);padding:4px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);">
+            💡 <strong>Doubles Format:</strong> Enter one pair per line (e.g. <code>Rashed / Sifat</code>) or pick athletes.
+          </div>
+        </div>
+
+        <div class="setup-pools-grid">
+          <!-- Pool A Box -->
+          <div class="setup-pool-box pool-a">
+            <div class="setup-pool-header">
+              <div class="setup-pool-title-group">
+                <span class="setup-pool-badge a">POOL A</span>
+                <span style="font-weight:800;font-size:0.86rem;color:var(--clr-text);" id="playerPoolLabelA">Pool A Pairs</span>
+                <span class="badge" style="background:rgba(16,185,129,0.12);color:var(--clr-green);font-size:0.7rem;font-weight:800;padding:2px 7px;" id="countABadge"><span id="countA">0</span></span>
+              </div>
+              <button type="button" class="btn btn-ghost btn-xs" onclick="openPlayerPickerModal('A')" style="gap:5px;color:var(--clr-green);border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.06);">
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>Add Registered</span>
+              </button>
+            </div>
+            <textarea id="rosterAInput" class="setup-pool-textarea" rows="7" placeholder="e.g.&#10;Rashed / Sifat&#10;Fahim / Tanvir&#10;Enter one player or pair per line..." oninput="updatePlayerCounts()"></textarea>
+            <div class="setup-pool-footer">
+              <span>● Pool A Group Bracket</span>
+              <span id="poolAStatusText">0 entries</span>
+            </div>
+          </div>
+
+          <!-- Pool B Box -->
+          <div class="setup-pool-box pool-b">
+            <div class="setup-pool-header">
+              <div class="setup-pool-title-group">
+                <span class="setup-pool-badge b">POOL B</span>
+                <span style="font-weight:800;font-size:0.86rem;color:var(--clr-text);" id="playerPoolLabelB">Pool B Pairs</span>
+                <span class="badge" style="background:rgba(6,182,212,0.12);color:var(--clr-cyan);font-size:0.7rem;font-weight:800;padding:2px 7px;" id="countBBadge"><span id="countB">0</span></span>
+              </div>
+              <button type="button" class="btn btn-ghost btn-xs" onclick="openPlayerPickerModal('B')" style="gap:5px;color:var(--clr-cyan);border-color:rgba(6,182,212,0.3);background:rgba(6,182,212,0.06);">
+                <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <span>Add Registered</span>
+              </button>
+            </div>
+            <textarea id="rosterBInput" class="setup-pool-textarea" rows="7" placeholder="e.g.&#10;Kamal / Jamal&#10;Rafiq / Shafiq&#10;Enter one player or pair per line..." oninput="updatePlayerCounts()"></textarea>
+            <div class="setup-pool-footer">
+              <span>● Pool B Group Bracket</span>
+              <span id="poolBStatusText">0 entries</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-Time Duplicate Validation Banner -->
+      <div id="rosterDuplicateWarning" style="display:none;background:rgba(239,68,68,0.12);border:1.5px solid rgba(239,68,68,0.45);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:18px;color:#f87171;font-size:0.86rem;font-weight:700;align-items:center;gap:12px;">
+        <span style="font-size:1.3rem;flex-shrink:0;">⚠️</span>
+        <span id="rosterDuplicateWarningText" style="line-height:1.45;"></span>
+      </div>
+
+      <!-- Footer Bar: Preferences & Launch CTA -->
+      <div class="setup-footer-bar">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <label class="setup-toggle-pill" title="Play official whistle, commentary, and sound effects">
             <input type="checkbox" id="audioToggleCheckbox" checked onchange="toggleAudioFx(this.checked)">
-            <span>Sound Effects & Speech</span>
+            <span>🔊 Sound Effects & Voice Referee</span>
           </label>
-          <label style="font-size:0.82rem;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer;" title="Allow starting point handicap">
+          <label class="setup-toggle-pill" title="Allow starting point handicap for uneven matches">
             <input type="checkbox" id="handicapToggleCheckbox" onchange="toggleHandicapMode(this.checked)">
-            <span>Starting Point Handicap</span>
+            <span>🎯 Starting Point Handicap</span>
           </label>
         </div>
-        <div style="display:flex;gap:10px;">
-          <button class="btn btn-ghost" onclick="resetTournamentState()">Reset</button>
-          <button class="btn btn-primary btn-lg" id="startTournamentBtn" onclick="initiateTournament()">Start Tournament &rarr;</button>
+
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <div id="rosterBalanceSummary" style="font-size:0.8rem;color:var(--clr-text-muted);font-weight:600;">
+            0 Athletes Entered
+          </div>
+          <button type="button" class="btn btn-ghost" onclick="resetTournamentState()">Reset</button>
+          <button type="button" class="btn btn-primary btn-lg" id="startTournamentBtn" onclick="initiateTournament()" style="font-weight:800;gap:8px;padding:12px 26px;background:linear-gradient(135deg, #10b981, #059669);box-shadow:0 4px 16px rgba(16,185,129,0.35);">
+            <span>Start Tournament</span>
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
         </div>
       </div>
     </div>

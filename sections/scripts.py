@@ -4475,10 +4475,40 @@ function updateTournamentTitle(val) {
 }
 function selectCategory(cat) {
   state.category = cat;
-  document.getElementById('btnCatSingles').classList.toggle('active', cat === 'singles');
-  document.getElementById('btnCatDoubles').classList.toggle('active', cat === 'doubles');
-  document.getElementById('playerPoolLabelA').textContent = cat === 'doubles' ? 'Pool A Pairs' : 'Pool A Roster';
-  document.getElementById('playerPoolLabelB').textContent = cat === 'doubles' ? 'Pool B Pairs' : 'Pool B Roster';
+  const btnSingles = document.getElementById('btnCatSingles');
+  const btnDoubles = document.getElementById('btnCatDoubles');
+  if (btnSingles) btnSingles.classList.toggle('active', cat === 'singles');
+  if (btnDoubles) btnDoubles.classList.toggle('active', cat === 'doubles');
+
+  const pLabelA = document.getElementById('playerPoolLabelA');
+  const pLabelB = document.getElementById('playerPoolLabelB');
+  if (pLabelA) pLabelA.textContent = cat === 'doubles' ? 'Pool A Pairs' : 'Pool A Roster';
+  if (pLabelB) pLabelB.textContent = cat === 'doubles' ? 'Pool B Pairs' : 'Pool B Roster';
+
+  const catHint = document.getElementById('categoryModeHint');
+  if (catHint) catHint.textContent = cat === 'doubles' ? 'Pairs (2v2)' : 'Singles (1v1)';
+
+  const formatHint = document.getElementById('rosterFormatHint');
+  if (formatHint) {
+    formatHint.innerHTML = cat === 'doubles'
+      ? '💡 <strong>Doubles Format:</strong> Enter one pair per line (e.g. <code>Rashed / Sifat</code>) or pick athletes.'
+      : '💡 <strong>Singles Format:</strong> Enter one athlete name per line or pick athletes.';
+  }
+
+  const rA = document.getElementById('rosterAInput');
+  const rB = document.getElementById('rosterBInput');
+  if (rA && !rA.value) {
+    rA.placeholder = cat === 'doubles'
+      ? 'e.g.\nRashed / Sifat\nFahim / Tanvir\nEnter one player or pair per line...'
+      : 'e.g.\nRashed\nSifat\nEnter one player per line...';
+  }
+  if (rB && !rB.value) {
+    rB.placeholder = cat === 'doubles'
+      ? 'e.g.\nKamal / Jamal\nRafiq / Shafiq\nEnter one player or pair per line...'
+      : 'e.g.\nKamal\nJamal\nEnter one player per line...';
+  }
+
+  updatePlayerCounts();
 }
 function selectPoints(pts) {
   state.ptsToWin = pts;
@@ -4569,6 +4599,27 @@ function updatePlayerCounts() {
   const countBEl = document.getElementById('countB');
   if (countAEl) countAEl.textContent = a.length;
   if (countBEl) countBEl.textContent = b.length;
+
+  const unit = state.category === 'doubles' ? 'pairs' : 'players';
+  const poolAStatus = document.getElementById('poolAStatusText');
+  const poolBStatus = document.getElementById('poolBStatusText');
+  const balanceSummary = document.getElementById('rosterBalanceSummary');
+
+  if (poolAStatus) poolAStatus.textContent = `${a.length} ${unit}`;
+  if (poolBStatus) poolBStatus.textContent = `${b.length} ${unit}`;
+
+  if (balanceSummary) {
+    if (a.length === 0 && b.length === 0) {
+      balanceSummary.textContent = '0 Athletes Entered';
+      balanceSummary.style.color = 'var(--clr-text-muted)';
+    } else if (a.length === 0 || b.length === 0) {
+      balanceSummary.textContent = a.length === 0 ? '⚠️ Pool A needs athletes' : '⚠️ Pool B needs athletes';
+      balanceSummary.style.color = 'var(--clr-gold)';
+    } else {
+      balanceSummary.textContent = `⚖️ Ready: ${a.length + b.length} ${unit} (${a.length} in A · ${b.length} in B)`;
+      balanceSummary.style.color = 'var(--clr-green)';
+    }
+  }
 
   const dup = checkRosterDuplicates();
   const warningBox = document.getElementById('rosterDuplicateWarning');
