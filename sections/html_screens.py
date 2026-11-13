@@ -193,6 +193,38 @@ SCREENS_CONTENT = """
         </div>
       </div>
 
+      <!-- Nill Penalty System Config Card -->
+      <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.22);border-radius:var(--radius-sm);padding:14px;margin-bottom:18px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+          <label style="font-size:0.85rem;font-weight:800;color:var(--clr-text);display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;">
+            <input type="checkbox" id="nillSystemToggle" checked onchange="document.getElementById('nillConfigOptions').style.display = this.checked ? 'grid' : 'none';">
+            <span>⚡ Nill Penalty Rule (Shutout Whitewash)</span>
+          </label>
+          <span style="font-size:0.75rem;color:var(--clr-gold);font-weight:700;">🔥 Double Points apply on Open Challenges!</span>
+        </div>
+        <div id="nillConfigOptions" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 180px), 1fr));gap:14px;">
+          <div>
+            <label style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:4px;">Nill Trigger Threshold</label>
+            <select id="nillThresholdInput" class="modal-input" style="padding:6px 10px;">
+              <option value="10" selected>10 – 0 Points (Standard Nill)</option>
+              <option value="7">7 – 0 Points (Early Nill)</option>
+              <option value="11">11 – 0 Points (Express Game Nill)</option>
+              <option value="15">15 – 0 Points (Full Set Nill)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:4px;">Tournament Penalty Points</label>
+            <input type="number" id="nillPenaltyInput" class="modal-input" value="10" min="1" step="5" placeholder="e.g. 10 PTS" style="padding:6px 10px;" oninput="updateNillPreview(this.value)">
+          </div>
+          <div style="display:flex;flex-direction:column;justify-content:center;background:rgba(0,0,0,0.18);padding:8px 12px;border-radius:6px;border:1px solid var(--clr-border);">
+            <div style="font-size:0.75rem;color:var(--clr-text);line-height:1.4;">
+              🏆 Tournament: <strong id="nillPreviewTourney" style="color:var(--clr-green);">10 PTS</strong> deducted & awarded.<br>
+              ⚡ Challenge Match: <strong id="nillPreviewChallenge" style="color:var(--clr-gold);">20 PTS (DOUBLE)</strong> deducted & earned!
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px;">
         <div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">

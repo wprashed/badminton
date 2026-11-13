@@ -91,6 +91,9 @@ const state = {
   handicapEnabled: false,
   courtFlipped: false,
   entryFee: 50,
+  nillSystemEnabled: true,
+  nillThreshold: 10,
+  nillPenalty: 10,
   poolA: [],
   poolB: [],
   players: [],
@@ -613,6 +616,10 @@ function saveQuickCustomScore() {
     { score: winSide === 'a' ? [21, Math.max(0, ptsB - 3)] : [Math.max(0, ptsA - 3), 21], winner: winSide }
   ];
   match.durationSeconds = 720;
+
+  match.sets.forEach(s => {
+    if (typeof checkAndApplyNill === 'function') checkAndApplyNill(match, s);
+  });
 
   recordMatchStats(match);
   logAdminAudit(`Quick custom score: ${match.a} ${ptsA} - ${ptsB} ${match.b} (Winner: ${winName})`);
@@ -4492,6 +4499,10 @@ function initiateTournament() {
   state.thirdPlace = null;
   const feeInput = document.getElementById('tournamentFeeInput');
   state.entryFee = feeInput ? (parseInt(feeInput.value) || 0) : 50;
+  const nillToggle = document.getElementById('nillSystemToggle');
+  state.nillSystemEnabled = nillToggle ? nillToggle.checked : true;
+  state.nillThreshold = parseInt(document.getElementById('nillThresholdInput')?.value) || 10;
+  state.nillPenalty = parseInt(document.getElementById('nillPenaltyInput')?.value) || 10;
 
   // Deduct tournament entry points from registered player wallets
   if (state.entryFee > 0) {
@@ -5436,6 +5447,116 @@ function updateLiveStatusBadges(match, set) {
   }
 }
 
+/* ═══════════════════════════════════════════════════
+   NILL SYSTEM (SHUTOUT WHITEWASH PENALTY ENGINE)
+   - When a team reaches Nill Threshold (e.g. 10 pts) while opponent is at 0:
+   - Penalty points are deducted from the losing team and awarded to the scoring team.
+   - DOUBLE points are deducted and earned on Open Challenge matches!
+═══════════════════════════════════════════════════ */
+function updateNillPreview(val) {
+  const p = Math.max(1, parseInt(val) || 10);
+  const tEl = document.getElementById('nillPreviewTourney');
+  const cEl = document.getElementById('nillPreviewChallenge');
+  if (tEl) tEl.textContent = `${p} PTS`;
+  if (cEl) cEl.textContent = `${p * 2} PTS (DOUBLE)`;
+}
+
+function checkAndApplyNill(match, set) {
+  if (!match || !set || set.nillTriggered) return false;
+  if (state.nillSystemEnabled === false) return false;
+
+  const threshold = state.nillThreshold || 10;
+  const scoreA = set.score ? (set.score[0] || 0) : 0;
+  const scoreB = set.score ? (set.score[1] || 0) : 0;
+
+  let winnerSide = null;
+  let loserSide = null;
+  if (scoreA >= threshold && scoreB === 0) {
+    winnerSide = 'a';
+    loserSide = 'b';
+  } else if (scoreB >= threshold && scoreA === 0) {
+    winnerSide = 'b';
+    loserSide = 'a';
+  }
+
+  if (!winnerSide) return false;
+
+  set.nillTriggered = true;
+  const isChallenge = match.pool === 'CHALLENGE' || (match.id && match.id.startsWith('ch_')) || (typeof getChallengesDB === 'function' && getChallengesDB().some(c => c.matchId === match.id));
+  const basePenalty = state.nillPenalty || 10;
+  // Double points deducted and earned on challenge match!
+  const penalty = isChallenge ? (basePenalty * 2) : basePenalty;
+
+  const winnerTeam = winnerSide === 'a' ? match.a : match.b;
+  const loserTeam = loserSide === 'a' ? match.a : match.b;
+  const winnerMembers = winnerTeam.includes('/') ? winnerTeam.split('/').map(s => s.trim()).filter(Boolean) : [winnerTeam.trim()];
+  const loserMembers = loserTeam.includes('/') ? loserTeam.split('/').map(s => s.trim()).filter(Boolean) : [loserTeam.trim()];
+
+  // Deduct penalty points from each loser team member
+  loserMembers.forEach(mem => {
+    const curBal = getUserCoins(mem);
+    const newBal = Math.max(0, curBal - penalty);
+    setUserCoins(newBal, mem);
+    recordTransaction(mem, 'nill_penalty', penalty, newBal, `⚡ Nill whitewash penalty (-${penalty} PTS) at ${Math.max(scoreA, scoreB)}–0 shutout vs ${winnerTeam}`);
+  });
+
+  // Award bonus points to each winner team member
+  winnerMembers.forEach(mem => {
+    const curBal = getUserCoins(mem);
+    const newBal = curBal + penalty;
+    setUserCoins(newBal, mem);
+    recordTransaction(mem, 'nill_bonus', penalty, newBal, `⚡ Nill shutout bonus (+${penalty} PTS) for ${Math.max(scoreA, scoreB)}–0 shutout vs ${loserTeam}`);
+  });
+
+  updateBettingUI();
+
+  // Notification and announcements
+  showToast(`⚡ NILL DECLARED! ${winnerTeam} shutout ${loserTeam} ${Math.max(scoreA, scoreB)}–0! ${penalty} PTS deducted from ${loserTeam} & awarded to ${winnerTeam}${isChallenge ? ' (🔥 DOUBLE Points on Challenge Match!)' : ''}.`, 'warning');
+  if (typeof speakScoreAnnouncement === 'function') {
+    speakScoreAnnouncement(`Nill declared! ${winnerTeam} leads ${Math.max(scoreA, scoreB)} to zero. Whitewash penalty applied.`);
+  }
+  if (typeof playSound === 'function') playSound('win');
+  if ('vibrate' in navigator) navigator.vibrate([120, 60, 120, 60, 240]);
+
+  // Scoreboard banner
+  showNillScoreboardBanner(winnerTeam, loserTeam, Math.max(scoreA, scoreB), penalty, isChallenge);
+  return true;
+}
+
+function showNillScoreboardBanner(winnerTeam, loserTeam, score, penalty, isChallenge) {
+  let banner = document.getElementById('liveNillBanner');
+  if (!banner) {
+    const container = document.getElementById('liveScoreboardContainer') || document.querySelector('.umpire-court');
+    if (container) {
+      banner = document.createElement('div');
+      banner.id = 'liveNillBanner';
+      banner.className = 'nill-live-banner';
+      container.prepend(banner);
+    }
+  }
+  if (banner) {
+    banner.style.display = 'block';
+    banner.innerHTML = `
+      <div style="background:linear-gradient(135deg, rgba(239,68,68,0.25), rgba(245,158,11,0.25));border:2px solid #ef4444;border-radius:8px;padding:10px 16px;margin:8px auto 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;width:95%;max-width:600px;box-shadow:0 4px 16px rgba(239,68,68,0.3);">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:1.6rem;">⚡</span>
+          <div>
+            <div style="font-family:var(--font-display);font-size:1.05rem;font-weight:900;color:#f87171;letter-spacing:0.04em;">NILL DECLARED (WHITEWASH)!</div>
+            <div style="font-size:0.8rem;color:var(--clr-text);">${escapeHtml(winnerTeam)} earned ${score}–0 shutout over ${escapeHtml(loserTeam)}!</div>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <span style="font-family:monospace;font-size:1.1rem;font-weight:900;color:var(--clr-gold);">${isChallenge ? '🔥 DOUBLE: ' : ''}${penalty} PTS</span>
+          <div style="font-size:0.7rem;color:var(--clr-text-muted);">Deducted & Awarded</div>
+        </div>
+      </div>
+    `;
+    setTimeout(() => {
+      if (banner) banner.style.display = 'none';
+    }, 9000);
+  }
+}
+
 function scorePoint(side) {
   const match = state.matches.find(m => m.id === state.currentMatchId);
   if (!match || match.winner) return;
@@ -5541,6 +5662,7 @@ function scorePoint(side) {
   }
 
   evaluateSetStatus(match, set);
+  checkAndApplyNill(match, set);
   updateLiveScoreboardUI();
   saveState();
   broadcastStateChange();
