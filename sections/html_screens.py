@@ -452,7 +452,7 @@ SCREENS_CONTENT = """
     </div>
 
     <!-- Streamlined Toolbar for Group Stage -->
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:14px;">
+    <div class="groups-stage-toolbar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:14px;">
       <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;">
         <h2 style="font-family:var(--font-display);font-size:1.35rem;font-weight:800;color:var(--clr-text);letter-spacing:-0.01em;margin:0;">Group Stage & Standings</h2>
         <select id="groupCourtFilter" class="app-custom-select" style="min-width:130px;padding:6px 36px 6px 12px;font-size:0.84rem;font-weight:600;cursor:pointer;" onchange="renderGroupMatches()">
@@ -463,7 +463,7 @@ SCREENS_CONTENT = """
           <option value="4">Court 4</option>
         </select>
       </div>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <div class="groups-stage-actions" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
         <button class="btn btn-ghost btn-sm" onclick="openSuggestScoreModal()" style="gap:6px;">
           <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           <span>Suggest Score</span>
@@ -1765,12 +1765,12 @@ SCREENS_CONTENT = """
       </div>
 
       <!-- Advanced Filters & Instant Search Toolbar -->
-      <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;background:rgba(0,0,0,0.15);padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--clr-border);">
+      <div class="chal-filter-toolbar" style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;background:rgba(0,0,0,0.15);padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--clr-border);">
         <div style="position:relative;flex:1;min-width:200px;">
           <input type="text" id="challengeSearchInput" class="modal-input" placeholder="🔍 Search player, court, or note..." style="padding:7px 12px;font-size:0.84rem;margin:0;width:100%;" oninput="renderChallengesBoard()">
         </div>
 
-        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
+        <div class="chal-tabs-strip" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
           <button class="btn btn-ghost btn-xs active" id="chalFilterAll" onclick="filterChallenges('all')">All (<span id="chalCountAll">0</span>)</button>
           <button class="btn btn-ghost btn-xs" id="chalFilterMy" onclick="filterChallenges('my')">★ My Matches (<span id="chalCountMy">0</span>)</button>
           <button class="btn btn-ghost btn-xs" id="chalFilterOpen" onclick="filterChallenges('open')">Open (<span id="chalCountOpen">0</span>)</button>

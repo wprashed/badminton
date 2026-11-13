@@ -1921,6 +1921,29 @@ body.theme-contrast .mobile-bottom-nav {
    100% MOBILE RESPONSIVE ENGINE (Tablets, Mobiles, Foldables)
 ═══════════════════════════════════════════════════ */
 
+/* Universal Mobile Viewport Containment (Prevents Any Horizontal Drift or Page Overflow) */
+html {
+  max-width: 100vw;
+  overflow-x: hidden !important;
+  width: 100%;
+}
+body {
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+  width: 100% !important;
+  position: relative;
+}
+
+/* Netlify Badge & Floating Widgets Mobile Clearance */
+[data-netlify-identity-menu],
+.netlify-badge,
+a[href*="netlify.com"],
+div[id*="netlify-identity"],
+iframe[src*="netlify"] {
+  z-index: 99 !important;
+  bottom: calc(68px + env(safe-area-inset-bottom, 0px)) !important;
+}
+
 /* ── Tablet & Small Laptops (<= 1024px) ── */
 @media (max-width: 1024px) {
   .top-bar {
@@ -1931,36 +1954,90 @@ body.theme-contrast .mobile-bottom-nav {
   }
 }
 
-/* ── Tablet Portrait & Large Mobiles (<= 768px) ── */
+/* ── Tablet Portrait & Mobiles (<= 768px) ── */
 @media (max-width: 768px) {
-  /* Layout & Navigation */
+  /* Layout & Top Bar: Clean, uncluttered, zero horizontal overflow */
   .top-bar {
-    padding: 8px 12px;
-    gap: 6px;
+    padding: 6px 12px;
+    gap: 8px;
     flex-wrap: nowrap !important;
-    min-height: 50px;
+    min-height: 52px;
+    height: 52px;
+    width: 100%;
+    max-width: 100vw;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  .brand-title {
+    min-width: 0;
+    flex-shrink: 1;
+    overflow: hidden;
   }
   .brand-heading {
-    font-size: 1rem;
+    font-size: 0.95rem;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .brand-badge {
     display: none !important;
   }
+
+  /* Hide Secondary Header Tools on Mobile (Seamlessly accessible in More Menu modal) */
+  #networkSyncPill,
+  #notifyBtn,
+  #headerAudioBtn,
+  #headerThemeBtn,
+  #installAppBtn,
   #headerMoreBtn {
-    display: none !important; /* Managed by 5th tab on bottom nav */
+    display: none !important;
   }
+
+  /* Global Stage Navigation Switch (Desktop tabs hide; Mobile 5-Tab Bar shows) */
   .app-stage-nav {
     display: none !important;
   }
   .mobile-bottom-nav {
     display: block !important;
+    z-index: 100000 !important;
   }
   .main-content {
-    padding: 12px 10px calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 12px 10px calc(80px + env(safe-area-inset-bottom, 0px)) !important;
     max-width: 100vw;
     overflow-x: hidden;
     box-sizing: border-box;
+  }
+
+  /* Coin Button on Mobile: Compact & clean */
+  #headerCoinBtn {
+    padding: 3px 8px;
+    font-size: 0.74rem;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  /* User Panel on Mobile: Show avatar; hide full username & redundant Sign Out button */
+  .user-panel {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  #headerUserPill {
+    padding: 3px 6px;
+    gap: 4px;
+  }
+  #headerUsername {
+    display: none !important;
+  }
+  /* When user is logged in, hide redundant 'Sign Out' in top bar so it doesn't wrap/truncate */
+  #headerUserPill:not([style*="display: none"]):not([style*="display:none"]) ~ #authBtn {
+    display: none !important;
+  }
+  #authBtn {
+    padding: 4px 8px;
+    font-size: 0.74rem;
+    white-space: nowrap;
   }
 
   /* Cards & Containers */
@@ -1978,7 +2055,117 @@ body.theme-contrast .mobile-bottom-nav {
     font-size: 0.95rem;
   }
 
-  /* Grids */
+  /* Group Stage Toolbar & Action Buttons */
+  .groups-stage-toolbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+    margin-bottom: 16px !important;
+  }
+  .groups-stage-toolbar > div:first-child {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+  .groups-stage-toolbar h2 {
+    font-size: 1.15rem !important;
+  }
+  .groups-stage-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .groups-stage-actions > button {
+    flex: 1 !important;
+    justify-content: center !important;
+    min-height: 38px !important;
+    font-size: 0.78rem !important;
+  }
+  .groups-stage-actions > button:last-child {
+    grid-column: 1 / -1 !important; /* Full width for primary CTA */
+  }
+
+  /* Challenge Board Toolbar & Horizontally Swipeable Filter Pills */
+  .chal-filter-toolbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    padding: 10px !important;
+    gap: 8px !important;
+  }
+  .chal-tabs-strip {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    padding-bottom: 4px !important;
+    scrollbar-width: none !important;
+    width: 100% !important;
+  }
+  .chal-tabs-strip::-webkit-scrollbar {
+    display: none !important;
+  }
+  .chal-tabs-strip > button {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Tournament Setup Studio on Mobile */
+  .setup-studio-card {
+    padding: 16px 12px !important;
+    border-radius: var(--radius-md) !important;
+  }
+  .setup-studio-header {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    margin-bottom: 16px !important;
+  }
+  .setup-studio-title {
+    font-size: 1.2rem !important;
+  }
+  .setup-studio-actions {
+    display: flex !important;
+    width: 100% !important;
+    gap: 6px !important;
+  }
+  .setup-studio-actions > button {
+    flex: 1 !important;
+    justify-content: center !important;
+    padding: 8px 6px !important;
+    font-size: 0.76rem !important;
+  }
+  .setup-form-grid-3 {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  .setup-pools-grid {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+  .setup-pts-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 6px !important;
+  }
+  .setup-pts-btn {
+    min-height: 44px !important;
+  }
+  .setup-footer-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+  .setup-footer-bar > div {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+  #startTournamentBtn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  /* Grids & Match Containers */
   .more-grid {
     grid-template-columns: 1fr;
   }
@@ -1996,19 +2183,20 @@ body.theme-contrast .mobile-bottom-nav {
     gap: 12px;
   }
   .score-digit {
-    font-size: 3.8rem;
+    font-size: 3.6rem;
   }
 
-  /* Modals */
+  /* Modals: Clean 95vw full containment */
   dialog {
-    width: 94vw !important;
-    max-width: 94vw !important;
-    max-height: 86dvh !important;
-    max-height: 86vh !important;
+    width: 95vw !important;
+    max-width: 95vw !important;
+    max-height: 88dvh !important;
+    max-height: 88vh !important;
     margin: auto !important;
     overflow-y: auto !important;
     -webkit-overflow-scrolling: touch !important;
     box-sizing: border-box !important;
+    border-radius: var(--radius-md) !important;
   }
   .modal-card, .modal-box {
     padding: 16px 12px !important;
@@ -2043,52 +2231,8 @@ body.theme-contrast .mobile-bottom-nav {
     font-size: 0.76rem;
     white-space: nowrap;
   }
-}
 
-/* ── Standard Phones (<= 600px, e.g. iPhone 13/14/15/16, Pixel, Galaxy) ── */
-@media (max-width: 600px) {
-  .top-bar {
-    padding: 6px 8px;
-    gap: 4px;
-  }
-  .brand-heading {
-    font-size: 0.92rem;
-  }
-  #networkSyncPill #syncStatusLabel {
-    display: none !important;
-  }
-  #networkSyncPill {
-    padding: 3px 6px;
-  }
-  #headerCoinBtn {
-    padding: 3px 6px;
-    font-size: 0.72rem;
-    gap: 3px;
-  }
-  #userStatusPanel {
-    padding: 2px 4px;
-    gap: 4px;
-  }
-  #userStatusPanel .user-avatar {
-    width: 26px;
-    height: 26px;
-    font-size: 0.72rem;
-  }
-  #headerUsername {
-    display: none !important;
-  }
-  #authBtn {
-    padding: 3px 7px;
-    font-size: 0.7rem;
-  }
-  #installAppBtn span {
-    display: none !important;
-  }
-  #installAppBtn {
-    padding: 4px 6px;
-  }
-
-  /* Match Card 2-Tier Responsive Quick Actions (50/50 Win, 33/33/33 Tools) */
+  /* Match Card 2-Tier Responsive Quick Actions */
   .quick-match-row {
     display: grid !important;
     grid-template-columns: repeat(6, 1fr) !important;
@@ -2127,31 +2271,6 @@ body.theme-contrast .mobile-bottom-nav {
     font-size: 0.72rem !important;
   }
 
-  /* Completed Match Card Actions */
-  .quick-match-row > div[style*="display:flex"] {
-    width: 100% !important;
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 8px !important;
-  }
-  .quick-match-row > div[style*="display:flex"] > div {
-    display: flex !important;
-    width: 100% !important;
-    gap: 6px !important;
-  }
-  .quick-match-row > div[style*="display:flex"] > div > button {
-    flex: 1 !important;
-    min-height: 38px !important;
-  }
-
-  /* Grids & Cards */
-  .challenge-grid {
-    grid-template-columns: 1fr !important;
-  }
-  #scorecardsGalleryContainer {
-    grid-template-columns: 1fr !important;
-  }
-
   /* Form Inputs (16px to prevent iOS Safari auto-zoom on focus) */
   input, select, textarea, .modal-input {
     font-size: 16px !important;
@@ -2164,21 +2283,15 @@ body.theme-contrast .mobile-bottom-nav {
 /* ── Ultra-Compact / Foldable Outer Screens (<= 380px, e.g. iPhone SE, Galaxy Z Fold) ── */
 @media (max-width: 380px) {
   .top-bar {
-    padding: 5px 6px;
-    gap: 3px;
+    padding: 5px 8px;
+    gap: 4px;
   }
   .brand-heading {
-    font-size: 0.85rem;
-  }
-  #networkSyncPill {
-    display: none !important; /* Hide completely on ultra-narrow viewports */
+    font-size: 0.88rem;
   }
   #headerCoinBtn {
-    padding: 2px 4px;
+    padding: 2px 5px;
     font-size: 0.68rem;
-  }
-  #notifyBtn {
-    padding: 4px 6px;
   }
   .quick-win-btn, .quick-score-btn {
     font-size: 0.68rem !important;
