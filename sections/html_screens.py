@@ -288,7 +288,7 @@ SCREENS_CONTENT = """
       <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
         <button class="btn btn-primary btn-sm" onclick="openNewChallengeModal()" style="gap:6px;">
           <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          <span data-i18n="createChalBtn">+ Open Challenge</span>
+          <span data-i18n="createChalBtn">Open Challenge</span>
         </button>
         <button class="btn btn-ghost btn-sm admin-only-item" onclick="handleSetupNav()">
           <span>Tournament Setup</span>
@@ -1570,7 +1570,7 @@ SCREENS_CONTENT = """
           <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-top:4px;" data-i18n="chalScreenSub">Anyone can open a challenge here! Other students or players can accept and jump straight into the match.</p>
         </div>
         <div style="display:flex;gap:8px;">
-          <button class="btn btn-primary btn-sm" onclick="openNewChallengeModal()"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> <span data-i18n="createChalBtn">+ Open a Challenge</span></button>
+          <button class="btn btn-primary btn-sm" onclick="openNewChallengeModal()"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> <span data-i18n="createChalBtn">Open a Challenge</span></button>
         </div>
       </div>
 
