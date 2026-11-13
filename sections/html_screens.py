@@ -198,7 +198,7 @@ SCREENS_CONTENT = """
         </div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px;">
         <div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
             <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);margin:0;">
@@ -219,6 +219,12 @@ SCREENS_CONTENT = """
         </div>
       </div>
 
+      <!-- Real-Time Duplicate Player Validation Banner -->
+      <div id="rosterDuplicateWarning" style="display:none;background:rgba(239,68,68,0.12);border:1.5px solid rgba(239,68,68,0.4);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:18px;color:#f87171;font-size:0.86rem;font-weight:700;align-items:center;gap:10px;">
+        <span style="font-size:1.2rem;flex-shrink:0;">⚠️</span>
+        <span id="rosterDuplicateWarningText" style="line-height:1.4;"></span>
+      </div>
+
       <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--clr-border);padding-top:16px;flex-wrap:wrap;gap:12px;">
         <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
           <label style="font-size:0.82rem;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer;">
@@ -232,7 +238,7 @@ SCREENS_CONTENT = """
         </div>
         <div style="display:flex;gap:10px;">
           <button class="btn btn-ghost" onclick="resetTournamentState()">Reset</button>
-          <button class="btn btn-primary btn-lg" onclick="initiateTournament()">Start Tournament &rarr;</button>
+          <button class="btn btn-primary btn-lg" id="startTournamentBtn" onclick="initiateTournament()">Start Tournament &rarr;</button>
         </div>
       </div>
     </div>

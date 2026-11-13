@@ -2081,6 +2081,15 @@ function renderPlayerPickerItems(filter) {
   const container = document.getElementById('playerPickerListContainer');
   const users = getUsersDB().filter(u => u.role === 'player' || u.role === 'admin');
 
+  const otherPool = currentPickerTargetPool === 'A' ? 'rosterBInput' : 'rosterAInput';
+  const otherPoolPlayers = new Set(
+    (typeof extractIndividualPlayers === 'function' ? extractIndividualPlayers(getCleanRoster(otherPool)) : getCleanRoster(otherPool)).map(p => p.toLowerCase())
+  );
+  const currentPool = currentPickerTargetPool === 'A' ? 'rosterAInput' : 'rosterBInput';
+  const currentPoolPlayers = new Set(
+    (typeof extractIndividualPlayers === 'function' ? extractIndividualPlayers(getCleanRoster(currentPool)) : getCleanRoster(currentPool)).map(p => p.toLowerCase())
+  );
+
   const filtered = users.filter(u =>
     u.name.toLowerCase().includes(filter) ||
     (u.email && u.email.toLowerCase().includes(filter)) ||
@@ -2094,18 +2103,30 @@ function renderPlayerPickerItems(filter) {
 
   container.innerHTML = filtered.map(u => {
     const isSelected = selectedPickerIds.has(u.name);
+    const inOtherPool = otherPoolPlayers.has(u.name.toLowerCase());
+    const inCurrentPool = currentPoolPlayers.has(u.name.toLowerCase());
+    const disabled = inOtherPool || inCurrentPool;
+
     return `
-      <div class="player-picker-item ${isSelected ? 'selected' : ''}" onclick="togglePickerSelection('${u.name.replace(/'/g, "\\'")}')">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <div class="user-avatar" style="width:28px;height:28px;">${u.avatar || u.name.charAt(0)}</div>
-          <div>
-            <div style="font-weight:bold;font-size:0.9rem;">${u.name}</div>
-            <div style="font-size:0.75rem;color:var(--clr-text-muted);">${u.club || 'Independent'} · Elo ${u.elo || 1200}</div>
+      <div class="player-picker-item ${isSelected ? 'selected' : ''} ${disabled ? 'disabled' : ''}"
+        style="${disabled ? 'opacity:0.5;background:rgba(239,68,68,0.05);border-color:rgba(239,68,68,0.25);cursor:not-allowed;' : ''}"
+        onclick="handlePickerItemClick('${u.name.replace(/'/g, "\\'")}', ${inOtherPool}, ${inCurrentPool})">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;">
+          <div class="user-avatar" style="width:28px;height:28px;flex-shrink:0;">${u.avatar || u.name.charAt(0)}</div>
+          <div style="min-width:0;">
+            <div style="font-weight:bold;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(u.name)}</div>
+            <div style="font-size:0.75rem;color:var(--clr-text-muted);">${escapeHtml(u.club || 'Independent')} · Elo ${u.elo || 1200}</div>
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span class="user-role-badge ${u.status === 'active' ? 'badge-active' : 'badge-invited'}">${u.status}</span>
-          <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:4px;border:1px solid var(--clr-border);background:${isSelected ? 'var(--clr-green)' : 'transparent'};color:#fff;">${isSelected ? svgIcon('check', 'icon-xs') : ''}</span>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+          ${inOtherPool ? `
+            <span class="badge" style="background:rgba(239,68,68,0.18);color:#f87171;font-size:0.68rem;font-weight:800;">ALREADY IN POOL ${currentPickerTargetPool === 'A' ? 'B' : 'A'}</span>
+          ` : (inCurrentPool ? `
+            <span class="badge" style="background:rgba(16,185,129,0.18);color:#34d399;font-size:0.68rem;font-weight:800;">IN POOL ${currentPickerTargetPool}</span>
+          ` : `
+            <span class="user-role-badge ${u.status === 'active' ? 'badge-active' : 'badge-invited'}">${u.status}</span>
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:4px;border:1px solid var(--clr-border);background:${isSelected ? 'var(--clr-green)' : 'transparent'};color:#fff;">${isSelected ? svgIcon('check', 'icon-xs') : ''}</span>
+          `)}
         </div>
       </div>
     `;
@@ -2114,7 +2135,28 @@ function renderPlayerPickerItems(filter) {
   document.getElementById('pickerSelectedCount').textContent = `${selectedPickerIds.size} athletes selected`;
 }
 
+function handlePickerItemClick(name, inOtherPool, inCurrentPool) {
+  if (inOtherPool) {
+    showToast(`Athlete "${name}" is already in Pool ${currentPickerTargetPool === 'A' ? 'B' : 'A'}. The same player cannot be added to both sides!`, 'error');
+    return;
+  }
+  if (inCurrentPool) {
+    showToast(`Athlete "${name}" is already in Pool ${currentPickerTargetPool}.`, 'warning');
+    return;
+  }
+  togglePickerSelection(name);
+}
+
 function togglePickerSelection(name) {
+  const otherPool = currentPickerTargetPool === 'A' ? 'rosterBInput' : 'rosterAInput';
+  const otherPoolPlayers = new Set(
+    (typeof extractIndividualPlayers === 'function' ? extractIndividualPlayers(getCleanRoster(otherPool)) : getCleanRoster(otherPool)).map(p => p.toLowerCase())
+  );
+  if (otherPoolPlayers.has(name.toLowerCase())) {
+    showToast(`Athlete "${name}" is already in Pool ${currentPickerTargetPool === 'A' ? 'B' : 'A'} and cannot be added to both sides!`, 'error');
+    return;
+  }
+
   if (selectedPickerIds.has(name)) {
     selectedPickerIds.delete(name);
   } else {
@@ -2130,9 +2172,20 @@ function confirmPlayerPickerSelection() {
     return;
   }
 
+  const otherPool = currentPickerTargetPool === 'A' ? 'rosterBInput' : 'rosterAInput';
+  const otherPoolPlayers = new Set(
+    (typeof extractIndividualPlayers === 'function' ? extractIndividualPlayers(getCleanRoster(otherPool)) : getCleanRoster(otherPool)).map(p => p.toLowerCase())
+  );
+
+  const selectedArr = Array.from(selectedPickerIds);
+  const duplicates = selectedArr.filter(p => otherPoolPlayers.has(p.toLowerCase()));
+  if (duplicates.length > 0) {
+    showToast(`Cannot add: Athlete(s) ${duplicates.join(', ')} are already in Pool ${currentPickerTargetPool === 'A' ? 'B' : 'A'}. The same player cannot be added to both sides!`, 'error');
+    return;
+  }
+
   const targetTextarea = document.getElementById(currentPickerTargetPool === 'A' ? 'rosterAInput' : 'rosterBInput');
   const existing = targetTextarea.value.split('\n').map(s => s.trim()).filter(s => s.length > 0);
-  const selectedArr = Array.from(selectedPickerIds);
 
   if (state.category === 'doubles') {
     for (let i = 0; i < selectedArr.length; i += 2) {
@@ -4040,15 +4093,126 @@ function toggleHandicapMode(enabled) {
   state.handicapEnabled = enabled;
 }
 
+function extractIndividualPlayers(lines) {
+  const players = [];
+  (lines || []).forEach(line => {
+    if (!line) return;
+    // Split by slash, ampersand, or comma (for doubles partners)
+    const parts = line.split(/[/&,]/).map(s => s.trim()).filter(Boolean);
+    parts.forEach(p => {
+      if (p.length > 0) players.push(p);
+    });
+  });
+  return players;
+}
+
+function findArrayDuplicates(arr) {
+  const seen = new Set();
+  const duplicates = new Set();
+  (arr || []).forEach(item => {
+    const key = item.toLowerCase();
+    if (seen.has(key)) {
+      duplicates.add(item);
+    } else {
+      seen.add(key);
+    }
+  });
+  return Array.from(duplicates);
+}
+
+function checkRosterDuplicates() {
+  const linesA = getCleanRoster('rosterAInput');
+  const linesB = getCleanRoster('rosterBInput');
+  const playersA = extractIndividualPlayers(linesA);
+  const playersB = extractIndividualPlayers(linesB);
+
+  const aMap = new Map();
+  playersA.forEach(p => aMap.set(p.toLowerCase(), p));
+
+  const crossDuplicates = [];
+  playersB.forEach(p => {
+    const key = p.toLowerCase();
+    if (aMap.has(key)) {
+      const orig = aMap.get(key);
+      if (!crossDuplicates.includes(orig)) {
+        crossDuplicates.push(orig);
+      }
+    }
+  });
+
+  const internalA = findArrayDuplicates(playersA);
+  const internalB = findArrayDuplicates(playersB);
+
+  return {
+    crossDuplicates,
+    internalA,
+    internalB,
+    hasDuplicates: crossDuplicates.length > 0 || internalA.length > 0 || internalB.length > 0
+  };
+}
+
 function updatePlayerCounts() {
   const a = getCleanRoster('rosterAInput');
   const b = getCleanRoster('rosterBInput');
-  document.getElementById('countA').textContent = a.length;
-  document.getElementById('countB').textContent = b.length;
+  const countAEl = document.getElementById('countA');
+  const countBEl = document.getElementById('countB');
+  if (countAEl) countAEl.textContent = a.length;
+  if (countBEl) countBEl.textContent = b.length;
+
+  const dup = checkRosterDuplicates();
+  const warningBox = document.getElementById('rosterDuplicateWarning');
+  const warningText = document.getElementById('rosterDuplicateWarningText');
+  const inputA = document.getElementById('rosterAInput');
+  const inputB = document.getElementById('rosterBInput');
+  const startBtn = document.getElementById('startTournamentBtn');
+
+  if (dup.crossDuplicates.length > 0) {
+    if (warningBox && warningText) {
+      warningBox.style.display = 'flex';
+      const names = dup.crossDuplicates.map(n => `"${n}"`).join(', ');
+      warningText.textContent = `The same player cannot be added to both sides! Duplicate player(s) found in Pool A and Pool B: ${names}. Please remove duplicate player(s) to proceed.`;
+    }
+    if (inputA) inputA.style.borderColor = '#ef4444';
+    if (inputB) inputB.style.borderColor = '#ef4444';
+    if (startBtn) {
+      startBtn.disabled = true;
+      startBtn.style.opacity = '0.5';
+      startBtn.style.cursor = 'not-allowed';
+      startBtn.title = 'Remove duplicate players to start tournament';
+    }
+  } else if (dup.internalA.length > 0 || dup.internalB.length > 0) {
+    if (warningBox && warningText) {
+      warningBox.style.display = 'flex';
+      const listA = dup.internalA.length ? `Pool A: ${dup.internalA.map(n => `"${n}"`).join(', ')}` : '';
+      const listB = dup.internalB.length ? `Pool B: ${dup.internalB.map(n => `"${n}"`).join(', ')}` : '';
+      const combined = [listA, listB].filter(Boolean).join(' | ');
+      warningText.textContent = `Duplicate player detected within the same pool: ${combined}. Each athlete can only be entered once.`;
+    }
+    if (inputA) inputA.style.borderColor = dup.internalA.length ? '#ef4444' : '';
+    if (inputB) inputB.style.borderColor = dup.internalB.length ? '#ef4444' : '';
+    if (startBtn) {
+      startBtn.disabled = true;
+      startBtn.style.opacity = '0.5';
+      startBtn.style.cursor = 'not-allowed';
+      startBtn.title = 'Remove duplicate players to start tournament';
+    }
+  } else {
+    if (warningBox) warningBox.style.display = 'none';
+    if (inputA) inputA.style.borderColor = '';
+    if (inputB) inputB.style.borderColor = '';
+    if (startBtn) {
+      startBtn.disabled = false;
+      startBtn.style.opacity = '1';
+      startBtn.style.cursor = 'pointer';
+      startBtn.title = '';
+    }
+  }
 }
 
 function getCleanRoster(textareaId) {
-  const txt = document.getElementById(textareaId).value;
+  const el = document.getElementById(textareaId);
+  if (!el) return [];
+  const txt = el.value || '';
   return txt.split('\n').map(s => s.trim()).filter(s => s.length > 0);
 }
 
@@ -4110,6 +4274,20 @@ function applyBulkRoster() {
    TOURNAMENT DRAFT & ROUND ROBIN
 ═══════════════════════════════════════════════════ */
 function initiateTournament() {
+  const dup = checkRosterDuplicates();
+  if (dup.crossDuplicates.length > 0) {
+    const names = dup.crossDuplicates.map(n => `"${n}"`).join(', ');
+    showToast(`Cannot start tournament: Player ${names} cannot be added to both Pool A and Pool B!`, 'error');
+    updatePlayerCounts();
+    return;
+  }
+  if (dup.internalA.length > 0 || dup.internalB.length > 0) {
+    const name = dup.internalA[0] || dup.internalB[0];
+    showToast(`Cannot start tournament: Duplicate player "${name}" detected in the same pool!`, 'error');
+    updatePlayerCounts();
+    return;
+  }
+
   const a = getCleanRoster('rosterAInput');
   const b = getCleanRoster('rosterBInput');
 
