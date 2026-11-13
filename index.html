@@ -5740,8 +5740,14 @@ body.battery-saver .mobile-bottom-nav {
     </div>
 
     <div id="challengePartnerField" class="modal-form-item" style="display:none;">
-      <label>Doubles Partner / Teammate</label>
-      <input type="text" id="challengePartnerName" class="modal-input" placeholder="e.g. Sifat / Partner Name">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <label style="margin:0;">Doubles Partner / Teammate</label>
+        <span style="font-size:0.72rem;color:var(--clr-green);font-weight:700;">Optional · Open Partner Slot</span>
+      </div>
+      <input type="text" id="challengePartnerName" class="modal-input" placeholder="e.g. Sifat (or leave empty so anyone can join as partner)">
+      <p style="font-size:0.74rem;color:var(--clr-text-muted);margin-top:4px;">
+        💡 If you don't select a partner, an <strong>Open Partner Slot</strong> will be published so any player can join your team on the challenge board.
+      </p>
     </div>
 
     <div class="modal-form-item">
@@ -7412,6 +7418,7 @@ function postNewChallenge() {
 
   const partnerInput = document.getElementById('challengePartnerName');
   const partnerName = (category === 'doubles' && partnerInput) ? partnerInput.value.trim() : '';
+  const hasOpenPartner = (category === 'doubles' && !partnerName);
   const isPrivate = document.getElementById('challengePrivateToggle')?.checked || false;
   const pin = isPrivate ? (document.getElementById('challengePinInput')?.value.trim() || '') : '';
 
@@ -7469,7 +7476,8 @@ function postNewChallenge() {
     id: 'ch_' + Date.now().toString(36),
     creator: creatorDisplayName,
     creatorPayer: payerName,
-    partner: partnerName,
+    partner: partnerName || null,
+    hasOpenPartner,
     category,
     points,
     buyIn,
@@ -7669,8 +7677,10 @@ function executeAcceptChallenge(id) {
     return;
   }
 
-  if (chal.creator.toLowerCase() === joinerName.toLowerCase()) {
-    showToast('You cannot accept your own challenge! Share the invite link with a friend.', 'warning');
+  const creatorNames = (chal.creator || '').toLowerCase().split('/').map(s => s.trim());
+  const hostPayer = (chal.creatorPayer || '').toLowerCase();
+  if (creatorNames.includes(joinerName.toLowerCase()) || hostPayer === joinerName.toLowerCase()) {
+    showToast('You are on the challenger team! You cannot play against yourself.', 'warning');
     return;
   }
 
@@ -7690,6 +7700,17 @@ function executeAcceptChallenge(id) {
   chal.opponent = joinerName.trim();
   chal.opponentPayer = joinerName.trim();
   chal.stakedOpponents = stakedOpponents;
+
+  if (chal.hasOpenPartner) {
+    // Challenger team still needs 1 partner to start the doubles match!
+    chal.status = 'open';
+    saveChallengesDB(list);
+    renderChallengesBoard();
+    updateBettingUI();
+    showToast(`⚔️ Accepted as opponent! Waiting for 1 player to join as ${chal.creator}'s partner to launch match.`, 'success');
+    return;
+  }
+
   chal.status = 'accepted';
 
   // Automatically create match and link
@@ -7706,6 +7727,76 @@ function executeAcceptChallenge(id) {
   setTimeout(() => {
     startUmpireMatch(newMatch.id);
   }, 400);
+}
+
+function joinChallengeAsPartner(id) {
+  if (!requireAuthUser('join as doubles partner')) return;
+  const list = getChallengesDB();
+  const chal = list.find(c => c.id === id);
+  if (!chal) return;
+  if (chal.status === 'completed' || chal.status === 'expired') {
+    showToast('This challenge is no longer open.', 'warning');
+    return;
+  }
+  if (!chal.hasOpenPartner) {
+    showToast('This challenge already has a partner!', 'warning');
+    return;
+  }
+
+  const joinerName = currentUser ? currentUser.name : '';
+  if (!joinerName || !joinerName.trim()) {
+    showToast('Please sign in to join as partner.', 'warning');
+    return;
+  }
+
+  const hostName = chal.creatorPayer || chal.creator.split('/')[0].trim();
+  if (joinerName.toLowerCase() === hostName.toLowerCase()) {
+    showToast('You are the host of this challenge! You cannot join as your own partner.', 'warning');
+    return;
+  }
+
+  if (chal.opponent && chal.opponent.toLowerCase().split('/').map(s => s.trim()).includes(joinerName.toLowerCase())) {
+    showToast('You are already on the opponent team! You cannot be on both sides.', 'warning');
+    return;
+  }
+
+  // Deduct points buy-in from partner if challenge has a stake
+  if (chal.buyIn && chal.buyIn > 0) {
+    const curBal = getUserCoins(joinerName);
+    if (curBal < chal.buyIn) {
+      showToast(`⚠️ Insufficient points to join as partner! You need ${chal.buyIn} PTS (Your balance: ${curBal} PTS).`, 'warning');
+      return;
+    }
+    setUserCoins(curBal - chal.buyIn, joinerName);
+    recordTransaction(joinerName, 'challenge_stake', chal.buyIn, curBal - chal.buyIn, `Staked ${chal.buyIn} PTS to join as partner with ${hostName} (Playing for ${chal.buyIn * 2} PTS)`);
+    if (!chal.stakedPlayers) chal.stakedPlayers = [];
+    chal.stakedPlayers.push({ name: joinerName, amount: chal.buyIn });
+  }
+
+  chal.partner = joinerName;
+  chal.creator = `${hostName} / ${joinerName}`;
+  chal.hasOpenPartner = false;
+
+  // Check if opponent is already present
+  if (chal.opponent) {
+    chal.status = 'accepted';
+    const newMatch = createMatchObj(chal.creator, chal.opponent, 'CHALLENGE');
+    chal.matchId = newMatch.id;
+    state.matches.push(newMatch);
+    saveChallengesDB(list);
+    saveState();
+    renderChallengesBoard();
+    updateBettingUI();
+    showToast(`⚡ Team complete! Joined as partner with ${hostName}. Starting match vs ${chal.opponent}!`, 'success');
+    setTimeout(() => {
+      startUmpireMatch(newMatch.id);
+    }, 400);
+  } else {
+    saveChallengesDB(list);
+    renderChallengesBoard();
+    updateBettingUI();
+    showToast(`🤝 You joined as partner with ${hostName}! Waiting for an opponent team to accept...`, 'success');
+  }
 }
 
 function renderChallengesBoard() {
@@ -7771,8 +7862,10 @@ function renderChallengesBoard() {
     }
 
     const curName = (currentUser && currentUser.name) ? currentUser.name.toLowerCase() : '';
-    const isCreator = curName && (c.creator || '').toLowerCase() === curName;
-    const isOpponent = curName && (c.opponent || '').toLowerCase() === curName;
+    const creatorNames = (c.creator || '').toLowerCase().split('/').map(s => s.trim());
+    const isCreator = curName && (creatorNames.includes(curName) || (c.creatorPayer && c.creatorPayer.toLowerCase() === curName));
+    const opponentNames = (c.opponent || '').toLowerCase().split('/').map(s => s.trim());
+    const isOpponent = curName && (opponentNames.includes(curName) || (c.opponentPayer && c.opponentPayer.toLowerCase() === curName));
     const isMyMatch = isCreator || isOpponent;
     const isAdmin = currentUser && (currentUser.role === 'admin' || currentUser.role === 'super_admin');
     const canCancel = isMyMatch || isAdmin;
@@ -7783,12 +7876,12 @@ function renderChallengesBoard() {
     const avatarB = c.opponent && typeof getPlayerAvatarHtml === 'function' ? getPlayerAvatarHtml(c.opponent, 38, winnerName === c.opponent) : '';
 
     return `
-      <div class="challenge-card ${c.status === 'open' ? 'open-status' : (c.status === 'completed' ? 'completed-status' : 'accepted-status')}">
+      <div class="challenge-card ${c.status === 'open' ? 'open-status' : (c.status === 'completed' ? 'completed-status' : 'accepted-status')}" data-challenge-id="${c.id}">
         <!-- Top Meta Header -->
         <div class="challenge-card-header">
           <div class="challenge-badges-row">
             <span class="challenge-badge ${c.status}">
-              ${c.status === 'open' ? '● Open' : (c.status === 'completed' ? '✓ Completed' : '⚡ In Progress')}
+              ${c.status === 'open' ? (c.hasOpenPartner && c.opponent ? '⏳ Needs Partner' : (c.hasOpenPartner ? '● Open (Open Partner)' : '● Open')) : (c.status === 'completed' ? '✓ Completed' : '⚡ In Progress')}
             </span>
             <span style="font-weight:700;color:var(--clr-text);font-size:0.75rem;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);display:inline-flex;align-items:center;gap:4px;">
               🏸 ${c.category === 'doubles' ? 'Doubles' : 'Singles'} · ${c.points || 15} pts
@@ -7838,10 +7931,23 @@ function renderChallengesBoard() {
                 </div>
                 <div class="challenge-player-role">
                   <span style="color:var(--clr-green);font-weight:700;">● Challenger</span>
-                  <span>· Host</span>
+                  <span>· Host${c.partner ? ' & Partner' : ''}</span>
                 </div>
               </div>
             </div>
+            ${c.category === 'doubles' && c.hasOpenPartner ? `
+              <div style="flex-shrink:0;">
+                ${!isCreator && !isOpponent ? `
+                  <button class="btn btn-primary btn-xs" style="gap:5px;background:linear-gradient(135deg, #10b981, #059669);font-weight:800;box-shadow:0 2px 8px rgba(16,185,129,0.3);" onclick="event.stopPropagation();joinChallengeAsPartner('${c.id}')">
+                    <span>🤝 Join as Partner${c.buyIn > 0 ? ` (${c.buyIn} PTS)` : ''}</span>
+                  </button>
+                ` : `
+                  <span class="badge" style="background:rgba(16,185,129,0.12);color:var(--clr-green);border:1px dashed var(--clr-green);font-size:0.72rem;padding:3px 8px;">
+                    ${isCreator ? '⏳ Open Partner Slot (Waiting...)' : 'Open Partner Slot'}
+                  </span>
+                `}
+              </div>
+            ` : ''}
             ${match && match.sets && match.sets.length ? `
               <div style="font-family:monospace;font-size:1.15rem;font-weight:800;color:${winnerName === c.creator ? 'var(--clr-green)' : 'var(--clr-text)'};">
                 ${match.sets.map(s => s.score[0]).join('-')}
@@ -7879,21 +7985,21 @@ function renderChallengesBoard() {
               ` : ''}
             </div>
           ` : `
-            <div class="challenge-open-slot-box" ${!isCreator ? `onclick="acceptChallenge('${c.id}')" style="cursor:pointer;"` : ''}>
+            <div class="challenge-open-slot-box" ${(!isCreator && !isOpponent) ? `onclick="acceptChallenge('${c.id}')" style="cursor:pointer;"` : ''}>
               <div style="display:flex;align-items:center;gap:12px;min-width:0;">
                 <div style="width:38px;height:38px;border-radius:50%;border:1.5px dashed var(--clr-green);display:flex;align-items:center;justify-content:center;color:var(--clr-green);font-weight:800;font-size:1.1rem;flex-shrink:0;background:rgba(16,185,129,0.08);">
                   +
                 </div>
                 <div style="min-width:0;">
                   <div style="font-weight:800;font-size:0.92rem;color:var(--clr-green);">
-                    Open Slot — Waiting for Opponent
+                    Open Slot — Waiting for Opponent${c.category === 'doubles' ? ' Team' : ''}
                   </div>
                   <div style="font-size:0.74rem;color:var(--clr-text-muted);">
-                    ${isCreator ? 'Share your invite link with a player or friend' : 'Click to accept this challenge & take the court!'}
+                    ${isCreator ? 'Share your invite link with a player or opponent' : 'Click to accept this challenge & take the court!'}
                   </div>
                 </div>
               </div>
-              ${!isCreator ? `
+              ${(!isCreator && !isOpponent) ? `
                 <button class="btn btn-primary btn-xs" style="flex-shrink:0;gap:4px;" onclick="event.stopPropagation();acceptChallenge('${c.id}')">
                   <span>Accept${c.buyIn > 0 ? ` (${c.buyIn} PTS)` : ''}</span>
                 </button>
@@ -7927,20 +8033,52 @@ function renderChallengesBoard() {
         <!-- Action Toolbar -->
         <div style="display:flex;gap:10px;align-items:center;margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
           ${c.status === 'open' ? `
-            ${isCreator ? `
-              <button class="btn btn-primary btn-sm" style="flex:1;gap:6px;justify-content:center;font-weight:700;" onclick="copyChallengeInviteLink('${c.id}')">
-                <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                <span>Share Invite Link</span>
-              </button>
-              <button class="btn btn-ghost btn-sm" style="gap:6px;border:1px solid var(--clr-border);" onclick="openChallengeQrModal('${c.id}')" title="Scan QR Code to join">
-                <span>📱 QR</span>
-              </button>
+            ${c.hasOpenPartner && c.opponent ? `
+              ${!isCreator && !isOpponent ? `
+                <button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;font-weight:800;gap:8px;font-size:0.92rem;background:#10b981;border-color:#10b981;" onclick="joinChallengeAsPartner('${c.id}')">
+                  <span>🤝 Join as Partner & Play Now${c.buyIn > 0 ? ` (${c.buyIn} PTS)` : ''}</span>
+                </button>
+              ` : `
+                <button class="btn btn-primary btn-sm" style="flex:1;gap:6px;justify-content:center;font-weight:700;" onclick="copyChallengeInviteLink('${c.id}')">
+                  <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  <span>Invite Partner to Complete Match</span>
+                </button>
+              `}
+            ` : (c.hasOpenPartner && !c.opponent ? `
+              ${!isCreator ? `
+                <div style="display:flex;gap:8px;flex:1;flex-wrap:wrap;">
+                  <button class="btn btn-primary btn-sm" style="flex:1;min-width:140px;justify-content:center;font-weight:800;gap:6px;font-size:0.86rem;background:linear-gradient(135deg, #10b981, #059669);border-color:#10b981;" onclick="joinChallengeAsPartner('${c.id}')">
+                    <span>🤝 Join as Partner${c.buyIn > 0 ? ` (${c.buyIn} PTS)` : ''}</span>
+                  </button>
+                  <button class="btn btn-ghost btn-sm" style="flex:1;min-width:140px;justify-content:center;font-weight:800;gap:6px;font-size:0.86rem;border:1px solid #3b82f6;color:#60a5fa;" onclick="acceptChallenge('${c.id}')">
+                    <span>⚔️ Accept vs Team${c.buyIn > 0 ? ` (${c.buyIn} PTS)` : ''}</span>
+                  </button>
+                </div>
+              ` : `
+                <button class="btn btn-primary btn-sm" style="flex:1;gap:6px;justify-content:center;font-weight:700;" onclick="copyChallengeInviteLink('${c.id}')">
+                  <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  <span>Share Invite Link</span>
+                </button>
+                <button class="btn btn-ghost btn-sm" style="gap:6px;border:1px solid var(--clr-border);" onclick="openChallengeQrModal('${c.id}')" title="Scan QR Code to join">
+                  <span>📱 QR</span>
+                </button>
+              `}
             ` : `
-              <button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;font-weight:800;gap:8px;font-size:0.92rem;background:#10b981;border-color:#10b981;" onclick="acceptChallenge('${c.id}')">
-                <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                <span>Accept Challenge & Play Now${c.buyIn > 0 ? ` (${c.buyIn} PTS)` : ''}</span>
-              </button>
-            `}
+              ${isCreator ? `
+                <button class="btn btn-primary btn-sm" style="flex:1;gap:6px;justify-content:center;font-weight:700;" onclick="copyChallengeInviteLink('${c.id}')">
+                  <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  <span>Share Invite Link</span>
+                </button>
+                <button class="btn btn-ghost btn-sm" style="gap:6px;border:1px solid var(--clr-border);" onclick="openChallengeQrModal('${c.id}')" title="Scan QR Code to join">
+                  <span>📱 QR</span>
+                </button>
+              ` : `
+                <button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;font-weight:800;gap:8px;font-size:0.92rem;background:#10b981;border-color:#10b981;" onclick="acceptChallenge('${c.id}')">
+                  <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  <span>Accept Challenge & Play Now${c.buyIn > 0 ? ` (${c.buyIn} PTS)` : ''}</span>
+                </button>
+              `}
+            `)}
           ` : (c.status === 'completed' ? `
             <button class="btn btn-ghost btn-sm" style="flex:1;min-width:120px;gap:6px;justify-content:center;border:1px solid var(--clr-border);" onclick="openScorecardModal('${match ? match.id : ''}')">
               <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>

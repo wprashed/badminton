@@ -527,8 +527,14 @@ DIALOGS_CONTENT = """
     </div>
 
     <div id="challengePartnerField" class="modal-form-item" style="display:none;">
-      <label>Doubles Partner / Teammate</label>
-      <input type="text" id="challengePartnerName" class="modal-input" placeholder="e.g. Sifat / Partner Name">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <label style="margin:0;">Doubles Partner / Teammate</label>
+        <span style="font-size:0.72rem;color:var(--clr-green);font-weight:700;">Optional · Open Partner Slot</span>
+      </div>
+      <input type="text" id="challengePartnerName" class="modal-input" placeholder="e.g. Sifat (or leave empty so anyone can join as partner)">
+      <p style="font-size:0.74rem;color:var(--clr-text-muted);margin-top:4px;">
+        💡 If you don't select a partner, an <strong>Open Partner Slot</strong> will be published so any player can join your team on the challenge board.
+      </p>
     </div>
 
     <div class="modal-form-item">
