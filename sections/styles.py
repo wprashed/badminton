@@ -1531,38 +1531,161 @@ body.theme-light .schedule-filter-bar {
 /* Open Challenge Board */
 .challenge-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
-  gap: 14px;
-  margin-top: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+  gap: 18px;
+  margin-top: 16px;
 }
 .challenge-card {
   background: var(--clr-surface-card);
   border: 1px solid var(--clr-border);
-  border-radius: var(--radius-sm);
-  padding: 16px;
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 12px;
+  gap: 14px;
   position: relative;
-  transition: all 140ms ease;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
   box-sizing: border-box;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 .challenge-card:hover {
-  border-color: var(--clr-green);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border-color: rgba(16, 185, 129, 0.4);
 }
 .challenge-card.open-status {
-  border-left: 3px solid #10b981;
+  border-left: 4px solid #10b981;
 }
 .challenge-card.accepted-status {
-  border-left: 3px solid #3b82f6;
+  border-left: 4px solid #3b82f6;
+}
+.challenge-card.completed-status {
+  border-left: 4px solid var(--clr-gold);
+}
+.challenge-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.challenge-badges-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.challenge-meta-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.challenge-timestamp {
+  font-size: 0.76rem;
+  color: var(--clr-text-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.challenge-arena {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+body.theme-light .challenge-arena {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+.challenge-competitor-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.challenge-player-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+.challenge-player-text {
+  min-width: 0;
+  flex: 1;
+}
+.challenge-player-name {
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: var(--clr-text);
+  line-height: 1.25;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  word-break: break-word;
+}
+.challenge-player-role {
+  font-size: 0.72rem;
+  color: var(--clr-text-muted);
+  margin-top: 2px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.challenge-vs-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 2px 0;
+}
+.challenge-vs-divider::before,
+.challenge-vs-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+}
+body.theme-light .challenge-vs-divider::before,
+body.theme-light .challenge-vs-divider::after {
+  background: #e2e8f0;
+}
+.challenge-vs-pill {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--clr-text-muted);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.challenge-open-slot-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1.5px dashed rgba(16, 185, 129, 0.45);
+  border-radius: var(--radius-xs);
+  background: rgba(16, 185, 129, 0.05);
+  transition: all 140ms ease;
+}
+.challenge-open-slot-box:hover {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: var(--clr-green);
 }
 .challenge-badge {
-  font-size: 0.68rem;
-  font-weight: 700;
+  font-size: 0.72rem;
+  font-weight: 800;
   text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: 3px;
+  padding: 3px 8px;
+  border-radius: 4px;
   letter-spacing: 0.03em;
 }
 .challenge-badge.open {
@@ -1574,6 +1697,11 @@ body.theme-light .schedule-filter-bar {
   background: rgba(59, 130, 246, 0.15);
   color: #60a5fa;
   border: 1px solid rgba(59, 130, 246, 0.3);
+}
+.challenge-badge.completed {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--clr-gold);
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 /* Reset Danger Button */

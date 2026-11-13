@@ -960,116 +960,177 @@ function renderChallengesBoard() {
     const avatarB = c.opponent && typeof getPlayerAvatarHtml === 'function' ? getPlayerAvatarHtml(c.opponent, 38, winnerName === c.opponent) : '';
 
     return `
-      <div class="challenge-card ${c.status === 'open' ? 'open-status' : (c.status === 'completed' ? 'completed-status' : 'accepted-status')}" style="padding:16px 18px;border-radius:var(--radius-md);border:1px solid var(--clr-border);background:var(--clr-surface-card);display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow-card);">
+      <div class="challenge-card ${c.status === 'open' ? 'open-status' : (c.status === 'completed' ? 'completed-status' : 'accepted-status')}">
         <!-- Top Meta Header -->
-        <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.75rem;">
-          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-            <span class="challenge-badge ${c.status}" style="font-weight:800;font-size:0.7rem;padding:3px 8px;border-radius:4px;text-transform:uppercase;">
-              ${c.status === 'open' ? 'OPEN' : (c.status === 'completed' ? 'COMPLETED' : 'IN PROGRESS')}
+        <div class="challenge-card-header">
+          <div class="challenge-badges-row">
+            <span class="challenge-badge ${c.status}">
+              ${c.status === 'open' ? '● Open' : (c.status === 'completed' ? '✓ Completed' : '⚡ In Progress')}
             </span>
-            ${isMyMatch ? '<span style="font-size:0.7rem;color:var(--clr-gold);font-weight:800;background:rgba(245,158,11,0.12);padding:2px 6px;border-radius:4px;border:1px solid rgba(245,158,11,0.25);">★ YOUR MATCH</span>' : ''}
-            <span style="font-weight:600;color:var(--clr-text-muted);font-size:0.72rem;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">
-              ${c.category === 'doubles' ? 'Doubles' : 'Singles'} · ${c.points || 15} pts
+            <span style="font-weight:700;color:var(--clr-text);font-size:0.75rem;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);display:inline-flex;align-items:center;gap:4px;">
+              🏸 ${c.category === 'doubles' ? 'Doubles' : 'Singles'} · ${c.points || 15} pts
             </span>
-            ${c.isPrivate ? '<span class="challenge-pin-badge">🔒 PIN</span>' : ''}
+            ${isMyMatch ? '<span style="font-size:0.72rem;color:var(--clr-gold);font-weight:800;background:rgba(245,158,11,0.14);padding:3px 8px;border-radius:4px;border:1px solid rgba(245,158,11,0.3);">★ YOUR MATCH</span>' : ''}
+            ${c.isPrivate ? '<span class="challenge-pin-badge" style="font-size:0.72rem;padding:3px 8px;border-radius:4px;">🔒 PIN</span>' : ''}
           </div>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:0.75rem;color:var(--clr-text-muted);">${c.createdAt || 'Today'}</span>
-            <button onclick="openChallengeQrModal('${c.id}')" title="Scan QR Code to join" style="background:transparent;border:none;color:var(--clr-text-muted);cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.color='var(--clr-green)'" onmouseout="this.style.color='var(--clr-text-muted)'">
-              📱
+          <div class="challenge-meta-actions">
+            <span class="challenge-timestamp">🕒 ${escapeHtml(c.createdAt || 'Today')}</span>
+            <button onclick="openChallengeQrModal('${c.id}')" title="Scan QR Code to join" class="btn btn-ghost btn-xs" style="padding:4px 8px;border:1px solid var(--clr-border);">
+              📱 QR
             </button>
             ${canCancel ? `
-              <button onclick="cancelChallenge('${c.id}')" title="Cancel challenge" style="background:transparent;border:none;color:var(--clr-text-muted);cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='var(--clr-text-muted)'">
+              <button onclick="cancelChallenge('${c.id}')" title="Cancel challenge" class="btn btn-ghost btn-xs" style="padding:4px 8px;color:#f87171;border:1px solid rgba(239,68,68,0.25);" onmouseover="this.style.background='rgba(239,68,68,0.15)'" onmouseout="this.style.background='transparent'">
                 <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
               </button>
             ` : ''}
           </div>
         </div>
 
-        <!-- Competitor Matchup Arena -->
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:rgba(0,0,0,0.16);border-radius:var(--radius-sm);border:1px solid rgba(255,255,255,0.04);">
-          <!-- Creator Player -->
-          <div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;">
-            ${avatarA}
-            <div style="min-width:0;">
-              <div style="font-weight:800;font-size:0.95rem;color:${winnerName === c.creator ? 'var(--clr-green)' : 'var(--clr-text)'};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                ${escapeHtml(c.creator)} ${winnerName === c.creator ? '👑' : ''}
+        ${c.court ? `
+          <div style="font-size:0.78rem;font-weight:700;color:var(--clr-cyan);display:flex;align-items:center;gap:6px;background:rgba(6,182,212,0.08);padding:4px 10px;border-radius:5px;border:1px solid rgba(6,182,212,0.2);width:fit-content;">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Court ${escapeHtml(c.court)} · Ready for match</span>
+          </div>
+        ` : ''}
+
+        <!-- Competitor Matchup Arena (Vertical Two-Row Stacked Layout) -->
+        <div class="challenge-arena">
+          <!-- Challenger Row -->
+          <div class="challenge-competitor-row">
+            <div class="challenge-player-meta">
+              ${avatarA}
+              <div class="challenge-player-text">
+                <div class="challenge-player-name">
+                  <span>${escapeHtml(c.creator)}</span>
+                  ${winnerName === c.creator ? '<span title="Winner" style="color:var(--clr-gold);">👑</span>' : ''}
+                </div>
+                <div class="challenge-player-role">
+                  <span style="color:var(--clr-green);font-weight:700;">● Challenger</span>
+                  <span>· Host</span>
+                </div>
               </div>
-              <div style="font-size:0.68rem;color:var(--clr-text-muted);">Challenger</div>
             </div>
+            ${match && match.sets && match.sets.length ? `
+              <div style="font-family:monospace;font-size:1.15rem;font-weight:800;color:${winnerName === c.creator ? 'var(--clr-green)' : 'var(--clr-text)'};">
+                ${match.sets.map(s => s.score[0]).join('-')}
+              </div>
+            ` : ''}
           </div>
 
-          <!-- VS or Score Badge -->
-          <div style="padding:0 8px;flex-shrink:0;text-align:center;">
-            ${c.status === 'completed' && scoreStr ?
-              `<span style="font-family:monospace;font-size:0.85rem;font-weight:800;color:var(--clr-gold);background:rgba(245,158,11,0.12);padding:2px 6px;border-radius:4px;border:1px solid rgba(245,158,11,0.25);">${scoreStr}</span>` :
-              `<span style="font-size:0.75rem;font-weight:800;color:var(--clr-green);text-transform:uppercase;letter-spacing:0.04em;">VS</span>`
-            }
+          <!-- Divider -->
+          <div class="challenge-vs-divider">
+            <span class="challenge-vs-pill">
+              ${c.status === 'completed' && scoreStr ? scoreStr : `VS · FIRST TO ${c.points || 15} PTS`}
+            </span>
           </div>
 
-          <!-- Opponent Player or Waiting Placeholder -->
-          <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0;flex:1;text-align:right;">
-            <div style="min-width:0;">
-              <div style="font-weight:800;font-size:0.95rem;color:${winnerName && winnerName === c.opponent ? 'var(--clr-green)' : (c.opponent ? 'var(--clr-text)' : 'var(--clr-text-muted)')};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                ${c.opponent ? escapeHtml(c.opponent) + (winnerName === c.opponent ? ' 👑' : '') : '<em style="font-weight:400;font-size:0.85rem;">Waiting...</em>'}
+          <!-- Opponent Row OR Open Slot -->
+          ${c.opponent ? `
+            <div class="challenge-competitor-row">
+              <div class="challenge-player-meta">
+                ${avatarB}
+                <div class="challenge-player-text">
+                  <div class="challenge-player-name">
+                    <span>${escapeHtml(c.opponent)}</span>
+                    ${winnerName === c.opponent ? '<span title="Winner" style="color:var(--clr-gold);">👑</span>' : ''}
+                  </div>
+                  <div class="challenge-player-role">
+                    <span style="color:#60a5fa;font-weight:700;">● Contender</span>
+                    <span>· Accepted</span>
+                  </div>
+                </div>
               </div>
-              <div style="font-size:0.68rem;color:var(--clr-text-muted);">${c.opponent ? 'Opponent' : 'Open Slot'}</div>
+              ${match && match.sets && match.sets.length ? `
+                <div style="font-family:monospace;font-size:1.15rem;font-weight:800;color:${winnerName === c.opponent ? 'var(--clr-green)' : 'var(--clr-text)'};">
+                  ${match.sets.map(s => s.score[1]).join('-')}
+                </div>
+              ` : ''}
             </div>
-            ${c.opponent ?
-              avatarB :
-              `<div style="width:38px;height:38px;border-radius:50%;border:1.5px dashed var(--clr-border);display:flex;align-items:center;justify-content:center;color:var(--clr-text-muted);font-weight:700;font-size:0.9rem;flex-shrink:0;background:rgba(255,255,255,0.02);">+</div>`
-            }
-          </div>
+          ` : `
+            <div class="challenge-open-slot-box" ${!isCreator ? `onclick="acceptChallenge('${c.id}')" style="cursor:pointer;"` : ''}>
+              <div style="display:flex;align-items:center;gap:12px;min-width:0;">
+                <div style="width:38px;height:38px;border-radius:50%;border:1.5px dashed var(--clr-green);display:flex;align-items:center;justify-content:center;color:var(--clr-green);font-weight:800;font-size:1.1rem;flex-shrink:0;background:rgba(16,185,129,0.08);">
+                  +
+                </div>
+                <div style="min-width:0;">
+                  <div style="font-weight:800;font-size:0.92rem;color:var(--clr-green);">
+                    Open Slot — Waiting for Opponent
+                  </div>
+                  <div style="font-size:0.74rem;color:var(--clr-text-muted);">
+                    ${isCreator ? 'Share your invite link with a player or friend' : 'Click to accept this challenge & take the court!'}
+                  </div>
+                </div>
+              </div>
+              ${!isCreator ? `
+                <button class="btn btn-primary btn-xs" style="flex-shrink:0;gap:4px;" onclick="event.stopPropagation();acceptChallenge('${c.id}')">
+                  <span>Accept</span>
+                </button>
+              ` : `
+                <span style="font-size:0.7rem;font-weight:700;color:var(--clr-text-muted);background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:4px;flex-shrink:0;">
+                  Waiting...
+                </span>
+              `}
+            </div>
+          `}
         </div>
 
         ${c.note ? `
-          <div style="font-size:0.78rem;color:var(--clr-text-muted);display:flex;align-items:center;gap:5px;">
-            <svg class="icon icon-xs" viewBox="0 0 24 24" style="color:var(--clr-green);"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(c.note)}</span>
+          <div style="font-size:0.8rem;color:var(--clr-text-muted);display:flex;align-items:flex-start;gap:8px;background:rgba(255,255,255,0.02);padding:8px 12px;border-radius:var(--radius-xs);border-left:2px solid var(--clr-border);">
+            <span style="font-size:0.9rem;">💬</span>
+            <span style="line-height:1.4;">${escapeHtml(c.note)}</span>
           </div>
         ` : ''}
 
         ${c.status === 'completed' && winnerName ? `
-          <div style="padding:6px 10px;background:rgba(16,185,129,0.1);border-radius:var(--radius-xs);color:var(--clr-green);font-size:0.82rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(16,185,129,0.2);">
-            <span>🏆 Winner: <strong>${escapeHtml(winnerName)}</strong></span>
-            ${scoreStr ? `<span style="font-family:monospace;font-weight:800;">${scoreStr}</span>` : ''}
+          <div style="padding:8px 12px;background:rgba(16,185,129,0.12);border-radius:var(--radius-xs);color:var(--clr-green);font-size:0.88rem;font-weight:700;display:flex;justify-content:space-between;align-items:center;border:1px solid rgba(16,185,129,0.25);">
+            <span style="display:flex;align-items:center;gap:6px;">
+              <span>🏆</span>
+              <span>Winner: <strong>${escapeHtml(winnerName)}</strong></span>
+            </span>
+            ${scoreStr ? `<span style="font-family:monospace;font-weight:800;font-size:1rem;color:var(--clr-gold);">${scoreStr}</span>` : ''}
           </div>
         ` : ''}
 
         <!-- Action Toolbar -->
-        <div style="display:flex;gap:8px;align-items:center;margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);">
+        <div style="display:flex;gap:10px;align-items:center;margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">
           ${c.status === 'open' ? `
             ${isCreator ? `
-              <button class="btn btn-ghost btn-sm" style="flex:1;gap:6px;justify-content:center;" onclick="copyChallengeInviteLink('${c.id}')">
+              <button class="btn btn-primary btn-sm" style="flex:1;gap:6px;justify-content:center;font-weight:700;" onclick="copyChallengeInviteLink('${c.id}')">
                 <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                 <span>Share Invite Link</span>
               </button>
+              <button class="btn btn-ghost btn-sm" style="gap:6px;border:1px solid var(--clr-border);" onclick="openChallengeQrModal('${c.id}')" title="Scan QR Code to join">
+                <span>📱 QR</span>
+              </button>
             ` : `
-              <button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;font-weight:700;gap:6px;" onclick="acceptChallenge('${c.id}')">
+              <button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;font-weight:800;gap:8px;font-size:0.92rem;background:#10b981;border-color:#10b981;" onclick="acceptChallenge('${c.id}')">
                 <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                <span>Accept Challenge &rarr;</span>
+                <span>Accept Challenge & Play Now</span>
               </button>
             `}
           ` : (c.status === 'completed' ? `
-            <button class="btn btn-ghost btn-sm" style="flex:1;gap:6px;justify-content:center;" onclick="openScorecardModal('${match ? match.id : ''}')">
+            <button class="btn btn-ghost btn-sm" style="flex:1;min-width:120px;gap:6px;justify-content:center;border:1px solid var(--clr-border);" onclick="openScorecardModal('${match ? match.id : ''}')">
               <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              <span>View Scorecard</span>
+              <span>Scorecard</span>
             </button>
-            <button class="btn btn-primary btn-sm" style="gap:6px;" onclick="instantRematchChallenge('${c.id}')" title="Play an instant rematch">⚡ Rematch</button>
-            <button class="btn btn-ghost btn-sm" style="gap:6px;" onclick="shareChallengeWhatsApp('${c.id}')" title="Share via WhatsApp">💬 WhatsApp</button>
-            <button class="btn btn-ghost btn-sm" style="gap:6px;" onclick="copyChallengeInviteLink('${c.id}')" title="Share Match Result">
+            <button class="btn btn-primary btn-sm" style="gap:6px;font-weight:700;" onclick="instantRematchChallenge('${c.id}')" title="Play an instant rematch">
+              <span>⚡ Rematch</span>
+            </button>
+            <button class="btn btn-ghost btn-sm" style="gap:6px;border:1px solid var(--clr-border);" onclick="shareChallengeWhatsApp('${c.id}')" title="Share via WhatsApp">
+              <span>💬 WhatsApp</span>
+            </button>
+            <button class="btn btn-ghost btn-sm" style="gap:6px;border:1px solid var(--clr-border);" onclick="copyChallengeInviteLink('${c.id}')" title="Share Match Result">
               <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
               <span>Share</span>
             </button>
           ` : `
-            <!-- In Progress / Accepted Challenge Management -->
-            <button class="btn btn-primary btn-sm" style="flex:1;min-width:130px;gap:6px;font-weight:700;justify-content:center;" onclick="launchChallengeUmpire('${c.id}')">
+            <button class="btn btn-primary btn-sm" style="flex:1;min-width:130px;gap:6px;font-weight:800;justify-content:center;" onclick="launchChallengeUmpire('${c.id}')">
               <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="12 2 15 8 22 9 17 14 18 21 12 17 6 21 7 14 2 9 9 8 12 2"/></svg>
-              <span>Play / Referee</span>
+              <span>Score / Referee Live</span>
             </button>
-            <button class="btn btn-ghost btn-sm" style="gap:6px;font-weight:600;justify-content:center;" onclick="enterChallengeQuickScore('${c.id}')" title="Enter Final Score">
+            <button class="btn btn-ghost btn-sm" style="gap:6px;font-weight:700;justify-content:center;border:1px solid var(--clr-border);" onclick="enterChallengeQuickScore('${c.id}')" title="Enter Final Score">
               <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-              <span>Score</span>
+              <span>Quick Score</span>
             </button>
           `)}
         </div>
