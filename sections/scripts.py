@@ -824,9 +824,17 @@ let activeChallengeFilter = 'all';
 
 function filterChallenges(type) {
   activeChallengeFilter = type;
-  ['All', 'Open', 'Accepted', 'Expired'].forEach(t => {
-    const b = document.getElementById('chalFilter' + t);
-    if (b) b.classList.toggle('active', t.toLowerCase() === type);
+  const filterIds = {
+    all: 'chalFilterAll',
+    my: 'chalFilterMy',
+    open: 'chalFilterOpen',
+    partner: 'chalFilterPartner',
+    accepted: 'chalFilterAccepted',
+    expired: 'chalFilterExpired'
+  };
+  Object.keys(filterIds).forEach(key => {
+    const b = document.getElementById(filterIds[key]);
+    if (b) b.classList.toggle('active', key === type);
   });
   renderChallengesBoard();
 }
@@ -1123,33 +1131,106 @@ function renderChallengesBoard() {
   if (!container) return;
 
   const list = getChallengesDB();
-  document.getElementById('chalCountAll').textContent = list.length;
-  document.getElementById('chalCountOpen').textContent = list.filter(c => c.status === 'open').length;
-  document.getElementById('chalCountAccepted').textContent = list.filter(c => c.status === 'accepted').length;
-  const expCountEl = document.getElementById('chalCountExpired');
-  if (expCountEl) expCountEl.textContent = list.filter(c => c.status === 'expired').length;
+  const curUserLower = (currentUser && currentUser.name) ? currentUser.name.toLowerCase() : '';
 
-  let filtered = list;
+  const isChallengeParticipant = (c) => {
+    if (!curUserLower) return false;
+    const cLower = (c.creator || '').toLowerCase();
+    const oLower = (c.opponent || '').toLowerCase();
+    const pLower = (c.partner || '').toLowerCase();
+    const cpLower = (c.creatorPayer || '').toLowerCase();
+    const opLower = (c.opponentPayer || '').toLowerCase();
+    return cLower.includes(curUserLower) || oLower.includes(curUserLower) || pLower.includes(curUserLower) || cpLower === curUserLower || opLower === curUserLower;
+  };
+
+  // Update top metrics dashboard
+  const mTotal = list.length;
+  const mOpen = list.filter(c => c.status === 'open' && !c.opponent).length;
+  const mPartners = list.filter(c => c.status === 'open' && c.category === 'doubles' && c.hasOpenPartner).length;
+  const mPoints = list.reduce((acc, c) => {
+    const buyIn = c.buyIn || 0;
+    const pCount = (c.stakedPlayers ? c.stakedPlayers.length : 1) + (c.stakedOpponents ? c.stakedOpponents.length : 0);
+    return acc + (buyIn * pCount);
+  }, 0);
+
+  const elTot = document.getElementById('chalMetricTotal');
+  const elOpn = document.getElementById('chalMetricOpen');
+  const elPrt = document.getElementById('chalMetricPartners');
+  const elPts = document.getElementById('chalMetricPointsPool');
+  if (elTot) elTot.textContent = mTotal;
+  if (elOpn) elOpn.textContent = mOpen;
+  if (elPrt) elPrt.textContent = mPartners;
+  if (elPts) elPts.textContent = `${mPoints} PTS`;
+
+  // Update filter pill counts
+  const cAll = document.getElementById('chalCountAll');
+  const cMy = document.getElementById('chalCountMy');
+  const cOpen = document.getElementById('chalCountOpen');
+  const cPart = document.getElementById('chalCountPartner');
+  const cAcc = document.getElementById('chalCountAccepted');
+  const cExp = document.getElementById('chalCountExpired');
+
+  if (cAll) cAll.textContent = list.length;
+  if (cMy) cMy.textContent = list.filter(isChallengeParticipant).length;
+  if (cOpen) cOpen.textContent = list.filter(c => c.status === 'open').length;
+  if (cPart) cPart.textContent = list.filter(c => c.status === 'open' && c.hasOpenPartner).length;
+  if (cAcc) cAcc.textContent = list.filter(c => c.status === 'accepted').length;
+  if (cExp) cExp.textContent = list.filter(c => c.status === 'completed' || c.status === 'expired').length;
+
+  let filtered = [...list];
   const searchInput = document.getElementById('challengeSearchInput');
   const query = (searchInput ? searchInput.value : '').trim().toLowerCase();
   if (query) {
     filtered = filtered.filter(c =>
       (c.creator && c.creator.toLowerCase().includes(query)) ||
       (c.opponent && c.opponent.toLowerCase().includes(query)) ||
-      (c.note && c.note.toLowerCase().includes(query))
+      (c.note && c.note.toLowerCase().includes(query)) ||
+      (c.court && String(c.court).toLowerCase().includes(query))
     );
   }
-  if (activeChallengeFilter === 'open') filtered = list.filter(c => c.status === 'open');
-  if (activeChallengeFilter === 'accepted') filtered = list.filter(c => c.status === 'accepted');
-  if (activeChallengeFilter === 'expired') filtered = list.filter(c => c.status === 'expired');
+
+  // Active status / view filter
+  if (activeChallengeFilter === 'my') {
+    filtered = filtered.filter(isChallengeParticipant);
+  } else if (activeChallengeFilter === 'open') {
+    filtered = filtered.filter(c => c.status === 'open');
+  } else if (activeChallengeFilter === 'partner') {
+    filtered = filtered.filter(c => c.status === 'open' && c.hasOpenPartner);
+  } else if (activeChallengeFilter === 'accepted') {
+    filtered = filtered.filter(c => c.status === 'accepted');
+  } else if (activeChallengeFilter === 'expired') {
+    filtered = filtered.filter(c => c.status === 'completed' || c.status === 'expired');
+  }
+
+  // Category filter dropdown
+  const catFilter = document.getElementById('chalCategoryFilter');
+  if (catFilter && catFilter.value !== 'all') {
+    filtered = filtered.filter(c => c.category === catFilter.value);
+  }
+
+  // Sort selector
+  const sortSelect = document.getElementById('chalSortSelect');
+  const sortBy = sortSelect ? sortSelect.value : 'newest';
+  if (sortBy === 'points_desc') {
+    filtered.sort((a, b) => (b.buyIn || 0) - (a.buyIn || 0));
+  } else if (sortBy === 'points_asc') {
+    filtered.sort((a, b) => (a.buyIn || 0) - (b.buyIn || 0));
+  } else {
+    filtered.sort((a, b) => (b.createdTimestamp || 0) - (a.createdTimestamp || 0));
+  }
 
   if (!filtered.length) {
     container.innerHTML = `
-      <div class="empty-state-card" style="grid-column:1/-1;">
-        <div class="empty-state-icon">${svgIcon("swords", "icon-3xl")}</div>
-        <div class="empty-state-title">${'No Challenges Found'}</div>
-        <div class="empty-state-desc">${'Be the first to post a public badminton challenge for others to join!'}</div>
-        <button class="btn btn-primary btn-sm" onclick="openNewChallengeModal()">${'+ Open a Challenge'}</button>
+      <div class="empty-state-card" style="grid-column:1/-1;padding:44px 20px;text-align:center;background:rgba(0,0,0,0.22);border:1.5px dashed var(--clr-border);border-radius:var(--radius-md);">
+        <div class="empty-state-icon" style="font-size:3.2rem;margin-bottom:12px;">🏸</div>
+        <div class="empty-state-title" style="font-size:1.2rem;font-weight:900;color:var(--clr-text);margin-bottom:6px;">No Challenges Found</div>
+        <div class="empty-state-desc" style="font-size:0.86rem;color:var(--clr-text-muted);max-width:460px;margin:0 auto 16px;line-height:1.5;">
+          ${query ? 'No challenges match your search. Try clearing the search query or switching filter tabs.' : 'No active matches in this view. Post a public challenge and invite players to compete!'}
+        </div>
+        <button class="btn btn-primary btn-sm" style="font-weight:800;gap:8px;padding:8px 20px;background:linear-gradient(135deg, #10b981, #059669);" onclick="openNewChallengeModal()">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Open a Challenge</span>
+        </button>
       </div>
     `;
     return;
@@ -1194,16 +1275,20 @@ function renderChallengesBoard() {
     const avatarA = typeof getPlayerAvatarHtml === 'function' ? getPlayerAvatarHtml(c.creator, 38, winnerName === c.creator) : '';
     const avatarB = c.opponent && typeof getPlayerAvatarHtml === 'function' ? getPlayerAvatarHtml(c.opponent, 38, winnerName === c.opponent) : '';
 
+    const statusBorderClass = c.status === 'open' ? (c.hasOpenPartner && !c.opponent ? 'open-status partner-status' : 'open-status') : (c.status === 'completed' ? 'completed-status' : 'accepted-status');
+    const badgeType = c.status === 'open' ? (c.hasOpenPartner && !c.opponent ? 'partner' : 'open') : c.status;
+    const badgeText = c.status === 'open' ? (c.hasOpenPartner && c.opponent ? '⏳ Needs Partner' : (c.hasOpenPartner ? '🤝 Open Partner Slot' : '● Open')) : (c.status === 'completed' ? '✓ Completed' : '⚡ In Progress');
+
     return `
-      <div class="challenge-card ${c.status === 'open' ? 'open-status' : (c.status === 'completed' ? 'completed-status' : 'accepted-status')}" data-challenge-id="${c.id}">
+      <div class="challenge-card ${statusBorderClass}" data-challenge-id="${c.id}">
         <!-- Top Meta Header -->
         <div class="challenge-card-header">
           <div class="challenge-badges-row">
-            <span class="challenge-badge ${c.status}">
-              ${c.status === 'open' ? (c.hasOpenPartner && c.opponent ? '⏳ Needs Partner' : (c.hasOpenPartner ? '● Open (Open Partner)' : '● Open')) : (c.status === 'completed' ? '✓ Completed' : '⚡ In Progress')}
+            <span class="challenge-badge ${badgeType}">
+              ${badgeText}
             </span>
             <span style="font-weight:700;color:var(--clr-text);font-size:0.75rem;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);display:inline-flex;align-items:center;gap:4px;">
-              🏸 ${c.category === 'doubles' ? 'Doubles' : 'Singles'} · ${c.points || 15} pts
+              🏸 ${c.category === 'doubles' ? 'Doubles (2v2)' : 'Singles (1v1)'} · ${c.points || 15} pts
             </span>
             ${(c.buyIn && c.buyIn > 0) ? `
               <span style="font-weight:800;color:var(--clr-gold);font-size:0.75rem;background:rgba(245,158,11,0.15);padding:3px 8px;border-radius:4px;border:1px solid rgba(245,158,11,0.35);display:inline-flex;align-items:center;gap:4px;">

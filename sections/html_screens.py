@@ -1599,27 +1599,95 @@ SCREENS_CONTENT = """
        SCREEN 12: OPEN CHALLENGES BOARD (FOOSBALL STYLE)
   ═══════════════════════════════════════════════════ -->
   <section id="challengesScreen" class="screen">
-    <div class="card" style="margin-bottom:20px;">
-      <div class="card-header">
-        <div>
-          <h2 class="card-title"><svg class="icon icon-md" viewBox="0 0 24 24"><path d="M14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></svg> <span data-i18n="chalScreenTitle">School & Club Open Challenge Board</span></h2>
-          <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-top:4px;" data-i18n="chalScreenSub">Anyone can open a challenge here! Other students or players can accept and jump straight into the match.</p>
+    <div class="card" style="margin-bottom:20px;border-radius:var(--radius-lg);padding:20px 22px;">
+      <!-- Top Title & Primary Action -->
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:18px;">
+        <div style="min-width:240px;flex:1;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg, rgba(16,185,129,0.2), rgba(6,182,212,0.2));border:1px solid rgba(16,185,129,0.3);display:flex;align-items:center;justify-content:center;color:var(--clr-green);">
+              <svg class="icon icon-sm" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <div>
+              <h2 style="font-size:1.35rem;font-weight:900;color:var(--clr-text);letter-spacing:-0.01em;margin:0;line-height:1.2;">
+                School & Club Open Challenge Board
+              </h2>
+              <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-top:2px;">
+                Anyone can post a public badminton challenge, pair with an open partner, or accept and play for points!
+              </p>
+            </div>
+          </div>
         </div>
-        <div style="display:flex;gap:8px;">
-          <button class="btn btn-primary btn-sm" onclick="openNewChallengeModal()"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> <span data-i18n="createChalBtn">Open a Challenge</span></button>
+
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" onclick="openNewChallengeModal()" style="display:inline-flex;align-items:center;gap:8px;font-weight:800;padding:8px 18px;border-radius:var(--radius-sm);background:linear-gradient(135deg, #10b981, #059669);box-shadow:0 4px 14px rgba(16,185,129,0.35);">
+            <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span data-i18n="createChalBtn">Open Challenge</span>
+          </button>
         </div>
       </div>
 
-      <!-- Instant Challenge Search & Filter bar -->
-      <div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap;">
-        <div style="position:relative;flex:1;min-width:220px;">
-          <input type="text" id="challengeSearchInput" class="modal-input" placeholder="🔍 Search by player, court, or venue..." style="padding:7px 12px;font-size:0.84rem;margin:0;" oninput="renderChallengesBoard()">
+      <!-- Quick Metrics Ribbon -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 150px), 1fr));gap:12px;margin-bottom:18px;">
+        <div style="background:rgba(0,0,0,0.2);border:1px solid var(--clr-border);border-radius:var(--radius-sm);padding:10px 14px;display:flex;align-items:center;gap:12px;">
+          <div style="font-size:1.4rem;">🏸</div>
+          <div>
+            <div id="chalMetricTotal" style="font-size:1.25rem;font-weight:900;color:var(--clr-text);line-height:1;">0</div>
+            <div style="font-size:0.72rem;color:var(--clr-text-muted);font-weight:700;text-transform:uppercase;margin-top:3px;">Total Challenges</div>
+          </div>
         </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+
+        <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.22);border-radius:var(--radius-sm);padding:10px 14px;display:flex;align-items:center;gap:12px;">
+          <div style="font-size:1.4rem;">⚔️</div>
+          <div>
+            <div id="chalMetricOpen" style="font-size:1.25rem;font-weight:900;color:var(--clr-green);line-height:1;">0</div>
+            <div style="font-size:0.72rem;color:var(--clr-green);font-weight:700;text-transform:uppercase;margin-top:3px;">Waiting Opponents</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(6,182,212,0.06);border:1px solid rgba(6,182,212,0.22);border-radius:var(--radius-sm);padding:10px 14px;display:flex;align-items:center;gap:12px;">
+          <div style="font-size:1.4rem;">🤝</div>
+          <div>
+            <div id="chalMetricPartners" style="font-size:1.25rem;font-weight:900;color:var(--clr-cyan);line-height:1;">0</div>
+            <div style="font-size:0.72rem;color:var(--clr-cyan);font-weight:700;text-transform:uppercase;margin-top:3px;">Open Partner Slots</div>
+          </div>
+        </div>
+
+        <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.22);border-radius:var(--radius-sm);padding:10px 14px;display:flex;align-items:center;gap:12px;">
+          <div style="font-size:1.4rem;">💰</div>
+          <div>
+            <div id="chalMetricPointsPool" style="font-size:1.25rem;font-weight:900;color:var(--clr-gold);line-height:1;">0 PTS</div>
+            <div style="font-size:0.72rem;color:var(--clr-gold);font-weight:700;text-transform:uppercase;margin-top:3px;">Points Staked Pool</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advanced Filters & Instant Search Toolbar -->
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap;background:rgba(0,0,0,0.15);padding:10px 12px;border-radius:var(--radius-sm);border:1px solid var(--clr-border);">
+        <div style="position:relative;flex:1;min-width:200px;">
+          <input type="text" id="challengeSearchInput" class="modal-input" placeholder="🔍 Search player, court, or note..." style="padding:7px 12px;font-size:0.84rem;margin:0;width:100%;" oninput="renderChallengesBoard()">
+        </div>
+
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">
           <button class="btn btn-ghost btn-xs active" id="chalFilterAll" onclick="filterChallenges('all')">All (<span id="chalCountAll">0</span>)</button>
+          <button class="btn btn-ghost btn-xs" id="chalFilterMy" onclick="filterChallenges('my')">★ My Matches (<span id="chalCountMy">0</span>)</button>
           <button class="btn btn-ghost btn-xs" id="chalFilterOpen" onclick="filterChallenges('open')">Open (<span id="chalCountOpen">0</span>)</button>
+          <button class="btn btn-ghost btn-xs" id="chalFilterPartner" onclick="filterChallenges('partner')">🤝 Needs Partner (<span id="chalCountPartner">0</span>)</button>
           <button class="btn btn-ghost btn-xs" id="chalFilterAccepted" onclick="filterChallenges('accepted')">In Progress (<span id="chalCountAccepted">0</span>)</button>
-          <button class="btn btn-ghost btn-xs" id="chalFilterExpired" onclick="filterChallenges('expired')">Archived (<span id="chalCountExpired">0</span>)</button>
+          <button class="btn btn-ghost btn-xs" id="chalFilterExpired" onclick="filterChallenges('expired')">Completed (<span id="chalCountExpired">0</span>)</button>
+        </div>
+
+        <div style="display:flex;gap:6px;align-items:center;">
+          <select id="chalCategoryFilter" class="modal-input" style="padding:4px 8px;font-size:0.78rem;margin:0;width:auto;" onchange="renderChallengesBoard()">
+            <option value="all">All Formats</option>
+            <option value="singles">Singles (1v1)</option>
+            <option value="doubles">Doubles (2v2)</option>
+          </select>
+
+          <select id="chalSortSelect" class="modal-input" style="padding:4px 8px;font-size:0.78rem;margin:0;width:auto;" onchange="renderChallengesBoard()">
+            <option value="newest">Newest First</option>
+            <option value="points_desc">Highest Points Stake</option>
+            <option value="points_asc">Lowest Points Stake</option>
+          </select>
         </div>
       </div>
 

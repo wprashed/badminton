@@ -1531,31 +1531,34 @@ body.theme-light .schedule-filter-bar {
 /* Open Challenge Board */
 .challenge-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
-  gap: 18px;
-  margin-top: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+  gap: 20px;
+  margin-top: 18px;
 }
 .challenge-card {
-  background: var(--clr-surface-card);
-  border: 1px solid var(--clr-border);
+  background: linear-gradient(180deg, rgba(31, 41, 55, 0.75) 0%, rgba(17, 24, 39, 0.95) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
-  padding: 18px 20px;
+  padding: 20px 22px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 14px;
+  gap: 16px;
   position: relative;
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
   box-sizing: border-box;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 .challenge-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  border-color: rgba(16, 185, 129, 0.45);
 }
 .challenge-card.open-status {
   border-left: 4px solid #10b981;
+}
+.challenge-card.partner-status {
+  border-left: 4px solid #06b6d4;
 }
 .challenge-card.accepted-status {
   border-left: 4px solid #3b82f6;
@@ -1692,6 +1695,11 @@ body.theme-light .challenge-vs-divider::after {
   background: rgba(16, 185, 129, 0.15);
   color: #34d399;
   border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.challenge-badge.partner {
+  background: rgba(6, 182, 212, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(6, 182, 212, 0.35);
 }
 .challenge-badge.accepted {
   background: rgba(59, 130, 246, 0.15);
