@@ -692,6 +692,31 @@ function switchChallengeAthleteProfile() {
   openAuthModal();
 }
 
+function toggleCustomChallengePointsInput(val) {
+  const container = document.getElementById('challengeCustomPointsContainer');
+  if (container) {
+    container.style.display = (val === 'custom') ? 'block' : 'none';
+  }
+}
+
+function updateCustomDoublePreview(val) {
+  const preview = document.getElementById('challengeCustomDoublePreview');
+  const pts = parseInt(val) || 0;
+  if (preview) {
+    preview.textContent = pts > 0 ? `Winner gets ${pts * 2} PTS` : 'Friendly';
+  }
+}
+
+function getSelectedChallengeBuyIn() {
+  const select = document.getElementById('challengeBuyInSelect');
+  if (!select) return 5;
+  if (select.value === 'custom') {
+    const customInput = document.getElementById('challengeCustomPointsInput');
+    return Math.max(0, parseInt(customInput?.value) || 5);
+  }
+  return parseInt(select.value) || 0;
+}
+
 function postNewChallenge() {
   const name = document.getElementById('challengeCreatorName').value.trim();
   if (!name) {
@@ -701,7 +726,7 @@ function postNewChallenge() {
   const category = document.getElementById('challengeCategorySelect').value;
   const points = parseInt(document.getElementById('challengePointsSelect').value) || 21;
   const note = document.getElementById('challengeNoteInput').value.trim() || 'Court 1';
-  const buyIn = parseInt(document.getElementById('challengeBuyInSelect')?.value) || 0;
+  const buyIn = getSelectedChallengeBuyIn();
 
   const partnerInput = document.getElementById('challengePartnerName');
   const partnerName = (category === 'doubles' && partnerInput) ? partnerInput.value.trim() : '';
@@ -711,15 +736,50 @@ function postNewChallenge() {
   const creatorDisplayName = partnerName ? `${name} / ${partnerName}` : name;
   const payerName = currentUser ? currentUser.name : name;
 
-  // Verify points balance for buy-in stake
+  // Staked players list for exact deduction and refund tracking
+  const stakedPlayers = [];
+
+  // Deduct points from creator (and partner if logged in with separate wallet):
+  // "if they select 5 then 5 points will be deduct from each player winner team memebers will get 10 points"
   if (buyIn > 0) {
-    const curBalance = getUserCoins(payerName);
-    if (curBalance < buyIn) {
-      showToast(`⚠️ Insufficient points to open this challenge! You have ${curBalance} PTS, but need ${buyIn} PTS.`, 'warning');
-      return;
+    if (category === 'doubles' && partnerName) {
+      const wallets = getWalletsDB();
+      if (wallets[partnerName] !== undefined && partnerName.toLowerCase() !== payerName.toLowerCase()) {
+        const p1Bal = getUserCoins(payerName);
+        const p2Bal = getUserCoins(partnerName);
+        if (p1Bal < buyIn) {
+          showToast(`⚠️ Insufficient points for ${payerName}! Has ${p1Bal} PTS, needs ${buyIn} PTS.`, 'warning');
+          return;
+        }
+        if (p2Bal < buyIn) {
+          showToast(`⚠️ Insufficient points for partner ${partnerName}! Has ${p2Bal} PTS, needs ${buyIn} PTS.`, 'warning');
+          return;
+        }
+        setUserCoins(p1Bal - buyIn, payerName);
+        setUserCoins(p2Bal - buyIn, partnerName);
+        recordTransaction(payerName, 'challenge_stake', buyIn, p1Bal - buyIn, `Staked ${buyIn} PTS for challenge (Playing for ${buyIn * 2} PTS)`);
+        recordTransaction(partnerName, 'challenge_stake', buyIn, p2Bal - buyIn, `Staked ${buyIn} PTS for challenge (Playing for ${buyIn * 2} PTS)`);
+        stakedPlayers.push({ name: payerName, amount: buyIn }, { name: partnerName, amount: buyIn });
+      } else {
+        const curBalance = getUserCoins(payerName);
+        if (curBalance < buyIn) {
+          showToast(`⚠️ Insufficient points to open this challenge! You have ${curBalance} PTS, but need ${buyIn} PTS.`, 'warning');
+          return;
+        }
+        setUserCoins(curBalance - buyIn, payerName);
+        recordTransaction(payerName, 'challenge_stake', buyIn, curBalance - buyIn, `Staked ${buyIn} PTS for challenge (Playing for ${buyIn * 2} PTS)`);
+        stakedPlayers.push({ name: payerName, amount: buyIn });
+      }
+    } else {
+      const curBalance = getUserCoins(payerName);
+      if (curBalance < buyIn) {
+        showToast(`⚠️ Insufficient points to open this challenge! You have ${curBalance} PTS, but need ${buyIn} PTS.`, 'warning');
+        return;
+      }
+      setUserCoins(curBalance - buyIn, payerName);
+      recordTransaction(payerName, 'challenge_stake', buyIn, curBalance - buyIn, `Staked ${buyIn} PTS for challenge (Playing for ${buyIn * 2} PTS)`);
+      stakedPlayers.push({ name: payerName, amount: buyIn });
     }
-    setUserCoins(curBalance - buyIn, payerName);
-    recordTransaction(payerName, 'challenge_stake', buyIn, curBalance - buyIn, `Staked ${buyIn} PTS for challenge pot`);
   }
 
   const list = getChallengesDB();
@@ -731,6 +791,7 @@ function postNewChallenge() {
     category,
     points,
     buyIn,
+    stakedPlayers,
     note,
     isPrivate,
     pin,
@@ -738,6 +799,7 @@ function postNewChallenge() {
     status: 'open',
     opponent: null,
     opponentPayer: null,
+    stakedOpponents: [],
     createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   };
 
@@ -746,7 +808,7 @@ function postNewChallenge() {
   document.getElementById('newChallengeModal').close();
   renderChallengesBoard();
   updateBettingUI();
-  showToast(`Challenge opened! ${buyIn > 0 ? buyIn + ' PTS staked (Pot: ' + (buyIn * 2) + ' PTS). ' : ''}Waiting for a challenger.`, 'success');
+  showToast(`Challenge opened! ${buyIn > 0 ? buyIn + ' PTS deducted from each player. Winner gets ' + (buyIn * 2) + ' PTS! ' : ''}Waiting for a challenger.`, 'success');
 }
 
 let activeChallengeFilter = 'all';
@@ -842,12 +904,26 @@ async function cancelChallenge(chalId) {
 
   // Refund points buy-in to participants if not yet concluded
   if (chal.buyIn && chal.buyIn > 0 && !chal.payoutProcessed) {
-    const creatorPayer = chal.creatorPayer || chal.creator;
-    const curCBal = getUserCoins(creatorPayer);
-    setUserCoins(curCBal + chal.buyIn, creatorPayer);
-    recordTransaction(creatorPayer, 'challenge_refund', chal.buyIn, curCBal + chal.buyIn, `Refunded ${chal.buyIn} PTS for cancelled challenge`);
+    if (chal.stakedPlayers && chal.stakedPlayers.length > 0) {
+      chal.stakedPlayers.forEach(p => {
+        const bal = getUserCoins(p.name);
+        setUserCoins(bal + p.amount, p.name);
+        recordTransaction(p.name, 'challenge_refund', p.amount, bal + p.amount, `Refunded ${p.amount} PTS for cancelled challenge`);
+      });
+    } else {
+      const creatorPayer = chal.creatorPayer || chal.creator;
+      const curCBal = getUserCoins(creatorPayer);
+      setUserCoins(curCBal + chal.buyIn, creatorPayer);
+      recordTransaction(creatorPayer, 'challenge_refund', chal.buyIn, curCBal + chal.buyIn, `Refunded ${chal.buyIn} PTS for cancelled challenge`);
+    }
 
-    if (chal.opponent) {
+    if (chal.stakedOpponents && chal.stakedOpponents.length > 0) {
+      chal.stakedOpponents.forEach(p => {
+        const bal = getUserCoins(p.name);
+        setUserCoins(bal + p.amount, p.name);
+        recordTransaction(p.name, 'challenge_refund', p.amount, bal + p.amount, `Refunded ${p.amount} PTS for cancelled challenge`);
+      });
+    } else if (chal.opponent) {
       const oppPayer = chal.opponentPayer || chal.opponent;
       const curOBal = getUserCoins(oppPayer);
       setUserCoins(curOBal + chal.buyIn, oppPayer);
@@ -916,7 +992,8 @@ function executeAcceptChallenge(id) {
     return;
   }
 
-  // Deduct points buy-in from contender if challenge has a stake
+  // Deduct points buy-in from contender: "if they select 5 then 5 points will be deduct from each player"
+  const stakedOpponents = [];
   if (chal.buyIn && chal.buyIn > 0) {
     const curBal = getUserCoins(joinerName);
     if (curBal < chal.buyIn) {
@@ -924,11 +1001,13 @@ function executeAcceptChallenge(id) {
       return;
     }
     setUserCoins(curBal - chal.buyIn, joinerName);
-    recordTransaction(joinerName, 'challenge_stake', chal.buyIn, curBal - chal.buyIn, `Staked ${chal.buyIn} PTS to accept challenge vs ${chal.creator}`);
+    recordTransaction(joinerName, 'challenge_stake', chal.buyIn, curBal - chal.buyIn, `Staked ${chal.buyIn} PTS to accept challenge vs ${chal.creator} (Playing for ${chal.buyIn * 2} PTS)`);
+    stakedOpponents.push({ name: joinerName, amount: chal.buyIn });
   }
 
   chal.opponent = joinerName.trim();
   chal.opponentPayer = joinerName.trim();
+  chal.stakedOpponents = stakedOpponents;
   chal.status = 'accepted';
 
   // Automatically create match and link
@@ -996,12 +1075,16 @@ function renderChallengesBoard() {
         c.payoutProcessed = true;
         c.status = 'completed';
         c.winner = match.winner === 'a' ? match.a : match.b;
-        const pot = c.buyIn * 2;
-        const winnerPayer = (c.winner.toLowerCase() === (c.creator || '').toLowerCase()) ? (c.creatorPayer || c.creator) : (c.opponentPayer || c.opponent);
-        const wBal = getUserCoins(winnerPayer);
-        setUserCoins(wBal + pot, winnerPayer);
-        recordTransaction(winnerPayer, 'challenge_win', pot, wBal + pot, `🏆 Won challenge pot (${pot} PTS)`);
+        const winPoints = c.buyIn * 2;
+        const winnerMembers = c.winner.includes('/') ? c.winner.split('/').map(s => s.trim()).filter(Boolean) : [c.winner.trim()];
+        const wallets = getWalletsDB();
+        winnerMembers.forEach(mem => {
+          wallets[mem] = (wallets[mem] || 0) + winPoints;
+          recordTransaction(mem, 'challenge_win', winPoints, wallets[mem], `🏆 Won challenge prize (${winPoints} PTS)`);
+        });
+        saveWalletsDB(wallets);
         saveChallengesDB(list);
+        updateBettingUI();
       }
     }
 
@@ -1030,7 +1113,7 @@ function renderChallengesBoard() {
             </span>
             ${(c.buyIn && c.buyIn > 0) ? `
               <span style="font-weight:800;color:var(--clr-gold);font-size:0.75rem;background:rgba(245,158,11,0.15);padding:3px 8px;border-radius:4px;border:1px solid rgba(245,158,11,0.35);display:inline-flex;align-items:center;gap:4px;">
-                💰 ${c.buyIn} PTS · Pot: ${c.buyIn * 2} PTS
+                💰 ${c.buyIn} PTS each · Winner gets ${c.buyIn * 2} PTS
               </span>
             ` : `
               <span style="font-weight:700;color:var(--clr-text-muted);font-size:0.75rem;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);display:inline-flex;align-items:center;gap:4px;">
@@ -3524,8 +3607,8 @@ function openBettingModal(matchId) {
   document.getElementById('betModalMatchId').value = match.id;
   document.getElementById('betModalTeamAName').textContent = match.a;
   document.getElementById('betModalTeamBName').textContent = match.b;
-  document.getElementById('betModalTeamABtn').textContent = `Predict ${match.a} (1.90x)`;
-  document.getElementById('betModalTeamBBtn').textContent = `Predict ${match.b} (1.90x)`;
+  document.getElementById('betModalTeamABtn').textContent = `Predict ${match.a} (2.0x Double)`;
+  document.getElementById('betModalTeamBBtn').textContent = `Predict ${match.b} (2.0x Double)`;
   selectBetSide('a');
   setBetAmount(25);
   updateBettingUI();
@@ -3568,29 +3651,24 @@ function placeBet() {
   }
 
   const amount = Math.floor(parseInt(document.getElementById('betModalAmountInput')?.value, 10));
-  if (isNaN(amount) || amount < 5) {
-    showToast('Minimum prediction wager is 5 coins.', 'warning');
+  if (isNaN(amount) || amount < 1) {
+    showToast('Minimum prediction wager is 1 point.', 'warning');
     return;
   }
 
   const coins = getUserCoins();
   if (coins < amount) {
-    showToast(`Insufficient coins! You have ${coins} coins. Claim bonus coins in your wallet.`, 'warning');
+    showToast(`Insufficient points! You have ${coins} PTS. Claim bonus points in your wallet.`, 'warning');
     return;
   }
 
   const username = currentUser ? currentUser.name : 'Guest';
   const teamName = (activeBetSide === 'a') ? activeBetMatch.a : activeBetMatch.b;
-  // Dynamic Elo-based odds
-  const eloA = getAthleteElo(activeBetMatch.a);
-  const eloB = getAthleteElo(activeBetMatch.b);
-  const selfElo = (activeBetSide === 'a') ? eloA : eloB;
-  const oppElo = (activeBetSide === 'a') ? eloB : eloA;
-  const diff = oppElo - selfElo;
-  const odds = Math.max(1.10, Math.min(3.50, +(1.90 + (diff / 400)).toFixed(2)));
+  // Guaranteed Double Points (2.0x) for match predictions
+  const odds = 2.0;
 
   setUserCoins(coins - amount);
-  recordTransaction(username, 'bet_placed', amount, coins - amount, `Placed prediction on ${teamName}`);
+  recordTransaction(username, 'bet_placed', amount, coins - amount, `Placed prediction wager of ${amount} PTS on ${teamName} (Playing for ${amount * 2} PTS)`);
 
   const bets = getBetsDB();
   bets.push({
@@ -3600,14 +3678,14 @@ function placeBet() {
     teamName,
     side: activeBetSide,
     amount,
-    odds,
+    odds: 2.0,
     status: 'pending',
     placedAt: new Date().toLocaleTimeString()
   });
   saveBetsDB(bets);
 
   document.getElementById('matchBettingModal').close();
-  showToast(`Placed ${amount} coin prediction on ${teamName}!`, 'success');
+  showToast(`Placed ${amount} PTS prediction on ${teamName}! Double payout (${amount * 2} PTS) on win.`, 'success');
   updateBettingUI();
 }
 
@@ -3622,22 +3700,23 @@ function settleMatchBets(match) {
       b.settledAt = new Date().toLocaleTimeString();
       if (b.side === match.winner) {
         b.status = 'won';
-        const payout = Math.round(b.amount * (b.odds || 1.90));
+        // Double points payout
+        const payout = Math.round(b.amount * 2);
         b.payout = payout;
 
         const wallets = getWalletsDB();
         wallets[b.username] = (wallets[b.username] || 0) + payout;
         saveWalletsDB(wallets);
-        recordTransaction(b.username, 'bet_won', payout, wallets[b.username], `Won prediction on match ${match.a} vs ${match.b}`);
+        recordTransaction(b.username, 'bet_won', payout, wallets[b.username], `🎉 Won double points prediction (${payout} PTS) on match ${match.a} vs ${match.b}`);
 
         if (b.username === currentUsername) {
-          showToast(`🎉 Congratulations! You won ${payout} coins on ${b.teamName}!`, 'success');
+          showToast(`🎉 Congratulations! You won double points (${payout} PTS) on ${b.teamName}!`, 'success');
           playChimeSound('win');
         }
       } else {
         b.status = 'lost';
         b.payout = 0;
-        recordTransaction(b.username, 'bet_lost', b.amount, getUserCoins(), `Lost prediction on match ${match.a} vs ${match.b}`);
+        recordTransaction(b.username, 'bet_lost', b.amount, getUserCoins(b.username), `Lost prediction on match ${match.a} vs ${match.b}`);
       }
       updated = true;
     }
@@ -6122,7 +6201,7 @@ function recordMatchStats(match) {
     updateBettingUI();
   } catch (e) {}
 
-  // Award open challenge buy-in pot to winner
+  // Award open challenge buy-in: winner team members receive double points (chal.buyIn * 2)
   try {
     const list = getChallengesDB();
     const chal = list.find(c => c.matchId === match.id ||
@@ -6132,13 +6211,18 @@ function recordMatchStats(match) {
       chal.payoutProcessed = true;
       chal.status = 'completed';
       chal.winner = winner;
-      const pot = chal.buyIn * 2;
-      const winnerPayer = (winner.toLowerCase() === (chal.creator || '').toLowerCase()) ? (chal.creatorPayer || chal.creator) : (chal.opponentPayer || chal.opponent);
-      const wBal = getUserCoins(winnerPayer);
-      setUserCoins(wBal + pot, winnerPayer);
-      recordTransaction(winnerPayer, 'challenge_win', pot, wBal + pot, `🏆 Won challenge pot vs ${loser} (${pot} PTS)`);
+      const winPoints = chal.buyIn * 2; // e.g. 5 PTS -> 10 PTS!
+
+      // Award double points (winPoints) to all winner team members
+      const winnerMembers = winner.includes('/') ? winner.split('/').map(s => s.trim()).filter(Boolean) : [winner.trim()];
+      const wallets = getWalletsDB();
+      winnerMembers.forEach(mem => {
+        wallets[mem] = (wallets[mem] || 0) + winPoints;
+        recordTransaction(mem, 'challenge_win', winPoints, wallets[mem], `🏆 Won challenge prize of ${winPoints} PTS vs ${loser}`);
+      });
+      saveWalletsDB(wallets);
       saveChallengesDB(list);
-      showToast(`🏆 ${winner} won the challenge pot of ${pot} PTS!`, 'success');
+      showToast(`🏆 ${winner} won the challenge! Winner team members received ${winPoints} PTS each.`, 'success');
       updateBettingUI();
     }
   } catch (e) {}

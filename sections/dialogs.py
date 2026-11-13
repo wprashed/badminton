@@ -542,16 +542,27 @@ DIALOGS_CONTENT = """
 
     <div class="modal-form-item">
       <label style="display:flex;justify-content:space-between;align-items:center;">
-        <span>Points Buy-in / Stake</span>
-        <span style="font-size:0.75rem;color:var(--clr-gold);font-weight:700;">Winner takes full pot!</span>
+        <span>Points to Play For (Stake per Player)</span>
+        <span style="font-size:0.75rem;color:var(--clr-gold);font-weight:700;">Winner team members get double!</span>
       </label>
-      <select id="challengeBuyInSelect" class="modal-input">
+      <select id="challengeBuyInSelect" class="modal-input" onchange="toggleCustomChallengePointsInput(this.value)">
+        <option value="5" selected>5 Points (Deduct 5 PTS from each player · Winner gets 10 PTS)</option>
+        <option value="10">10 Points (Deduct 10 PTS from each player · Winner gets 20 PTS)</option>
+        <option value="15">15 Points (Deduct 15 PTS from each player · Winner gets 30 PTS)</option>
+        <option value="20">20 Points (Deduct 20 PTS from each player · Winner gets 40 PTS)</option>
+        <option value="25">25 Points (Deduct 25 PTS from each player · Winner gets 50 PTS)</option>
+        <option value="50">50 Points (Deduct 50 PTS from each player · Winner gets 100 PTS)</option>
+        <option value="100">100 Points (Deduct 100 PTS from each player · Winner gets 200 PTS)</option>
         <option value="0">Friendly (0 PTS - Free)</option>
-        <option value="10">10 PTS Buy-in (Pot: 20 PTS)</option>
-        <option value="25" selected>25 PTS Buy-in (Pot: 50 PTS)</option>
-        <option value="50">50 PTS Buy-in (Pot: 100 PTS)</option>
-        <option value="100">100 PTS Buy-in (Pot: 200 PTS)</option>
+        <option value="custom">Custom Points Amount...</option>
       </select>
+    </div>
+    <div id="challengeCustomPointsContainer" class="modal-form-item" style="display:none;margin-top:6px;">
+      <label style="display:flex;justify-content:space-between;align-items:center;">
+        <span>Custom Points per Player</span>
+        <span id="challengeCustomDoublePreview" style="font-size:0.75rem;color:var(--clr-gold);font-weight:700;">Winner gets 10 PTS</span>
+      </label>
+      <input type="number" id="challengeCustomPointsInput" class="modal-input" min="1" max="10000" value="5" oninput="updateCustomDoublePreview(this.value)">
     </div>
 
     <div class="modal-form-item">
@@ -925,7 +936,7 @@ DIALOGS_CONTENT = """
       <div style="font-size:1.05rem;font-weight:800;color:var(--clr-text);">
         <span id="betModalTeamAName">Team A</span> <span style="color:var(--clr-text-muted);font-size:0.85rem;">vs</span> <span id="betModalTeamBName">Team B</span>
       </div>
-      <div style="font-size:0.75rem;color:var(--clr-gold);margin-top:4px;font-weight:600;">Payout Odds: 1.90x on correct prediction</div>
+      <div style="font-size:0.8rem;color:var(--clr-gold);margin-top:4px;font-weight:700;">🎁 Payout: Double Points (2.0x) on correct prediction!</div>
     </div>
 
     <!-- Select Prediction Side -->
