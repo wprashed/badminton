@@ -412,6 +412,10 @@ SCREENS_CONTENT = """
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="matchDurationClock" style="font-family:monospace;font-size:0.95rem;background:rgba(0,0,0,0.3);padding:4px 8px;border-radius:4px;border:1px solid var(--clr-border);">00:00</span>
+        <span class="badge" style="cursor:pointer;background:rgba(255,255,255,0.06);font-size:0.75rem;" onclick="incrementShuttleCount()" id="shuttleCountBadge" title="Tap when a new shuttlecock is introduced">🏸 Shuttles: <span id="shuttleCountVal">1</span></span>
+        <span class="badge" style="cursor:pointer;background:rgba(255,255,255,0.06);font-size:0.75rem;" onclick="incrementRallyShots()" id="rallyShotsBadge" title="Tap during rally to count shots">Rally: <span id="rallyShotsVal">0</span> shots</span>
+        <button class="btn btn-ghost btn-xs" onclick="document.getElementById('disciplinaryCardModal').showModal()" title="Issue Yellow/Red/Black Card" style="color:#eab308;"><span class="card-chip card-yellow"></span> Cards</button>
+        <button class="btn btn-ghost btn-xs" onclick="startMedicalTimeout()" title="5-minute medical recovery timeout" style="color:#f87171;">🩹 Medical</button>
         <button class="shortcuts-badge" onclick="document.getElementById('shortcutsHelpModal').showModal()" title="Referee Keyboard Shortcuts">⌨️ Shortcuts</button>
         <button class="btn btn-ghost btn-xs" onclick="toggleFullScreen()" title="Toggle Fullscreen">⛶ Fullscreen</button>
         <button class="btn btn-ghost btn-xs" onclick="toggleCourtFlip()" id="flipCourtBtn" title="Flip court display 180° for umpire sitting opposite"><svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Flip Court</button>
@@ -555,6 +559,14 @@ SCREENS_CONTENT = """
        5. TOURNAMENT SCHEDULE & TIMETABLE SCREEN
   ═══════════════════════════════════════════════════ -->
   <section id="scheduleScreen" class="screen">
+    <div id="scheduleConflictAlerts" style="margin-bottom:14px;"></div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+      <div style="display:flex;gap:4px;background:rgba(255,255,255,0.04);padding:3px;border-radius:6px;border:1px solid var(--clr-border);">
+        <button class="btn btn-ghost btn-xs active" id="schedViewListBtn" onclick="toggleScheduleViewMode('list')">List View</button>
+        <button class="btn btn-ghost btn-xs" id="schedViewMatrixBtn" onclick="toggleScheduleViewMode('matrix')">Court Matrix Timetable</button>
+      </div>
+    </div>
+    <div id="scheduleMatrixContainer" style="display:none;margin-bottom:20px;overflow-x:auto;"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
       <div>
         <h2 style="font-family:var(--font-display);font-size:1.6rem;text-transform:uppercase;"><svg class="icon icon-md" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Tournament Match Schedule & Timetable</h2>
@@ -625,7 +637,49 @@ SCREENS_CONTENT = """
       </div>
     </div>
 
-    <!-- Tournament Overview KPIs -->
+    
+    <!-- Point Scoring Source & Efficiency -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:14px;margin-bottom:20px;">
+      <div class="card" style="padding:16px;">
+        <div style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:6px;">Scoring Source Distribution</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-size:0.83rem;">Serving Team Point Won</span>
+          <span id="statServeWinPct" style="font-weight:800;color:var(--clr-green);">58%</span>
+        </div>
+        <div class="odds-bar-container" style="height:8px;">
+          <div id="statServeBar" class="odds-bar-fill-a" style="width:58%;"></div>
+          <div id="statReceiverBar" class="odds-bar-fill-b" style="width:42%;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--clr-text-muted);margin-top:4px;">
+          <span>On Own Serve (58%)</span>
+          <span>On Receiver Break (42%)</span>
+        </div>
+      </div>
+      <div class="card" style="padding:16px;">
+        <div style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:6px;">Rally Intensity Metrics</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+          <div>
+            <div style="font-size:1.4rem;font-weight:800;color:var(--clr-gold);" id="statAvgRallyShots">8.4</div>
+            <div style="font-size:0.72rem;color:var(--clr-text-muted);">Avg Shots / Rally</div>
+          </div>
+          <div>
+            <div style="font-size:1.4rem;font-weight:800;color:var(--clr-cyan);" id="statMaxRallyShots">34</div>
+            <div style="font-size:0.72rem;color:var(--clr-text-muted);">Longest Rally</div>
+          </div>
+          <div>
+            <div style="font-size:1.4rem;font-weight:800;color:var(--clr-green);" id="statTotalShuttles">18</div>
+            <div style="font-size:0.72rem;color:var(--clr-text-muted);">Shuttles Consumed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- H2H Heatmap Grid -->
+    <div class="card" style="padding:16px;margin-bottom:20px;">
+      <div style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:10px;">Tournament Cross-Encounter Head-to-Head Heatmap</div>
+      <div id="h2hMatrixContainer" style="overflow-x:auto;"></div>
+    </div>
+<!-- Tournament Overview KPIs -->
     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr));gap:14px;margin-bottom:24px;">
       <div class="card" style="padding:16px;">
         <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Tournament Progress</div>
@@ -1319,12 +1373,15 @@ SCREENS_CONTENT = """
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="status-badge-live badge-game-point"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;"></span> LIVE BROADCAST</span>
+        <button class="btn btn-outline btn-xs" id="stadiumProjectorBtn" onclick="toggleProjectorGridView()" style="margin-right:4px;">Projector Grid</button>
+        <button class="btn btn-ghost btn-xs" onclick="sendSpectatorCheer('👏')" title="Send Clap Reaction" style="margin-right:4px;">👏 Cheer</button>
         <button class="btn btn-outline btn-xs" id="stadiumDualCourtBtn" onclick="toggleDualCourtArenaView()" style="margin-right:4px;">Dual-Court Arena</button>
         <button class="btn btn-ghost btn-sm" onclick="toggleFullScreen()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg> Fullscreen</button>
       </div>
     </div>
 
     <!-- Multi-Court Grid Container -->
+    <div id="stadiumHighlightsCard" style="display:none;margin-bottom:16px;"></div>
     <div class="stadium-grid" id="stadiumCourtsContainer"></div>
     <div id="stadiumSponsorCarousel" class="sponsor-carousel">
       <div class="sponsor-logo-item">🏸 Yonex Official Shuttlecock</div>
@@ -1338,6 +1395,14 @@ SCREENS_CONTENT = """
        11. ENHANCED ADMIN DASHBOARD SCREEN
   ═══════════════════════════════════════════════════ -->
   <section id="adminDashboardScreen" class="screen">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;padding:12px;background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);">
+      <button class="btn btn-outline btn-xs" onclick="document.getElementById('auditTrailModal').showModal();renderAuditTrailList();">🛡️ Audit Trail</button>
+      <button class="btn btn-outline btn-xs" onclick="openPlayerIdBadgesModal()">🪪 Print ID Badges</button>
+      <button class="btn btn-outline btn-xs" onclick="generateConsolationBracket()">🏅 Generate Plate/Consolation Bracket</button>
+      <button class="btn btn-outline btn-xs" onclick="document.getElementById('poolDrawWheelModal').showModal();initPoolDrawCanvas();">🎡 Live Pool Draw Wheel</button>
+      <button class="btn btn-outline btn-xs" onclick="toggleAmoledBatterySaver()">🔋 AMOLED Battery Saver</button>
+      <button class="btn btn-outline btn-xs" onclick="pruneOldMatchHistory()">🧹 Prune & Compress Storage</button>
+    </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
       <div>
         <h2 style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;"><svg class="icon icon-md" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Commercial Tournament Director & Admin Suite</h2>

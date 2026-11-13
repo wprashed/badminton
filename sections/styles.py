@@ -3235,5 +3235,168 @@ body.obs-mode {
   background: rgba(255, 255, 255, 0.02);
 }
 
+
+/* ═══════════════════════════════════════════════════════════════
+   ADVANCED BWF, BROADCAST, CERTIFICATES & MATRIX SCHEDULE STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Disciplinary Cards */
+.card-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 20px;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.card-yellow { background: #eab308; border: 1px solid #ca8a04; }
+.card-red { background: #ef4444; border: 1px solid #b91c1c; }
+.card-black { background: #111827; border: 1px solid #374151; }
+
+/* AMOLED Battery Saver Mode */
+body.battery-saver {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+body.battery-saver * {
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  text-shadow: none !important;
+  transition: none !important;
+}
+body.battery-saver .card,
+body.battery-saver .modal-card,
+body.battery-saver .top-bar,
+body.battery-saver .mobile-bottom-nav {
+  background: #050505 !important;
+  border-color: #262626 !important;
+}
+
+/* Schedule Matrix Timetable Grid */
+.schedule-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  background: var(--clr-surface-card);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.schedule-matrix-table th,
+.schedule-matrix-table td {
+  border: 1px solid var(--clr-border);
+  padding: 10px 12px;
+  text-align: center;
+}
+.schedule-matrix-table th {
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 800;
+  color: var(--clr-text-muted);
+}
+.schedule-matrix-cell-match {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+.schedule-matrix-cell-match:hover {
+  background: rgba(16, 185, 129, 0.18);
+  transform: translateY(-1px);
+}
+
+/* H2H Matrix Heatmap */
+.h2h-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  text-align: center;
+}
+.h2h-matrix-table th, .h2h-matrix-table td {
+  border: 1px solid var(--clr-border);
+  padding: 8px;
+}
+.h2h-cell-win { background: rgba(16, 185, 129, 0.22); color: #34d399; font-weight: 800; }
+.h2h-cell-loss { background: rgba(239, 68, 68, 0.22); color: #f87171; font-weight: 800; }
+.h2h-cell-self { background: rgba(255, 255, 255, 0.04); color: var(--clr-text-muted); }
+
+/* Projector 4-6 Court Compact Grid */
+.projector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  width: 100%;
+}
+
+/* Achievement Badges */
+.achievement-badge-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--clr-border);
+}
+.achievement-badge-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--clr-gold);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* OBS Game Point Animated Banner */
+@keyframes pulseGamePointBorder {
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+  70% { box-shadow: 0 0 0 14px rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+.obs-pulse-alert {
+  animation: pulseGamePointBorder 1.5s infinite;
+  border-color: var(--clr-gold) !important;
+}
+
+/* Floating Cheer Reaction Bubble */
+@keyframes floatReactionUp {
+  0% { opacity: 1; transform: translateY(0) scale(0.8); }
+  100% { opacity: 0; transform: translateY(-80px) scale(1.4); }
+}
+.cheer-reaction-bubble {
+  position: absolute;
+  font-size: 1.8rem;
+  pointer-events: none;
+  animation: floatReactionUp 1.2s ease-out forwards;
+  z-index: 9999;
+}
+
+/* Official Printable Certificate (A4 Landscape) */
+.certificate-frame {
+  background: #ffffff;
+  color: #111827;
+  padding: 36px;
+  border: 8px double #10b981;
+  border-radius: 8px;
+  text-align: center;
+  font-family: 'Poppins', serif;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  max-width: 800px;
+  margin: 0 auto;
+}
+@media print {
+  .certificate-frame {
+    box-shadow: none;
+    border-width: 6px;
+  }
+}
+
 </style>
 """

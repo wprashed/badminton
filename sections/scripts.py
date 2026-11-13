@@ -4786,6 +4786,26 @@ function scorePoint(side) {
   const scorerName = side === 'a' ? match.a : match.b;
   const oppName = side === 'a' ? match.b : match.a;
 
+  // BWF Deciding 3rd Set Court Switch Threshold (8 pts for 15-pt match, 11 pts for 21-pt match)
+  if (state.currentSetIdx === 2 && !state.endsSwitchedInDecidingSet) {
+    const threshold = state.ptsToWin === 15 ? 8 : 11;
+    if (set.score[0] >= threshold || set.score[1] >= threshold) {
+      state.endsSwitchedInDecidingSet = true;
+      toggleCourtFlip();
+      speakScoreAnnouncement('Change ends. Interval.');
+      showToast('🔄 Deciding Set Threshold reached! Change Ends.');
+    }
+  }
+
+  // Record Rally Shot Count
+  if (match.currentRallyShots) {
+    if (!match.rallyHistory) match.rallyHistory = [];
+    match.rallyHistory.push(match.currentRallyShots);
+    match.currentRallyShots = 0;
+    const rVal = document.getElementById('rallyShotsVal');
+    if (rVal) rVal.textContent = '0';
+  }
+
   // 13 Hope Ball · 14 Game Ball · 15 Win Rule
   // If opponent has 14 points (Game Ball) and current player scores a point:
   // Opponent is downgraded from Game Ball (14) back to Hope Ball (13)!
@@ -6979,6 +6999,450 @@ document.addEventListener('DOMContentLoaded', () => {
   handleAppHashRouting();
   checkCourtScheduleConflicts();
 });
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   ADVANCED BWF, BROADCAST, CERTIFICATES & HARDWARE LOGIC
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Disciplinary Sanctions (Yellow / Red / Black Card) ── */
+let currentCardType = 'YELLOW';
+
+function selectCardType(type) {
+  currentCardType = type;
+  document.getElementById('selectedCardType').value = type;
+  ['Yellow', 'Red', 'Black'].forEach(t => {
+    const btn = document.getElementById(`cardBtn${t}`);
+    if (btn) btn.className = (t.toUpperCase() === type) ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm';
+  });
+}
+
+function confirmIssueDisciplinaryCard() {
+  const match = state.matches.find(m => m.id === state.currentMatchId);
+  if (!match) return;
+
+  const side = document.getElementById('disciplinarySideSelect').value;
+  const cardType = currentCardType;
+  const reason = document.getElementById('disciplinaryReasonInput').value.trim() || 'Unsportsmanlike conduct';
+  const targetName = side === 'a' ? match.a : match.b;
+  const oppSide = side === 'a' ? 'b' : 'a';
+
+  if (!match.disciplinaryCards) match.disciplinaryCards = [];
+  match.disciplinaryCards.push({ side, card: cardType, reason, timestamp: Date.now() });
+
+  if (!match.eventLog) match.eventLog = [];
+  match.eventLog.push({ side, type: 'DISCIPLINARY', card: cardType, reason, timestamp: Date.now() });
+
+  document.getElementById('disciplinaryCardModal').close();
+
+  if (cardType === 'YELLOW') {
+    showToast(`⚠️ Yellow Card issued to ${targetName} (${reason})`, 'warning');
+    speakScoreAnnouncement(`Warning. Yellow card, ${targetName}.`);
+  } else if (cardType === 'RED') {
+    showToast(`🛑 Red Card issued to ${targetName}! 1 Penalty Point awarded to opponent.`, 'error');
+    speakScoreAnnouncement(`Fault. Red card, ${targetName}.`);
+    scorePoint(oppSide); // Red Card awards point to opponent under BWF 16.7
+  } else if (cardType === 'BLACK') {
+    showToast(`⬛ Black Card! ${targetName} Disqualified from match!`, 'error');
+    speakScoreAnnouncement(`Disqualification. Black card, ${targetName}.`);
+    match.winner = oppSide;
+    match.winType = 'DISQUALIFIED';
+    saveState();
+    updateLiveScoreboardUI();
+  }
+}
+
+/* ── 2. Medical Timeout Timer (5 Minutes) ── */
+let medicalInterval = null;
+let medicalSecondsLeft = 300;
+
+function startMedicalTimeout() {
+  const modal = document.getElementById('medicalTimeoutModal');
+  if (!modal) return;
+  medicalSecondsLeft = 300;
+  updateMedicalClockUI();
+  modal.showModal();
+
+  if (medicalInterval) clearInterval(medicalInterval);
+  medicalInterval = setInterval(() => {
+    medicalSecondsLeft--;
+    updateMedicalClockUI();
+    if (medicalSecondsLeft <= 0) {
+      clearInterval(medicalInterval);
+      showToast('⏰ Medical Recovery Timeout Expired! Play must resume.');
+      speakScoreAnnouncement('Time. Play must resume.');
+      playSound('point');
+    }
+  }, 1000);
+}
+
+function updateMedicalClockUI() {
+  const m = Math.floor(medicalSecondsLeft / 60).toString().padStart(2, '0');
+  const s = (medicalSecondsLeft % 60).toString().padStart(2, '0');
+  const clock = document.getElementById('medicalTimerClock');
+  if (clock) clock.textContent = `${m}:${s}`;
+}
+
+function stopMedicalTimeout() {
+  if (medicalInterval) clearInterval(medicalInterval);
+  const note = document.getElementById('medicalInjuryNote')?.value.trim();
+  const match = state.matches.find(m => m.id === state.currentMatchId);
+  if (match && note) {
+    if (!match.eventLog) match.eventLog = [];
+    match.eventLog.push({ type: 'MEDICAL_TIMEOUT', note, timestamp: Date.now() });
+  }
+  document.getElementById('medicalTimeoutModal').close();
+  showToast('Medical break concluded. Resuming match.');
+}
+
+function addMedicalMinute() {
+  medicalSecondsLeft += 60;
+  updateMedicalClockUI();
+  showToast('+1 Minute added to recovery interval');
+}
+
+/* ── 3. Shuttlecock & Rally Shot Counters ── */
+function incrementShuttleCount() {
+  const match = state.matches.find(m => m.id === state.currentMatchId);
+  if (!match) return;
+  match.shuttlesUsed = (match.shuttlesUsed || 1) + 1;
+  const val = document.getElementById('shuttleCountVal');
+  if (val) val.textContent = match.shuttlesUsed;
+  showToast(`🏸 Shuttlecock changed. Total used: ${match.shuttlesUsed}`);
+}
+
+function incrementRallyShots() {
+  const match = state.matches.find(m => m.id === state.currentMatchId);
+  if (!match) return;
+  match.currentRallyShots = (match.currentRallyShots || 0) + 1;
+  const val = document.getElementById('rallyShotsVal');
+  if (val) val.textContent = match.currentRallyShots;
+}
+
+/* ── 4. Bluetooth Remote Shutter / Media Clicker ── */
+window.addEventListener('keydown', (e) => {
+  const umpireScreen = document.getElementById('liveUmpireScreen');
+  if (!umpireScreen || !umpireScreen.classList.contains('active')) return;
+
+  // Handle standard Bluetooth selfie remote & media presentation clicker keycodes
+  if (e.key === 'VolumeUp' || e.code === 'AudioVolumeUp') {
+    e.preventDefault();
+    scorePoint(state.servingSide); // Score for Server
+  } else if (e.key === 'VolumeDown' || e.code === 'AudioVolumeDown') {
+    e.preventDefault();
+    scorePoint(state.servingSide === 'a' ? 'b' : 'a'); // Score for Receiver
+  } else if (e.key === 'MediaPlayPause' || e.key === 'AudioVolumeMute') {
+    e.preventDefault();
+    undoPoint(); // Remote Undo
+  }
+});
+
+/* ── 5. Official Printable Certificate Generator ── */
+function openAthleteCertificateModal(playerName) {
+  const name = playerName || (currentUser ? currentUser.name : 'Tournament Athlete');
+  const modal = document.getElementById('certificatePrintModal');
+  const container = document.getElementById('certificateContainerContent');
+  if (!modal || !container) return;
+
+  container.innerHTML = `
+    <div class="certificate-frame">
+      <div style="font-size:2.8rem;margin-bottom:8px;">🏸</div>
+      <h1 style="font-family:'Anton',serif;font-size:2.4rem;letter-spacing:1px;color:#111827;margin:0 0 6px;">CERTIFICATE OF ACHIEVEMENT</h1>
+      <p style="font-size:0.95rem;text-transform:uppercase;letter-spacing:2px;color:#059669;font-weight:700;margin:0 0 24px;">Annual Badminton Cup Championship</p>
+      
+      <p style="font-size:1.05rem;color:#4b5563;margin-bottom:8px;">This is proudly presented to</p>
+      <div style="font-size:2.2rem;font-weight:900;color:#111827;border-bottom:2px solid #10b981;display:inline-block;padding:0 32px 6px;margin-bottom:16px;">
+        ${name}
+      </div>
+      
+      <p style="font-size:0.95rem;color:#4b5563;max-width:580px;margin:0 auto 36px;line-height:1.6;">
+        In recognition of outstanding athletic excellence, competitive integrity, and exceptional performance displayed in the official badminton tournament.
+      </p>
+
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:40px;padding:0 40px;">
+        <div style="text-align:center;">
+          <div style="font-weight:700;color:#111827;font-size:0.95rem;">${new Date().toLocaleDateString()}</div>
+          <div style="border-top:1px solid #9ca3af;padding-top:4px;font-size:0.75rem;color:#6b7280;margin-top:4px;">Date of Issue</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:cursive;font-size:1.3rem;color:#10b981;">Rashed Khan</div>
+          <div style="border-top:1px solid #9ca3af;padding-top:4px;font-size:0.75rem;color:#6b7280;margin-top:4px;">Tournament Director</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  modal.showModal();
+}
+
+/* ── 6. Printable Tournament ID Badges Generator ── */
+function openPlayerIdBadgesModal() {
+  const modal = document.getElementById('playerIdBadgesModal');
+  const container = document.getElementById('idBadgesGridContainer');
+  if (!modal || !container) return;
+
+  const players = (state.players && state.players.length) ? state.players : ['Parag Das', 'Rifat Haque', 'Rashed', 'Sifat', 'Saiful', 'Toufiq'];
+
+  container.innerHTML = players.map(p => {
+    const avatarHtml = typeof getPlayerAvatarHtml === 'function' ? getPlayerAvatarHtml(p, 48) : '';
+    return `
+      <div style="border:2px solid #111827;border-radius:10px;padding:16px;background:#ffffff;color:#111827;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+        <div style="font-size:0.7rem;font-weight:900;letter-spacing:1px;color:#059669;text-transform:uppercase;">BADMINTON CUP · OFFICIAL PASS</div>
+        <div style="margin:12px auto;display:flex;justify-content:center;">${avatarHtml}</div>
+        <div style="font-size:1.15rem;font-weight:900;color:#111827;">${p}</div>
+        <div style="font-size:0.75rem;color:#4b5563;font-weight:700;margin-top:2px;">ATHLETE · BWF REGISTERED</div>
+        <div style="margin-top:12px;border-top:1px dashed #d1d5db;padding-top:8px;font-family:monospace;font-size:0.7rem;letter-spacing:4px;color:#6b7280;">||| | |||| | ||| ||</div>
+      </div>
+    `;
+  }).join('');
+
+  modal.showModal();
+}
+
+/* ── 7. Consolation / Plate Bracket Generator ── */
+function generateConsolationBracket() {
+  if (!state.koRounds || state.koRounds.length === 0) {
+    showToast('Generate main knockout bracket first!', 'warning');
+    return;
+  }
+  const round1 = state.koRounds[0];
+  const round1Matches = round1.map(id => state.matches.find(m => m.id === id)).filter(Boolean);
+  const completed = round1Matches.filter(m => m.winner);
+  if (completed.length < 2) {
+    showToast('Round 1 matches must be played before generating consolation bracket.', 'warning');
+    return;
+  }
+
+  const losers = round1Matches.map(m => m.winner === 'a' ? m.b : m.a).filter(Boolean);
+  state.plateMatches = [];
+  for (let i = 0; i < losers.length; i += 2) {
+    if (i + 1 < losers.length) {
+      const match = createMatchObj(losers[i], losers[i + 1], 'PLATE');
+      state.matches.push(match);
+      state.plateMatches.push(match.id);
+    }
+  }
+
+  saveState();
+  showToast(`🏅 Consolation Plate bracket generated with ${state.plateMatches.length} fixtures!`);
+  showScreen('knockoutScreen');
+}
+
+/* ── 8. Schedule Court Matrix Timetable ── */
+let currentScheduleView = 'list';
+
+function toggleScheduleViewMode(mode) {
+  currentScheduleView = mode;
+  const listEl = document.getElementById('scheduleMatchesList');
+  const matrixEl = document.getElementById('scheduleMatrixContainer');
+  const btnList = document.getElementById('schedViewListBtn');
+  const btnMatrix = document.getElementById('schedViewMatrixBtn');
+
+  if (mode === 'matrix') {
+    if (listEl) listEl.style.display = 'none';
+    if (matrixEl) {
+      matrixEl.style.display = 'block';
+      renderScheduleMatrix();
+    }
+    if (btnList) btnList.classList.remove('active');
+    if (btnMatrix) btnMatrix.classList.add('active');
+  } else {
+    if (listEl) listEl.style.display = 'grid';
+    if (matrixEl) matrixEl.style.display = 'none';
+    if (btnList) btnList.classList.add('active');
+    if (btnMatrix) btnMatrix.classList.remove('active');
+  }
+}
+
+function renderScheduleMatrix() {
+  const container = document.getElementById('scheduleMatrixContainer');
+  if (!container) return;
+
+  const courts = [1, 2];
+  const times = ['10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM'];
+
+  let html = `
+    <table class="schedule-matrix-table">
+      <thead>
+        <tr>
+          <th style="width:120px;">Time Slot</th>
+          <th>Court 1</th>
+          <th>Court 2</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  times.forEach((t, idx) => {
+    html += `<tr><td style="font-weight:700;color:var(--clr-gold);">${t}</td>`;
+    courts.forEach(c => {
+      const match = state.matches.find(m => m.court === c && m.scheduledTime === t) || state.matches[idx * 2 + (c - 1)];
+      if (match) {
+        html += `
+          <td>
+            <div class="schedule-matrix-cell-match" onclick="startUmpireMatch('${match.id}')">
+              <strong>${match.a}</strong> vs <strong>${match.b}</strong>
+              <div style="font-size:0.7rem;color:var(--clr-text-muted);margin-top:2px;">${match.winner ? '✓ Completed' : 'Tap to Referee'}</div>
+            </div>
+          </td>
+        `;
+      } else {
+        html += `<td style="color:var(--clr-text-muted);opacity:0.5;">— Available —</td>`;
+      }
+    });
+    html += `</tr>`;
+  });
+
+  html += `</tbody></table>`;
+  container.innerHTML = html;
+}
+
+/* ── 9. Interactive Pool Draw Ceremony Wheel ── */
+let poolWheelAngle = 0;
+let isWheelSpinning = false;
+
+function initPoolDrawCanvas() {
+  const canvas = document.getElementById('poolDrawCanvas');
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext('2d');
+  const players = (state.players && state.players.length) ? state.players : ['Parag', 'Rifat', 'Rashed', 'Sifat', 'Saiful', 'Toufiq', 'Jakir', 'Jobayer'];
+  const numSlices = players.length;
+  const sliceAngle = (2 * Math.PI) / numSlices;
+  const colors = ['#10b981', '#06b6d4', '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6', '#14b8a6', '#f97316'];
+
+  ctx.clearRect(0, 0, 240, 240);
+  ctx.save();
+  ctx.translate(120, 120);
+  ctx.rotate(poolWheelAngle);
+
+  for (let i = 0; i < numSlices; i++) {
+    ctx.beginPath();
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, 120, i * sliceAngle, (i + 1) * sliceAngle);
+    ctx.lineTo(0, 0);
+    ctx.fill();
+
+    ctx.save();
+    ctx.rotate(i * sliceAngle + sliceAngle / 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(players[i].slice(0, 8), 108, 4);
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+
+function spinPoolDrawWheel() {
+  if (isWheelSpinning) return;
+  isWheelSpinning = true;
+  const resText = document.getElementById('wheelCurrentDrawnText');
+  if (resText) resText.textContent = 'Spinning...';
+
+  const totalRotations = Math.PI * 2 * 5 + Math.random() * Math.PI * 2;
+  const startTime = Date.now();
+  const duration = 3000;
+
+  function animate() {
+    const elapsed = Date.now() - startTime;
+    const progress = Math.min(1, elapsed / duration);
+    const easeOut = 1 - Math.pow(1 - progress, 3);
+    poolWheelAngle = easeOut * totalRotations;
+    initPoolDrawCanvas();
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      isWheelSpinning = false;
+      const players = (state.players && state.players.length) ? state.players : ['Parag', 'Rifat', 'Rashed', 'Sifat', 'Saiful', 'Toufiq', 'Jakir', 'Jobayer'];
+      const picked = players[Math.floor(Math.random() * players.length)];
+      if (resText) resText.textContent = `🎯 Selected: ${picked}!`;
+      playSound('point');
+      if (typeof confetti === 'function') confetti({ particleCount: 50, spread: 70 });
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+/* ── 10. AMOLED Battery Saver Mode ── */
+function toggleAmoledBatterySaver() {
+  const isEnabled = document.body.classList.toggle('battery-saver');
+  localStorage.setItem('badminton_battery_saver', isEnabled ? 'true' : 'false');
+  showToast(isEnabled ? '🔋 AMOLED Battery Saver Enabled (OLED Black)' : 'Standard Theme Restored');
+}
+
+/* ── 11. Storage Prune & Clean Exporter ── */
+function pruneOldMatchHistory() {
+  const completed = state.matches.filter(m => m.winner);
+  if (completed.length === 0) {
+    showToast('No completed matches to prune.', 'info');
+    return;
+  }
+
+  // Backup state to JSON file download first
+  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(state));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute('href', dataStr);
+  downloadAnchor.setAttribute('download', `badminton_cup_backup_${Date.now()}.json`);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+
+  // Strip excessive rally events from historical matches to free storage
+  state.matches.forEach(m => {
+    if (m.winner) {
+      delete m.history;
+      delete m.eventLog;
+    }
+  });
+
+  saveState();
+  showToast('🧹 Storage compressed! Full JSON backup downloaded.');
+}
+
+/* ── 12. Floating Spectator Cheer Reactions ── */
+function sendSpectatorCheer(emoji) {
+  const bubble = document.createElement('div');
+  bubble.className = 'cheer-reaction-bubble';
+  bubble.textContent = emoji || '👏';
+  bubble.style.left = `${Math.random() * 80 + 10}%`;
+  bubble.style.bottom = '80px';
+  document.body.appendChild(bubble);
+  setTimeout(() => bubble.remove(), 1200);
+  broadcastSync('sync_cheer');
+}
+
+/* ── 13. Horizontal Touch Swipe Gestures for Mobile Navigation ── */
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipeGesture();
+}, { passive: true });
+
+function handleSwipeGesture() {
+  const diff = touchEndX - touchStartX;
+  if (Math.abs(diff) < 90) return; // Ignore small swipes
+
+  const screens = ['groupsScreen', 'challengesScreen', 'knockoutScreen', 'leaderboardScreen'];
+  const currentActive = screens.find(id => document.getElementById(id)?.classList.contains('active'));
+  if (!currentActive) return;
+
+  const idx = screens.indexOf(currentActive);
+  if (diff < 0 && idx < screens.length - 1) {
+    showScreen(screens[idx + 1]); // Swipe Left -> Next Screen
+  } else if (diff > 0 && idx > 0) {
+    showScreen(screens[idx - 1]); // Swipe Right -> Prev Screen
+  }
+}
 
 </script>
 """

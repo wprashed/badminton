@@ -3254,6 +3254,169 @@ body.obs-mode {
   background: rgba(255, 255, 255, 0.02);
 }
 
+
+/* ═══════════════════════════════════════════════════════════════
+   ADVANCED BWF, BROADCAST, CERTIFICATES & MATRIX SCHEDULE STYLES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Disciplinary Cards */
+.card-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 20px;
+  border-radius: 3px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  margin-left: 4px;
+  vertical-align: middle;
+}
+.card-yellow { background: #eab308; border: 1px solid #ca8a04; }
+.card-red { background: #ef4444; border: 1px solid #b91c1c; }
+.card-black { background: #111827; border: 1px solid #374151; }
+
+/* AMOLED Battery Saver Mode */
+body.battery-saver {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+body.battery-saver * {
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  text-shadow: none !important;
+  transition: none !important;
+}
+body.battery-saver .card,
+body.battery-saver .modal-card,
+body.battery-saver .top-bar,
+body.battery-saver .mobile-bottom-nav {
+  background: #050505 !important;
+  border-color: #262626 !important;
+}
+
+/* Schedule Matrix Timetable Grid */
+.schedule-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  background: var(--clr-surface-card);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.schedule-matrix-table th,
+.schedule-matrix-table td {
+  border: 1px solid var(--clr-border);
+  padding: 10px 12px;
+  text-align: center;
+}
+.schedule-matrix-table th {
+  background: rgba(255, 255, 255, 0.04);
+  font-weight: 800;
+  color: var(--clr-text-muted);
+}
+.schedule-matrix-cell-match {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+.schedule-matrix-cell-match:hover {
+  background: rgba(16, 185, 129, 0.18);
+  transform: translateY(-1px);
+}
+
+/* H2H Matrix Heatmap */
+.h2h-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+  text-align: center;
+}
+.h2h-matrix-table th, .h2h-matrix-table td {
+  border: 1px solid var(--clr-border);
+  padding: 8px;
+}
+.h2h-cell-win { background: rgba(16, 185, 129, 0.22); color: #34d399; font-weight: 800; }
+.h2h-cell-loss { background: rgba(239, 68, 68, 0.22); color: #f87171; font-weight: 800; }
+.h2h-cell-self { background: rgba(255, 255, 255, 0.04); color: var(--clr-text-muted); }
+
+/* Projector 4-6 Court Compact Grid */
+.projector-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  width: 100%;
+}
+
+/* Achievement Badges */
+.achievement-badge-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--clr-border);
+}
+.achievement-badge-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--clr-gold);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* OBS Game Point Animated Banner */
+@keyframes pulseGamePointBorder {
+  0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+  70% { box-shadow: 0 0 0 14px rgba(245, 158, 11, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+.obs-pulse-alert {
+  animation: pulseGamePointBorder 1.5s infinite;
+  border-color: var(--clr-gold) !important;
+}
+
+/* Floating Cheer Reaction Bubble */
+@keyframes floatReactionUp {
+  0% { opacity: 1; transform: translateY(0) scale(0.8); }
+  100% { opacity: 0; transform: translateY(-80px) scale(1.4); }
+}
+.cheer-reaction-bubble {
+  position: absolute;
+  font-size: 1.8rem;
+  pointer-events: none;
+  animation: floatReactionUp 1.2s ease-out forwards;
+  z-index: 9999;
+}
+
+/* Official Printable Certificate (A4 Landscape) */
+.certificate-frame {
+  background: #ffffff;
+  color: #111827;
+  padding: 36px;
+  border: 8px double #10b981;
+  border-radius: 8px;
+  text-align: center;
+  font-family: 'Poppins', serif;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  max-width: 800px;
+  margin: 0 auto;
+}
+@media print {
+  .certificate-frame {
+    box-shadow: none;
+    border-width: 6px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -3670,6 +3833,10 @@ body.obs-mode {
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="matchDurationClock" style="font-family:monospace;font-size:0.95rem;background:rgba(0,0,0,0.3);padding:4px 8px;border-radius:4px;border:1px solid var(--clr-border);">00:00</span>
+        <span class="badge" style="cursor:pointer;background:rgba(255,255,255,0.06);font-size:0.75rem;" onclick="incrementShuttleCount()" id="shuttleCountBadge" title="Tap when a new shuttlecock is introduced">🏸 Shuttles: <span id="shuttleCountVal">1</span></span>
+        <span class="badge" style="cursor:pointer;background:rgba(255,255,255,0.06);font-size:0.75rem;" onclick="incrementRallyShots()" id="rallyShotsBadge" title="Tap during rally to count shots">Rally: <span id="rallyShotsVal">0</span> shots</span>
+        <button class="btn btn-ghost btn-xs" onclick="document.getElementById('disciplinaryCardModal').showModal()" title="Issue Yellow/Red/Black Card" style="color:#eab308;"><span class="card-chip card-yellow"></span> Cards</button>
+        <button class="btn btn-ghost btn-xs" onclick="startMedicalTimeout()" title="5-minute medical recovery timeout" style="color:#f87171;">🩹 Medical</button>
         <button class="shortcuts-badge" onclick="document.getElementById('shortcutsHelpModal').showModal()" title="Referee Keyboard Shortcuts">⌨️ Shortcuts</button>
         <button class="btn btn-ghost btn-xs" onclick="toggleFullScreen()" title="Toggle Fullscreen">⛶ Fullscreen</button>
         <button class="btn btn-ghost btn-xs" onclick="toggleCourtFlip()" id="flipCourtBtn" title="Flip court display 180° for umpire sitting opposite"><svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Flip Court</button>
@@ -3813,6 +3980,14 @@ body.obs-mode {
        5. TOURNAMENT SCHEDULE & TIMETABLE SCREEN
   ═══════════════════════════════════════════════════ -->
   <section id="scheduleScreen" class="screen">
+    <div id="scheduleConflictAlerts" style="margin-bottom:14px;"></div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+      <div style="display:flex;gap:4px;background:rgba(255,255,255,0.04);padding:3px;border-radius:6px;border:1px solid var(--clr-border);">
+        <button class="btn btn-ghost btn-xs active" id="schedViewListBtn" onclick="toggleScheduleViewMode('list')">List View</button>
+        <button class="btn btn-ghost btn-xs" id="schedViewMatrixBtn" onclick="toggleScheduleViewMode('matrix')">Court Matrix Timetable</button>
+      </div>
+    </div>
+    <div id="scheduleMatrixContainer" style="display:none;margin-bottom:20px;overflow-x:auto;"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
       <div>
         <h2 style="font-family:var(--font-display);font-size:1.6rem;text-transform:uppercase;"><svg class="icon icon-md" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Tournament Match Schedule & Timetable</h2>
@@ -3883,7 +4058,49 @@ body.obs-mode {
       </div>
     </div>
 
-    <!-- Tournament Overview KPIs -->
+    
+    <!-- Point Scoring Source & Efficiency -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:14px;margin-bottom:20px;">
+      <div class="card" style="padding:16px;">
+        <div style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:6px;">Scoring Source Distribution</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <span style="font-size:0.83rem;">Serving Team Point Won</span>
+          <span id="statServeWinPct" style="font-weight:800;color:var(--clr-green);">58%</span>
+        </div>
+        <div class="odds-bar-container" style="height:8px;">
+          <div id="statServeBar" class="odds-bar-fill-a" style="width:58%;"></div>
+          <div id="statReceiverBar" class="odds-bar-fill-b" style="width:42%;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:0.7rem;color:var(--clr-text-muted);margin-top:4px;">
+          <span>On Own Serve (58%)</span>
+          <span>On Receiver Break (42%)</span>
+        </div>
+      </div>
+      <div class="card" style="padding:16px;">
+        <div style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:6px;">Rally Intensity Metrics</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+          <div>
+            <div style="font-size:1.4rem;font-weight:800;color:var(--clr-gold);" id="statAvgRallyShots">8.4</div>
+            <div style="font-size:0.72rem;color:var(--clr-text-muted);">Avg Shots / Rally</div>
+          </div>
+          <div>
+            <div style="font-size:1.4rem;font-weight:800;color:var(--clr-cyan);" id="statMaxRallyShots">34</div>
+            <div style="font-size:0.72rem;color:var(--clr-text-muted);">Longest Rally</div>
+          </div>
+          <div>
+            <div style="font-size:1.4rem;font-weight:800;color:var(--clr-green);" id="statTotalShuttles">18</div>
+            <div style="font-size:0.72rem;color:var(--clr-text-muted);">Shuttles Consumed</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- H2H Heatmap Grid -->
+    <div class="card" style="padding:16px;margin-bottom:20px;">
+      <div style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:10px;">Tournament Cross-Encounter Head-to-Head Heatmap</div>
+      <div id="h2hMatrixContainer" style="overflow-x:auto;"></div>
+    </div>
+<!-- Tournament Overview KPIs -->
     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 200px), 1fr));gap:14px;margin-bottom:24px;">
       <div class="card" style="padding:16px;">
         <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Tournament Progress</div>
@@ -4577,12 +4794,15 @@ body.obs-mode {
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="status-badge-live badge-game-point"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;"></span> LIVE BROADCAST</span>
+        <button class="btn btn-outline btn-xs" id="stadiumProjectorBtn" onclick="toggleProjectorGridView()" style="margin-right:4px;">Projector Grid</button>
+        <button class="btn btn-ghost btn-xs" onclick="sendSpectatorCheer('👏')" title="Send Clap Reaction" style="margin-right:4px;">👏 Cheer</button>
         <button class="btn btn-outline btn-xs" id="stadiumDualCourtBtn" onclick="toggleDualCourtArenaView()" style="margin-right:4px;">Dual-Court Arena</button>
         <button class="btn btn-ghost btn-sm" onclick="toggleFullScreen()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg> Fullscreen</button>
       </div>
     </div>
 
     <!-- Multi-Court Grid Container -->
+    <div id="stadiumHighlightsCard" style="display:none;margin-bottom:16px;"></div>
     <div class="stadium-grid" id="stadiumCourtsContainer"></div>
     <div id="stadiumSponsorCarousel" class="sponsor-carousel">
       <div class="sponsor-logo-item">🏸 Yonex Official Shuttlecock</div>
@@ -4596,6 +4816,14 @@ body.obs-mode {
        11. ENHANCED ADMIN DASHBOARD SCREEN
   ═══════════════════════════════════════════════════ -->
   <section id="adminDashboardScreen" class="screen">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;padding:12px;background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:var(--radius-sm);">
+      <button class="btn btn-outline btn-xs" onclick="document.getElementById('auditTrailModal').showModal();renderAuditTrailList();">🛡️ Audit Trail</button>
+      <button class="btn btn-outline btn-xs" onclick="openPlayerIdBadgesModal()">🪪 Print ID Badges</button>
+      <button class="btn btn-outline btn-xs" onclick="generateConsolationBracket()">🏅 Generate Plate/Consolation Bracket</button>
+      <button class="btn btn-outline btn-xs" onclick="document.getElementById('poolDrawWheelModal').showModal();initPoolDrawCanvas();">🎡 Live Pool Draw Wheel</button>
+      <button class="btn btn-outline btn-xs" onclick="toggleAmoledBatterySaver()">🔋 AMOLED Battery Saver</button>
+      <button class="btn btn-outline btn-xs" onclick="pruneOldMatchHistory()">🧹 Prune & Compress Storage</button>
+    </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
       <div>
         <h2 style="font-family:var(--font-display);font-size:1.25rem;font-weight:700;"><svg class="icon icon-md" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Commercial Tournament Director & Admin Suite</h2>
@@ -6141,6 +6369,132 @@ body.obs-mode {
     <div id="tournamentsArchiveList" style="max-height:240px;overflow-y:auto;border:1px solid var(--clr-border);border-radius:8px;padding:8px;">
       <!-- Populated via renderTournamentsArchiveList() -->
     </div>
+  </div>
+</dialog>
+
+
+<!-- 1. Disciplinary Sanctions Modal (Yellow / Red / Black Card) -->
+<dialog id="disciplinaryCardModal" closedby="any" style="max-width:440px;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h2 style="font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:8px;">
+        <span class="card-chip card-yellow"></span>
+        BWF Official Disciplinary Sanction
+      </h2>
+      <button class="modal-close" onclick="document.getElementById('disciplinaryCardModal').close()"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:14px;">Issue formal warning or penalty under BWF Law 16.7 for delay of play, misconduct, or equipment abuse.</p>
+    
+    <div class="modal-form-item">
+      <label>Target Athlete / Side</label>
+      <select id="disciplinarySideSelect" class="modal-input" style="width:100%;">
+        <option value="a">Player A / Team A</option>
+        <option value="b">Player B / Team B</option>
+      </select>
+    </div>
+
+    <div class="modal-form-item">
+      <label>Sanction Level</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="selectCardType('YELLOW')" id="cardBtnYellow" style="border-color:#eab308;color:#eab308;">
+          <span class="card-chip card-yellow"></span> Yellow (Warning)
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="selectCardType('RED')" id="cardBtnRed" style="border-color:#ef4444;color:#ef4444;">
+          <span class="card-chip card-red"></span> Red (Fault + 1 Pt)
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="selectCardType('BLACK')" id="cardBtnBlack" style="border-color:#6b7280;color:#9ca3af;">
+          <span class="card-chip card-black"></span> Black (Disqualify)
+        </button>
+      </div>
+      <input type="hidden" id="selectedCardType" value="YELLOW">
+    </div>
+
+    <div class="modal-form-item">
+      <label>Reason / Infraction</label>
+      <input type="text" id="disciplinaryReasonInput" class="modal-input" placeholder="e.g. Deliberate delay / Racket throwing / Dissent">
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('disciplinaryCardModal').close()">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmIssueDisciplinaryCard()">Confirm Sanction</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 2. Medical Timeout Countdown Modal -->
+<dialog id="medicalTimeoutModal" closedby="any" style="max-width:400px;">
+  <div class="modal-card" style="text-align:center;">
+    <div style="font-size:2rem;margin-bottom:6px;">🩹</div>
+    <h2 style="font-size:1.25rem;font-weight:700;margin-bottom:4px;">Medical Recovery Break</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.82rem;margin-bottom:14px;">BWF official 5-minute injury recovery interval.</p>
+    
+    <div id="medicalTimerClock" style="font-family:'Anton',monospace;font-size:3.5rem;color:#ef4444;margin:12px 0;">05:00</div>
+    <input type="text" id="medicalInjuryNote" class="modal-input" placeholder="Injury note (e.g. Left ankle strain)" style="margin-bottom:14px;text-align:center;">
+
+    <div style="display:flex;justify-content:center;gap:10px;">
+      <button class="btn btn-ghost btn-sm" onclick="stopMedicalTimeout()">Resume Match</button>
+      <button class="btn btn-primary btn-sm" onclick="addMedicalMinute()">+1 Minute</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 3. Official Printable Certificate Modal -->
+<dialog id="certificatePrintModal" closedby="any" style="max-width:860px;width:95%;">
+  <div class="modal-card" style="padding:24px;">
+    <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="font-size:1.2rem;font-weight:700;">Certificate of Athletic Achievement</h2>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print / Save PDF</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('certificatePrintModal').close()">Close</button>
+      </div>
+    </div>
+    <div id="certificateContainerContent"></div>
+  </div>
+</dialog>
+
+<!-- 4. Player & Umpire ID Badges Modal -->
+<dialog id="playerIdBadgesModal" closedby="any" style="max-width:800px;width:95%;">
+  <div class="modal-card" style="padding:24px;">
+    <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="font-size:1.2rem;font-weight:700;">🪪 Printable Official Tournament Badges</h2>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print All Badges</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('playerIdBadgesModal').close()">Close</button>
+      </div>
+    </div>
+    <div id="idBadgesGridContainer" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;"></div>
+  </div>
+</dialog>
+
+<!-- 5. Interactive Pool Draw Ceremony Wheel Modal -->
+<dialog id="poolDrawWheelModal" closedby="any" style="max-width:480px;">
+  <div class="modal-card" style="text-align:center;">
+    <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:6px;">🎡 Live Pool Draw Ceremony</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:16px;">Spin the wheel to assign teams randomly into tournament pools in front of spectators!</p>
+    
+    <div style="position:relative;width:240px;height:240px;margin:0 auto 16px;">
+      <canvas id="poolDrawCanvas" width="240" height="240" style="border-radius:50%;box-shadow:0 4px 20px rgba(0,0,0,0.5);"></canvas>
+      <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:1.6rem;color:#f59e0b;">▼</div>
+    </div>
+    
+    <div id="wheelCurrentDrawnText" style="font-size:1.15rem;font-weight:900;color:var(--clr-gold);min-height:28px;">Tap Spin to Draw</div>
+
+    <div style="display:flex;justify-content:center;gap:10px;margin-top:14px;">
+      <button class="btn btn-primary btn-lg" onclick="spinPoolDrawWheel()">Spin Wheel</button>
+      <button class="btn btn-ghost btn-lg" onclick="document.getElementById('poolDrawWheelModal').close()">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 6. Score Edit & Tamper Audit Trail Modal -->
+<dialog id="auditTrailModal" closedby="any" style="max-width:680px;width:95%;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h2 style="font-size:1.2rem;font-weight:700;">🛡️ Score Modification Audit Trail</h2>
+      <button class="modal-close" onclick="document.getElementById('auditTrailModal').close()"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:14px;">Transparent, immutable history of all referee score corrections and admin overrides.</p>
+    <div id="auditTrailListContainer" style="max-height:340px;overflow-y:auto;border:1px solid var(--clr-border);border-radius:8px;padding:8px;"></div>
   </div>
 </dialog>
 
@@ -10932,6 +11286,26 @@ function scorePoint(side) {
   const scorerName = side === 'a' ? match.a : match.b;
   const oppName = side === 'a' ? match.b : match.a;
 
+  // BWF Deciding 3rd Set Court Switch Threshold (8 pts for 15-pt match, 11 pts for 21-pt match)
+  if (state.currentSetIdx === 2 && !state.endsSwitchedInDecidingSet) {
+    const threshold = state.ptsToWin === 15 ? 8 : 11;
+    if (set.score[0] >= threshold || set.score[1] >= threshold) {
+      state.endsSwitchedInDecidingSet = true;
+      toggleCourtFlip();
+      speakScoreAnnouncement('Change ends. Interval.');
+      showToast('🔄 Deciding Set Threshold reached! Change Ends.');
+    }
+  }
+
+  // Record Rally Shot Count
+  if (match.currentRallyShots) {
+    if (!match.rallyHistory) match.rallyHistory = [];
+    match.rallyHistory.push(match.currentRallyShots);
+    match.currentRallyShots = 0;
+    const rVal = document.getElementById('rallyShotsVal');
+    if (rVal) rVal.textContent = '0';
+  }
+
   // 13 Hope Ball · 14 Game Ball · 15 Win Rule
   // If opponent has 14 points (Game Ball) and current player scores a point:
   // Opponent is downgraded from Game Ball (14) back to Hope Ball (13)!
@@ -13125,6 +13499,450 @@ document.addEventListener('DOMContentLoaded', () => {
   handleAppHashRouting();
   checkCourtScheduleConflicts();
 });
+
+
+
+/* ═══════════════════════════════════════════════════════════════
+   ADVANCED BWF, BROADCAST, CERTIFICATES & HARDWARE LOGIC
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Disciplinary Sanctions (Yellow / Red / Black Card) ── */
+let currentCardType = 'YELLOW';
+
+function selectCardType(type) {
+  currentCardType = type;
+  document.getElementById('selectedCardType').value = type;
+  ['Yellow', 'Red', 'Black'].forEach(t => {
+    const btn = document.getElementById(`cardBtn${t}`);
+    if (btn) btn.className = (t.toUpperCase() === type) ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm';
+  });
+}
+
+function confirmIssueDisciplinaryCard() {
+  const match = state.matches.find(m => m.id === state.currentMatchId);
+  if (!match) return;
+
+  const side = document.getElementById('disciplinarySideSelect').value;
+  const cardType = currentCardType;
+  const reason = document.getElementById('disciplinaryReasonInput').value.trim() || 'Unsportsmanlike conduct';
+  const targetName = side === 'a' ? match.a : match.b;
+  const oppSide = side === 'a' ? 'b' : 'a';
+
+  if (!match.disciplinaryCards) match.disciplinaryCards = [];
+  match.disciplinaryCards.push({ side, card: cardType, reason, timestamp: Date.now() });
+
+  if (!match.eventLog) match.eventLog = [];
+  match.eventLog.push({ side, type: 'DISCIPLINARY', card: cardType, reason, timestamp: Date.now() });
+
+  document.getElementById('disciplinaryCardModal').close();
+
+  if (cardType === 'YELLOW') {
+    showToast(`⚠️ Yellow Card issued to ${targetName} (${reason})`, 'warning');
+    speakScoreAnnouncement(`Warning. Yellow card, ${targetName}.`);
+  } else if (cardType === 'RED') {
+    showToast(`🛑 Red Card issued to ${targetName}! 1 Penalty Point awarded to opponent.`, 'error');
+    speakScoreAnnouncement(`Fault. Red card, ${targetName}.`);
+    scorePoint(oppSide); // Red Card awards point to opponent under BWF 16.7
+  } else if (cardType === 'BLACK') {
+    showToast(`⬛ Black Card! ${targetName} Disqualified from match!`, 'error');
+    speakScoreAnnouncement(`Disqualification. Black card, ${targetName}.`);
+    match.winner = oppSide;
+    match.winType = 'DISQUALIFIED';
+    saveState();
+    updateLiveScoreboardUI();
+  }
+}
+
+/* ── 2. Medical Timeout Timer (5 Minutes) ── */
+let medicalInterval = null;
+let medicalSecondsLeft = 300;
+
+function startMedicalTimeout() {
+  const modal = document.getElementById('medicalTimeoutModal');
+  if (!modal) return;
+  medicalSecondsLeft = 300;
+  updateMedicalClockUI();
+  modal.showModal();
+
+  if (medicalInterval) clearInterval(medicalInterval);
+  medicalInterval = setInterval(() => {
+    medicalSecondsLeft--;
+    updateMedicalClockUI();
+    if (medicalSecondsLeft <= 0) {
+      clearInterval(medicalInterval);
+      showToast('⏰ Medical Recovery Timeout Expired! Play must resume.');
+      speakScoreAnnouncement('Time. Play must resume.');
+      playSound('point');
+    }
+  }, 1000);
+}
+
+function updateMedicalClockUI() {
+  const m = Math.floor(medicalSecondsLeft / 60).toString().padStart(2, '0');
+  const s = (medicalSecondsLeft % 60).toString().padStart(2, '0');
+  const clock = document.getElementById('medicalTimerClock');
+  if (clock) clock.textContent = `${m}:${s}`;
+}
+
+function stopMedicalTimeout() {
+  if (medicalInterval) clearInterval(medicalInterval);
+  const note = document.getElementById('medicalInjuryNote')?.value.trim();
+  const match = state.matches.find(m => m.id === state.currentMatchId);
+  if (match && note) {
+    if (!match.eventLog) match.eventLog = [];
+    match.eventLog.push({ type: 'MEDICAL_TIMEOUT', note, timestamp: Date.now() });
+  }
+  document.getElementById('medicalTimeoutModal').close();
+  showToast('Medical break concluded. Resuming match.');
+}
+
+function addMedicalMinute() {
+  medicalSecondsLeft += 60;
+  updateMedicalClockUI();
+  showToast('+1 Minute added to recovery interval');
+}
+
+/* ── 3. Shuttlecock & Rally Shot Counters ── */
+function incrementShuttleCount() {
+  const match = state.matches.find(m => m.id === state.currentMatchId);
+  if (!match) return;
+  match.shuttlesUsed = (match.shuttlesUsed || 1) + 1;
+  const val = document.getElementById('shuttleCountVal');
+  if (val) val.textContent = match.shuttlesUsed;
+  showToast(`🏸 Shuttlecock changed. Total used: ${match.shuttlesUsed}`);
+}
+
+function incrementRallyShots() {
+  const match = state.matches.find(m => m.id === state.currentMatchId);
+  if (!match) return;
+  match.currentRallyShots = (match.currentRallyShots || 0) + 1;
+  const val = document.getElementById('rallyShotsVal');
+  if (val) val.textContent = match.currentRallyShots;
+}
+
+/* ── 4. Bluetooth Remote Shutter / Media Clicker ── */
+window.addEventListener('keydown', (e) => {
+  const umpireScreen = document.getElementById('liveUmpireScreen');
+  if (!umpireScreen || !umpireScreen.classList.contains('active')) return;
+
+  // Handle standard Bluetooth selfie remote & media presentation clicker keycodes
+  if (e.key === 'VolumeUp' || e.code === 'AudioVolumeUp') {
+    e.preventDefault();
+    scorePoint(state.servingSide); // Score for Server
+  } else if (e.key === 'VolumeDown' || e.code === 'AudioVolumeDown') {
+    e.preventDefault();
+    scorePoint(state.servingSide === 'a' ? 'b' : 'a'); // Score for Receiver
+  } else if (e.key === 'MediaPlayPause' || e.key === 'AudioVolumeMute') {
+    e.preventDefault();
+    undoPoint(); // Remote Undo
+  }
+});
+
+/* ── 5. Official Printable Certificate Generator ── */
+function openAthleteCertificateModal(playerName) {
+  const name = playerName || (currentUser ? currentUser.name : 'Tournament Athlete');
+  const modal = document.getElementById('certificatePrintModal');
+  const container = document.getElementById('certificateContainerContent');
+  if (!modal || !container) return;
+
+  container.innerHTML = `
+    <div class="certificate-frame">
+      <div style="font-size:2.8rem;margin-bottom:8px;">🏸</div>
+      <h1 style="font-family:'Anton',serif;font-size:2.4rem;letter-spacing:1px;color:#111827;margin:0 0 6px;">CERTIFICATE OF ACHIEVEMENT</h1>
+      <p style="font-size:0.95rem;text-transform:uppercase;letter-spacing:2px;color:#059669;font-weight:700;margin:0 0 24px;">Annual Badminton Cup Championship</p>
+      
+      <p style="font-size:1.05rem;color:#4b5563;margin-bottom:8px;">This is proudly presented to</p>
+      <div style="font-size:2.2rem;font-weight:900;color:#111827;border-bottom:2px solid #10b981;display:inline-block;padding:0 32px 6px;margin-bottom:16px;">
+        ${name}
+      </div>
+      
+      <p style="font-size:0.95rem;color:#4b5563;max-width:580px;margin:0 auto 36px;line-height:1.6;">
+        In recognition of outstanding athletic excellence, competitive integrity, and exceptional performance displayed in the official badminton tournament.
+      </p>
+
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:40px;padding:0 40px;">
+        <div style="text-align:center;">
+          <div style="font-weight:700;color:#111827;font-size:0.95rem;">${new Date().toLocaleDateString()}</div>
+          <div style="border-top:1px solid #9ca3af;padding-top:4px;font-size:0.75rem;color:#6b7280;margin-top:4px;">Date of Issue</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-family:cursive;font-size:1.3rem;color:#10b981;">Rashed Khan</div>
+          <div style="border-top:1px solid #9ca3af;padding-top:4px;font-size:0.75rem;color:#6b7280;margin-top:4px;">Tournament Director</div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  modal.showModal();
+}
+
+/* ── 6. Printable Tournament ID Badges Generator ── */
+function openPlayerIdBadgesModal() {
+  const modal = document.getElementById('playerIdBadgesModal');
+  const container = document.getElementById('idBadgesGridContainer');
+  if (!modal || !container) return;
+
+  const players = (state.players && state.players.length) ? state.players : ['Parag Das', 'Rifat Haque', 'Rashed', 'Sifat', 'Saiful', 'Toufiq'];
+
+  container.innerHTML = players.map(p => {
+    const avatarHtml = typeof getPlayerAvatarHtml === 'function' ? getPlayerAvatarHtml(p, 48) : '';
+    return `
+      <div style="border:2px solid #111827;border-radius:10px;padding:16px;background:#ffffff;color:#111827;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+        <div style="font-size:0.7rem;font-weight:900;letter-spacing:1px;color:#059669;text-transform:uppercase;">BADMINTON CUP · OFFICIAL PASS</div>
+        <div style="margin:12px auto;display:flex;justify-content:center;">${avatarHtml}</div>
+        <div style="font-size:1.15rem;font-weight:900;color:#111827;">${p}</div>
+        <div style="font-size:0.75rem;color:#4b5563;font-weight:700;margin-top:2px;">ATHLETE · BWF REGISTERED</div>
+        <div style="margin-top:12px;border-top:1px dashed #d1d5db;padding-top:8px;font-family:monospace;font-size:0.7rem;letter-spacing:4px;color:#6b7280;">||| | |||| | ||| ||</div>
+      </div>
+    `;
+  }).join('');
+
+  modal.showModal();
+}
+
+/* ── 7. Consolation / Plate Bracket Generator ── */
+function generateConsolationBracket() {
+  if (!state.koRounds || state.koRounds.length === 0) {
+    showToast('Generate main knockout bracket first!', 'warning');
+    return;
+  }
+  const round1 = state.koRounds[0];
+  const round1Matches = round1.map(id => state.matches.find(m => m.id === id)).filter(Boolean);
+  const completed = round1Matches.filter(m => m.winner);
+  if (completed.length < 2) {
+    showToast('Round 1 matches must be played before generating consolation bracket.', 'warning');
+    return;
+  }
+
+  const losers = round1Matches.map(m => m.winner === 'a' ? m.b : m.a).filter(Boolean);
+  state.plateMatches = [];
+  for (let i = 0; i < losers.length; i += 2) {
+    if (i + 1 < losers.length) {
+      const match = createMatchObj(losers[i], losers[i + 1], 'PLATE');
+      state.matches.push(match);
+      state.plateMatches.push(match.id);
+    }
+  }
+
+  saveState();
+  showToast(`🏅 Consolation Plate bracket generated with ${state.plateMatches.length} fixtures!`);
+  showScreen('knockoutScreen');
+}
+
+/* ── 8. Schedule Court Matrix Timetable ── */
+let currentScheduleView = 'list';
+
+function toggleScheduleViewMode(mode) {
+  currentScheduleView = mode;
+  const listEl = document.getElementById('scheduleMatchesList');
+  const matrixEl = document.getElementById('scheduleMatrixContainer');
+  const btnList = document.getElementById('schedViewListBtn');
+  const btnMatrix = document.getElementById('schedViewMatrixBtn');
+
+  if (mode === 'matrix') {
+    if (listEl) listEl.style.display = 'none';
+    if (matrixEl) {
+      matrixEl.style.display = 'block';
+      renderScheduleMatrix();
+    }
+    if (btnList) btnList.classList.remove('active');
+    if (btnMatrix) btnMatrix.classList.add('active');
+  } else {
+    if (listEl) listEl.style.display = 'grid';
+    if (matrixEl) matrixEl.style.display = 'none';
+    if (btnList) btnList.classList.add('active');
+    if (btnMatrix) btnMatrix.classList.remove('active');
+  }
+}
+
+function renderScheduleMatrix() {
+  const container = document.getElementById('scheduleMatrixContainer');
+  if (!container) return;
+
+  const courts = [1, 2];
+  const times = ['10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM'];
+
+  let html = `
+    <table class="schedule-matrix-table">
+      <thead>
+        <tr>
+          <th style="width:120px;">Time Slot</th>
+          <th>Court 1</th>
+          <th>Court 2</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  times.forEach((t, idx) => {
+    html += `<tr><td style="font-weight:700;color:var(--clr-gold);">${t}</td>`;
+    courts.forEach(c => {
+      const match = state.matches.find(m => m.court === c && m.scheduledTime === t) || state.matches[idx * 2 + (c - 1)];
+      if (match) {
+        html += `
+          <td>
+            <div class="schedule-matrix-cell-match" onclick="startUmpireMatch('${match.id}')">
+              <strong>${match.a}</strong> vs <strong>${match.b}</strong>
+              <div style="font-size:0.7rem;color:var(--clr-text-muted);margin-top:2px;">${match.winner ? '✓ Completed' : 'Tap to Referee'}</div>
+            </div>
+          </td>
+        `;
+      } else {
+        html += `<td style="color:var(--clr-text-muted);opacity:0.5;">— Available —</td>`;
+      }
+    });
+    html += `</tr>`;
+  });
+
+  html += `</tbody></table>`;
+  container.innerHTML = html;
+}
+
+/* ── 9. Interactive Pool Draw Ceremony Wheel ── */
+let poolWheelAngle = 0;
+let isWheelSpinning = false;
+
+function initPoolDrawCanvas() {
+  const canvas = document.getElementById('poolDrawCanvas');
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext('2d');
+  const players = (state.players && state.players.length) ? state.players : ['Parag', 'Rifat', 'Rashed', 'Sifat', 'Saiful', 'Toufiq', 'Jakir', 'Jobayer'];
+  const numSlices = players.length;
+  const sliceAngle = (2 * Math.PI) / numSlices;
+  const colors = ['#10b981', '#06b6d4', '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6', '#14b8a6', '#f97316'];
+
+  ctx.clearRect(0, 0, 240, 240);
+  ctx.save();
+  ctx.translate(120, 120);
+  ctx.rotate(poolWheelAngle);
+
+  for (let i = 0; i < numSlices; i++) {
+    ctx.beginPath();
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.moveTo(0, 0);
+    ctx.arc(0, 0, 120, i * sliceAngle, (i + 1) * sliceAngle);
+    ctx.lineTo(0, 0);
+    ctx.fill();
+
+    ctx.save();
+    ctx.rotate(i * sliceAngle + sliceAngle / 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(players[i].slice(0, 8), 108, 4);
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+
+function spinPoolDrawWheel() {
+  if (isWheelSpinning) return;
+  isWheelSpinning = true;
+  const resText = document.getElementById('wheelCurrentDrawnText');
+  if (resText) resText.textContent = 'Spinning...';
+
+  const totalRotations = Math.PI * 2 * 5 + Math.random() * Math.PI * 2;
+  const startTime = Date.now();
+  const duration = 3000;
+
+  function animate() {
+    const elapsed = Date.now() - startTime;
+    const progress = Math.min(1, elapsed / duration);
+    const easeOut = 1 - Math.pow(1 - progress, 3);
+    poolWheelAngle = easeOut * totalRotations;
+    initPoolDrawCanvas();
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      isWheelSpinning = false;
+      const players = (state.players && state.players.length) ? state.players : ['Parag', 'Rifat', 'Rashed', 'Sifat', 'Saiful', 'Toufiq', 'Jakir', 'Jobayer'];
+      const picked = players[Math.floor(Math.random() * players.length)];
+      if (resText) resText.textContent = `🎯 Selected: ${picked}!`;
+      playSound('point');
+      if (typeof confetti === 'function') confetti({ particleCount: 50, spread: 70 });
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+/* ── 10. AMOLED Battery Saver Mode ── */
+function toggleAmoledBatterySaver() {
+  const isEnabled = document.body.classList.toggle('battery-saver');
+  localStorage.setItem('badminton_battery_saver', isEnabled ? 'true' : 'false');
+  showToast(isEnabled ? '🔋 AMOLED Battery Saver Enabled (OLED Black)' : 'Standard Theme Restored');
+}
+
+/* ── 11. Storage Prune & Clean Exporter ── */
+function pruneOldMatchHistory() {
+  const completed = state.matches.filter(m => m.winner);
+  if (completed.length === 0) {
+    showToast('No completed matches to prune.', 'info');
+    return;
+  }
+
+  // Backup state to JSON file download first
+  const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(state));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute('href', dataStr);
+  downloadAnchor.setAttribute('download', `badminton_cup_backup_${Date.now()}.json`);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+
+  // Strip excessive rally events from historical matches to free storage
+  state.matches.forEach(m => {
+    if (m.winner) {
+      delete m.history;
+      delete m.eventLog;
+    }
+  });
+
+  saveState();
+  showToast('🧹 Storage compressed! Full JSON backup downloaded.');
+}
+
+/* ── 12. Floating Spectator Cheer Reactions ── */
+function sendSpectatorCheer(emoji) {
+  const bubble = document.createElement('div');
+  bubble.className = 'cheer-reaction-bubble';
+  bubble.textContent = emoji || '👏';
+  bubble.style.left = `${Math.random() * 80 + 10}%`;
+  bubble.style.bottom = '80px';
+  document.body.appendChild(bubble);
+  setTimeout(() => bubble.remove(), 1200);
+  broadcastSync('sync_cheer');
+}
+
+/* ── 13. Horizontal Touch Swipe Gestures for Mobile Navigation ── */
+let touchStartX = 0;
+let touchEndX = 0;
+
+document.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipeGesture();
+}, { passive: true });
+
+function handleSwipeGesture() {
+  const diff = touchEndX - touchStartX;
+  if (Math.abs(diff) < 90) return; // Ignore small swipes
+
+  const screens = ['groupsScreen', 'challengesScreen', 'knockoutScreen', 'leaderboardScreen'];
+  const currentActive = screens.find(id => document.getElementById(id)?.classList.contains('active'));
+  if (!currentActive) return;
+
+  const idx = screens.indexOf(currentActive);
+  if (diff < 0 && idx < screens.length - 1) {
+    showScreen(screens[idx + 1]); // Swipe Left -> Next Screen
+  } else if (diff > 0 && idx > 0) {
+    showScreen(screens[idx - 1]); // Swipe Right -> Prev Screen
+  }
+}
 
 </script>
 

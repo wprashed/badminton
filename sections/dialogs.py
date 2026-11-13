@@ -1323,4 +1323,130 @@ DIALOGS_CONTENT = """
   </div>
 </dialog>
 
+
+<!-- 1. Disciplinary Sanctions Modal (Yellow / Red / Black Card) -->
+<dialog id="disciplinaryCardModal" closedby="any" style="max-width:440px;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h2 style="font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:8px;">
+        <span class="card-chip card-yellow"></span>
+        BWF Official Disciplinary Sanction
+      </h2>
+      <button class="modal-close" onclick="document.getElementById('disciplinaryCardModal').close()"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:14px;">Issue formal warning or penalty under BWF Law 16.7 for delay of play, misconduct, or equipment abuse.</p>
+    
+    <div class="modal-form-item">
+      <label>Target Athlete / Side</label>
+      <select id="disciplinarySideSelect" class="modal-input" style="width:100%;">
+        <option value="a">Player A / Team A</option>
+        <option value="b">Player B / Team B</option>
+      </select>
+    </div>
+
+    <div class="modal-form-item">
+      <label>Sanction Level</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="selectCardType('YELLOW')" id="cardBtnYellow" style="border-color:#eab308;color:#eab308;">
+          <span class="card-chip card-yellow"></span> Yellow (Warning)
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="selectCardType('RED')" id="cardBtnRed" style="border-color:#ef4444;color:#ef4444;">
+          <span class="card-chip card-red"></span> Red (Fault + 1 Pt)
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="selectCardType('BLACK')" id="cardBtnBlack" style="border-color:#6b7280;color:#9ca3af;">
+          <span class="card-chip card-black"></span> Black (Disqualify)
+        </button>
+      </div>
+      <input type="hidden" id="selectedCardType" value="YELLOW">
+    </div>
+
+    <div class="modal-form-item">
+      <label>Reason / Infraction</label>
+      <input type="text" id="disciplinaryReasonInput" class="modal-input" placeholder="e.g. Deliberate delay / Racket throwing / Dissent">
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('disciplinaryCardModal').close()">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="confirmIssueDisciplinaryCard()">Confirm Sanction</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 2. Medical Timeout Countdown Modal -->
+<dialog id="medicalTimeoutModal" closedby="any" style="max-width:400px;">
+  <div class="modal-card" style="text-align:center;">
+    <div style="font-size:2rem;margin-bottom:6px;">🩹</div>
+    <h2 style="font-size:1.25rem;font-weight:700;margin-bottom:4px;">Medical Recovery Break</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.82rem;margin-bottom:14px;">BWF official 5-minute injury recovery interval.</p>
+    
+    <div id="medicalTimerClock" style="font-family:'Anton',monospace;font-size:3.5rem;color:#ef4444;margin:12px 0;">05:00</div>
+    <input type="text" id="medicalInjuryNote" class="modal-input" placeholder="Injury note (e.g. Left ankle strain)" style="margin-bottom:14px;text-align:center;">
+
+    <div style="display:flex;justify-content:center;gap:10px;">
+      <button class="btn btn-ghost btn-sm" onclick="stopMedicalTimeout()">Resume Match</button>
+      <button class="btn btn-primary btn-sm" onclick="addMedicalMinute()">+1 Minute</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 3. Official Printable Certificate Modal -->
+<dialog id="certificatePrintModal" closedby="any" style="max-width:860px;width:95%;">
+  <div class="modal-card" style="padding:24px;">
+    <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="font-size:1.2rem;font-weight:700;">Certificate of Athletic Achievement</h2>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print / Save PDF</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('certificatePrintModal').close()">Close</button>
+      </div>
+    </div>
+    <div id="certificateContainerContent"></div>
+  </div>
+</dialog>
+
+<!-- 4. Player & Umpire ID Badges Modal -->
+<dialog id="playerIdBadgesModal" closedby="any" style="max-width:800px;width:95%;">
+  <div class="modal-card" style="padding:24px;">
+    <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="font-size:1.2rem;font-weight:700;">🪪 Printable Official Tournament Badges</h2>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print All Badges</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('playerIdBadgesModal').close()">Close</button>
+      </div>
+    </div>
+    <div id="idBadgesGridContainer" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px;"></div>
+  </div>
+</dialog>
+
+<!-- 5. Interactive Pool Draw Ceremony Wheel Modal -->
+<dialog id="poolDrawWheelModal" closedby="any" style="max-width:480px;">
+  <div class="modal-card" style="text-align:center;">
+    <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:6px;">🎡 Live Pool Draw Ceremony</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:16px;">Spin the wheel to assign teams randomly into tournament pools in front of spectators!</p>
+    
+    <div style="position:relative;width:240px;height:240px;margin:0 auto 16px;">
+      <canvas id="poolDrawCanvas" width="240" height="240" style="border-radius:50%;box-shadow:0 4px 20px rgba(0,0,0,0.5);"></canvas>
+      <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-size:1.6rem;color:#f59e0b;">▼</div>
+    </div>
+    
+    <div id="wheelCurrentDrawnText" style="font-size:1.15rem;font-weight:900;color:var(--clr-gold);min-height:28px;">Tap Spin to Draw</div>
+
+    <div style="display:flex;justify-content:center;gap:10px;margin-top:14px;">
+      <button class="btn btn-primary btn-lg" onclick="spinPoolDrawWheel()">Spin Wheel</button>
+      <button class="btn btn-ghost btn-lg" onclick="document.getElementById('poolDrawWheelModal').close()">Close</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- 6. Score Edit & Tamper Audit Trail Modal -->
+<dialog id="auditTrailModal" closedby="any" style="max-width:680px;width:95%;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h2 style="font-size:1.2rem;font-weight:700;">🛡️ Score Modification Audit Trail</h2>
+      <button class="modal-close" onclick="document.getElementById('auditTrailModal').close()"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:14px;">Transparent, immutable history of all referee score corrections and admin overrides.</p>
+    <div id="auditTrailListContainer" style="max-height:340px;overflow-y:auto;border:1px solid var(--clr-border);border-radius:8px;padding:8px;"></div>
+  </div>
+</dialog>
+
 """
