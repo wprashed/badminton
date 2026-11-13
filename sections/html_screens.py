@@ -130,23 +130,23 @@ SCREENS_CONTENT = """
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
           <button class="btn btn-primary btn-xs" onclick="openPlayerPickerModal()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Pick Registered Users</button>
           <button class="btn btn-ghost btn-xs" onclick="openBulkRosterModal()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Bulk Roster</button>
-          <button class="btn btn-ghost btn-xs" onclick="loadDemoData()"><svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Demo Roster</button>
+          <button class="btn btn-ghost btn-xs" onclick="clearRosters()"><svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> Clear Rosters</button>
         </div>
       </div>
 
-      <!-- Quick Launch Banner -->
+      <!-- Quick Roster Builder Banner -->
       <div style="background:var(--clr-surface-card);border:1px solid var(--clr-border);border-left:3px solid var(--clr-green);border-radius:var(--radius-sm);padding:14px 18px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
         <div>
           <div style="font-weight:900;font-size:0.95rem;color:var(--clr-green);display:flex;align-items:center;gap:6px;">
-            <span><svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
-            <span>Quick Start Launcher</span>
+            <span><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
+            <span>Roster & Fixtures Builder</span>
           </div>
           <div style="font-size:0.8rem;color:var(--clr-text-muted);margin-top:2px;">
-            Kick off a tournament instantly with pre-seeded BWF champions or pick from your active registry.
+            Type player names into Pool A and B below or load your registered club athletes.
           </div>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn btn-primary btn-xs" onclick="loadDemoData()"><svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Load Pro Demo Roster</button>
+          <button class="btn btn-primary btn-xs" onclick="loadDemoData()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg> Load Registered Players</button>
           <button class="btn btn-ghost btn-xs" onclick="openPlayerPickerModal('A')"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Pick Athletes</button>
         </div>
       </div>

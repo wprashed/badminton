@@ -1428,7 +1428,25 @@ function openAuthModal() {
     return;
   }
   switchAuthTab('login');
+  populateQuickLoginUsers();
   document.getElementById('authModal').showModal();
+}
+
+function populateQuickLoginUsers() {
+  const container = document.getElementById('quickLoginUsersList');
+  const section = document.getElementById('quickLoginUsersSection');
+  if (!container) return;
+  const users = (typeof getUsersDB === 'function') ? getUsersDB() : [];
+  const players = users.filter(u => u.name && u.name.toLowerCase() !== 'rashed');
+  if (players.length > 0) {
+    if (section) section.style.display = 'block';
+    container.innerHTML = players.map(p => `
+      <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('${escapeHtml(p.name)}')">${escapeHtml(p.name)}</button>
+    `).join('');
+  } else {
+    if (section) section.style.display = 'none';
+    container.innerHTML = '';
+  }
 }
 function closeAuthModal() {
   document.getElementById('authModal').close();
@@ -1525,88 +1543,53 @@ function setCurrentUser(user) {
 
 
 function ensureDemoUsersSeeded() {
-  const users = getUsersDB();
-  const demoList = [
-    { name: 'Rashed', email: 'rashed@badminton.local', role: 'admin', club: 'Tournament Director', elo: 1650, avatar: 'R' },
-    { name: 'Parag Das', email: 'parag@badminton.local', role: 'player', club: 'Dhaka Smashers', elo: 1610, avatar: 'P' },
-    { name: 'Rifat Haque', email: 'rifat.haque@badminton.local', role: 'player', club: 'Uttara Shuttlers', elo: 1590, avatar: 'R' },
-    { name: 'Rifat Tariq', email: 'rifat.tariq@badminton.local', role: 'player', club: 'Banani BC', elo: 1580, avatar: 'R' },
-    { name: 'Jobayer', email: 'jobayer@badminton.local', role: 'player', club: 'Gulshan Aces', elo: 1570, avatar: 'J' },
-    { name: 'Shewa', email: 'shewa@badminton.local', role: 'player', club: 'Mirpur Warriors', elo: 1560, avatar: 'S' },
-    { name: 'Sazedul', email: 'sazedul@badminton.local', role: 'player', club: 'Dhanmondi Club', elo: 1550, avatar: 'S' },
-    { name: 'Nur', email: 'nur@badminton.local', role: 'player', club: 'Mohakhali Spikers', elo: 1540, avatar: 'N' },
-    { name: 'Ofi', email: 'ofi@badminton.local', role: 'player', club: 'Bashundhara BC', elo: 1530, avatar: 'O' },
-    { name: 'Sifat', email: 'sifat@badminton.local', role: 'player', club: 'Foosball & Shuttlers', elo: 1620, avatar: 'S' },
-    { name: 'Sajeeb', email: 'sajeeb@badminton.local', role: 'player', club: 'Paltan Smashers', elo: 1520, avatar: 'S' },
-    { name: 'Jakir', email: 'jakir@badminton.local', role: 'player', club: 'Rampura Rackets', elo: 1510, avatar: 'J' },
-    { name: 'Saiful', email: 'saiful@badminton.local', role: 'player', club: 'Khilgaon Shuttlers', elo: 1500, avatar: 'S' },
-    { name: 'Al Emran', email: 'emran@badminton.local', role: 'player', club: 'Chittagong Aces', elo: 1580, avatar: 'A' },
-    { name: 'Toufiq', email: 'toufiq@badminton.local', role: 'player', club: 'Sylhet Smashers', elo: 1540, avatar: 'T' },
-    { name: 'Abir', email: 'abir@badminton.local', role: 'player', club: 'Rajshahi Smashers', elo: 1560, avatar: 'A' }
-  ];
+  let users = getUsersDB();
+  const dummyNames = new Set([
+    'parag das', 'rifat haque', 'rifat tariq', 'jobayer', 'shewa', 'sazedul',
+    'nur', 'ofi', 'sifat', 'sajeeb', 'jakir', 'saiful', 'al emran', 'toufiq', 'abir',
+    'parag', 'rifat'
+  ]);
 
-  let added = false;
-  demoList.forEach((d, idx) => {
-    let existing = users.find(u => u.name.toLowerCase() === d.name.toLowerCase());
-    if (!existing) {
-      users.push({
-        id: 3000 + idx,
-        name: d.name,
-        email: d.email,
-        role: d.role,
-        status: 'active',
-        feeStatus: 'paid',
-        elo: d.elo,
-        dominantHand: 'Right-Handed',
-        club: d.club,
-        avatar: d.avatar,
-        createdAt: new Date().toLocaleDateString()
-      });
-      added = true;
-    } else {
-      if (d.name === 'Rashed' && existing.role !== 'admin') {
-        existing.role = 'admin';
-        added = true;
-      }
-    }
+  // Purge any pre-seeded dummy users so only real registered users & admin exist
+  users = users.filter(u => !dummyNames.has((u.name || '').trim().toLowerCase()));
+
+  // Ensure Rashed (Admin) exists
+  let rashed = users.find(u => (u.name || '').toLowerCase() === 'rashed');
+  if (!rashed) {
+    rashed = {
+      id: 1001,
+      name: 'Rashed',
+      email: 'rashed@badminton.local',
+      role: 'admin',
+      status: 'active',
+      feeStatus: 'paid',
+      elo: 1650,
+      dominantHand: 'Right-Handed',
+      club: 'Tournament Director',
+      avatar: 'R',
+      createdAt: 'Initial'
+    };
+    users.unshift(rashed);
+  } else {
+    rashed.role = 'admin';
+    rashed.club = 'Tournament Director';
+  }
+
+  saveUsersDB(users);
+
+  // Purge any dummy seeded challenges
+  let chalList = getChallengesDB();
+  chalList = chalList.filter(c => {
+    const cLower = (c.creator || '').toLowerCase();
+    const oLower = (c.opponent || '').toLowerCase();
+    const isDummy = Array.from(dummyNames).some(dn => cLower.includes(dn) || oLower.includes(dn)) || (c.id && c.id.startsWith('chal_seed_'));
+    return !isDummy;
   });
-
-  if (added) {
-    saveUsersDB(users);
-  }
-
-  // Pre-seed sample open challenges if empty
-  const chalList = getChallengesDB();
-  if (!chalList.length) {
-    chalList.push({
-      id: 'chal_seed_1',
-      creator: 'Parag Das',
-      opponent: null,
-      category: 'singles',
-      points: 21,
-      note: 'Court 1 · Friendly Singles Match',
-      status: 'open',
-      createdAt: 'Today'
-    });
-    chalList.push({
-      id: 'chal_seed_2',
-      creator: 'Sifat',
-      opponent: null,
-      category: 'singles',
-      points: 21,
-      note: 'Court 2 · Ready for high-paced match!',
-      status: 'open',
-      createdAt: 'Today'
-    });
-    saveChallengesDB(chalList);
-  }
+  saveChallengesDB(chalList);
 
   // If no currentUser is saved, default to Rashed as Admin
   if (!currentUser) {
-    const rashed = users.find(u => u.name.toLowerCase() === 'rashed');
-    if (rashed) {
-      setCurrentUser(rashed);
-    }
+    setCurrentUser(rashed);
   }
 }
 
@@ -2432,7 +2415,7 @@ function renderPlayerHub() {
   const betSub = document.getElementById('playerHubBettingSub');
   const betBar = document.getElementById('playerHubBettingBar');
 
-  const bets = getBetsHistory();
+  const bets = typeof getBetsDB === 'function' ? getBetsDB() : [];
   const userBets = bets.filter(b => b.userId === currentUser.id || !b.userId);
   const finishedBets = userBets.filter(b => b.status === 'won' || b.status === 'lost');
   const wonBets = finishedBets.filter(b => b.status === 'won').length;
@@ -4008,16 +3991,35 @@ function getCleanRoster(textareaId) {
   return txt.split('\n').map(s => s.trim()).filter(s => s.length > 0);
 }
 
-function loadDemoData() {
-  if (state.category === 'doubles') {
-    document.getElementById('rosterAInput').value = "Parag Das / Rifat Haque\nRifat Tariq / Jobayer\nShewa / Sazedul\nNur / Ofi";
-    document.getElementById('rosterBInput').value = "Sifat / Sajeeb\nJakir / Saiful\nAl Emran / Toufiq\nAbir / Rashed";
-  } else {
-    document.getElementById('rosterAInput').value = "Parag Das\nRifat Haque\nRifat Tariq\nJobayer\nShewa\nSazedul\nNur\nOfi";
-    document.getElementById('rosterBInput').value = "Sifat\nSajeeb\nJakir\nSaiful\nAl Emran\nToufiq\nAbir\nRashed";
-  }
+function clearRosters() {
+  const rA = document.getElementById('rosterAInput');
+  const rB = document.getElementById('rosterBInput');
+  if (rA) rA.value = '';
+  if (rB) rB.value = '';
   updatePlayerCounts();
-  showToast('Roster loaded with Rashed (Admin) & 15 players!');
+  showToast('Rosters cleared.');
+}
+
+function loadDemoData() {
+  // Load registered athletes into rosters if any exist
+  const users = (typeof getUsersDB === 'function') ? getUsersDB() : [];
+  const athletes = users.filter(u => u.name && u.name.toLowerCase() !== 'admin');
+  if (athletes.length >= 2) {
+    const half = Math.ceil(athletes.length / 2);
+    const rA = document.getElementById('rosterAInput');
+    const rB = document.getElementById('rosterBInput');
+    if (rA) rA.value = athletes.slice(0, half).map(p => p.name).join('\n');
+    if (rB) rB.value = athletes.slice(half).map(p => p.name).join('\n');
+    updatePlayerCounts();
+    showToast(`Loaded ${athletes.length} registered athletes into rosters.`);
+  } else {
+    const rA = document.getElementById('rosterAInput');
+    const rB = document.getElementById('rosterBInput');
+    if (rA) rA.value = '';
+    if (rB) rB.value = '';
+    updatePlayerCounts();
+    showToast('No pre-seeded dummy players. Enter player names above or pick from registry.', 'info');
+  }
 }
 
 function openBulkRosterModal() {
@@ -4315,18 +4317,18 @@ function getSinglePlayerAvatarHtml(name, size, isWinner, users) {
 
 function formatCompetitorNameHtml(name, isWinner = false) {
   if (!name) return '—';
-  const crown = isWinner ? '<span title="Match Winner" style="color:#f59e0b;font-size:0.85rem;margin-left:4px;">👑</span>' : '';
+  const crown = isWinner ? '<span title="Match Winner" style="color:#f59e0b;font-size:0.85rem;margin-left:4px;flex-shrink:0;">👑</span>' : '';
   if (name.includes('/')) {
     const parts = name.split('/').map(p => p.trim());
-    return `<div style="display:flex;align-items:center;flex-wrap:wrap;gap:4px;line-height:1.25;">
-      <span style="font-weight:700;">${escapeHtml(parts[0])}</span>
-      <span style="color:var(--clr-text-muted);font-size:0.75rem;font-weight:400;margin:0 1px;">&amp;</span>
-      <span style="font-weight:700;">${escapeHtml(parts[1])}</span>
+    return `<div style="display:flex;align-items:center;gap:4px;min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+      <span style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(parts[0])}</span>
+      <span style="color:var(--clr-text-muted);font-size:0.75rem;font-weight:400;margin:0 1px;flex-shrink:0;">&amp;</span>
+      <span style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(parts[1])}</span>
       ${crown}
     </div>`;
   }
-  return `<div style="display:flex;align-items:center;gap:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-    <span style="font-weight:700;">${escapeHtml(name)}</span>
+  return `<div style="display:flex;align-items:center;gap:4px;min-width:0;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+    <span style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(name)}</span>
     ${crown}
   </div>`;
 }
@@ -4350,15 +4352,12 @@ function renderGroupMatches() {
         </div>
         <div style="font-size:1.05rem;font-weight:700;margin-bottom:6px;color:var(--clr-text);">No Tournament Matches Found</div>
         <p style="color:var(--clr-text-muted);font-size:0.84rem;margin-bottom:18px;max-width:420px;margin-left:auto;margin-right:auto;line-height:1.45;">
-          ${isAdmin ? 'No fixtures match the selected court filter, or the tournament has not been generated yet.' : 'Round-robin fixtures will appear here once scheduled by the Tournament Director.'}
+          ${isAdmin ? 'No fixtures have been generated yet. Configure your player roster in Tournament Setup to schedule matches.' : 'Round-robin fixtures will appear here once scheduled by the Tournament Director.'}
         </p>
         ${isAdmin ? `
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
-          <button class="btn btn-primary btn-sm" onclick="quickInitializeDemoTournament()" style="display:inline-flex;align-items:center;gap:6px;">
-            <span>🚀 Load Tournament (Rashed + 15 Players)</span>
-          </button>
-          <button class="btn btn-ghost btn-sm" onclick="handleSetupNav()">
-            <span>⚙ Tournament Setup</span>
+          <button class="btn btn-primary btn-sm" onclick="handleSetupNav()" style="display:inline-flex;align-items:center;gap:6px;">
+            <span>⚙ Configure Tournament Setup</span>
           </button>
         </div>` : ''}
       </div>`;
@@ -5951,19 +5950,7 @@ function saveState() {
 }
 
 function quickInitializeDemoTournament() {
-  const poolA = ['Parag Das', 'Rifat Haque', 'Rifat Tariq', 'Jobayer', 'Shewa', 'Sazedul', 'Nur', 'Ofi'];
-  const poolB = ['Sifat', 'Sajeeb', 'Jakir', 'Saiful', 'Al Emran', 'Toufiq', 'Abir', 'Rashed'];
-  state.poolA = poolA;
-  state.poolB = poolB;
-  const matchesA = generateRoundRobinMatches(state.poolA, 'A');
-  const matchesB = generateRoundRobinMatches(state.poolB, 'B');
-  state.matches = [...matchesA, ...matchesB];
-  saveState();
-  renderGroups();
-  renderBracket();
-  updateGoldenAwards();
-  refreshCurrentViews();
-  showToast('Tournament loaded with Rashed (Admin) & 15 athletes!');
+  showToast('Demo tournament disabled. Use Tournament Setup to generate official fixtures.', 'info');
 }
 
 function loadSavedState(autoRender = true) {
@@ -5975,14 +5962,28 @@ function loadSavedState(autoRender = true) {
     }
   } catch (e) {}
 
-  if (!state.matches || state.matches.length === 0) {
-    const poolA = ['Parag Das', 'Rifat Haque', 'Rifat Tariq', 'Jobayer', 'Shewa', 'Sazedul', 'Nur', 'Ofi'];
-    const poolB = ['Sifat', 'Sajeeb', 'Jakir', 'Saiful', 'Al Emran', 'Toufiq', 'Abir', 'Rashed'];
-    state.poolA = poolA;
-    state.poolB = poolB;
-    const matchesA = generateRoundRobinMatches(state.poolA, 'A');
-    const matchesB = generateRoundRobinMatches(state.poolB, 'B');
-    state.matches = [...matchesA, ...matchesB];
+  state.poolA = state.poolA || [];
+  state.poolB = state.poolB || [];
+  state.matches = state.matches || [];
+  state.players = state.players || [];
+
+  // Active purge of dummy matches from previous sessions
+  const dummyNames = [
+    'parag das', 'rifat haque', 'rifat tariq', 'jobayer', 'shewa', 'sazedul',
+    'nur', 'ofi', 'sifat', 'sajeeb', 'jakir', 'saiful', 'al emran', 'toufiq', 'abir',
+    'parag', 'rifat'
+  ];
+  const hasDummyMatches = state.matches.some(m => {
+    const aLower = (m.a || '').toLowerCase();
+    const bLower = (m.b || '').toLowerCase();
+    return dummyNames.some(dn => aLower.includes(dn) || bLower.includes(dn));
+  });
+
+  if (hasDummyMatches) {
+    state.matches = [];
+    state.poolA = [];
+    state.poolB = [];
+    state.players = [];
     saveState();
   }
 
@@ -6202,12 +6203,12 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (savedTheme) document.body.className = savedTheme;
   updateThemeIcons();
 
-  // Pre-seed admin and verified demo athletes
+  // Pre-seed admin account
   try {
     const users = getUsersDB();
-    if (!users.some(u => u.name.toLowerCase() === 'admin')) {
+    if (!users.some(u => (u.name || '').toLowerCase() === 'rashed')) {
       const adminHash = await hashPassword('admin123');
-      users.push({
+      users.unshift({
         id: 1001,
         name: 'Rashed',
         email: 'rashed@badminton.local',
@@ -6215,52 +6216,12 @@ window.addEventListener('DOMContentLoaded', async () => {
         role: 'admin',
         status: 'active',
         feeStatus: 'paid',
-        elo: 1600,
+        elo: 1650,
         dominantHand: 'Right-Handed',
         club: 'Tournament Director',
         avatar: 'R',
         createdAt: 'Initial'
       });
-
-      // Seed verified demo players requested by user
-      const demoAthletes = [
-        { name: 'Parag Das', email: 'parag@badminton.local', club: 'Dhaka Smashers', elo: 1610, role: 'player', status: 'active' },
-        { name: 'Rifat Haque', email: 'rifat.haque@badminton.local', club: 'Uttara Shuttlers', elo: 1590, role: 'player', status: 'active' },
-        { name: 'Rifat Tariq', email: 'rifat.tariq@badminton.local', club: 'Banani BC', elo: 1580, role: 'player', status: 'active' },
-        { name: 'Jobayer', email: 'jobayer@badminton.local', club: 'Gulshan Aces', elo: 1570, role: 'player', status: 'active' },
-        { name: 'Shewa', email: 'shewa@badminton.local', club: 'Mirpur Warriors', elo: 1560, role: 'player', status: 'active' },
-        { name: 'Sazedul', email: 'sazedul@badminton.local', club: 'Dhanmondi Club', elo: 1550, role: 'player', status: 'active' },
-        { name: 'Nur', email: 'nur@badminton.local', club: 'Mohakhali Spikers', elo: 1540, role: 'player', status: 'active' },
-        { name: 'Ofi', email: 'ofi@badminton.local', club: 'Bashundhara BC', elo: 1530, role: 'player', status: 'active' },
-        { name: 'Sifat', email: 'sifat@badminton.local', club: 'Foosball & Shuttlers', elo: 1620, role: 'player', status: 'active' },
-        { name: 'Sajeeb', email: 'sajeeb@badminton.local', club: 'Paltan Smashers', elo: 1520, role: 'player', status: 'active' },
-        { name: 'Jakir', email: 'jakir@badminton.local', club: 'Rampura Rackets', elo: 1510, role: 'player', status: 'active' },
-        { name: 'Saiful', email: 'saiful@badminton.local', club: 'Khilgaon Shuttlers', elo: 1500, role: 'player', status: 'active' },
-        { name: 'Al Emran', email: 'emran@badminton.local', club: 'Chittagong Aces', elo: 1580, role: 'player', status: 'active' },
-        { name: 'Toufiq', email: 'toufiq@badminton.local', club: 'Sylhet Smashers', elo: 1540, role: 'player', status: 'active' },
-        { name: 'Abir', email: 'abir@badminton.local', club: 'Rajshahi Smashers', elo: 1560, role: 'player', status: 'active' }
-      ];
-
-      for (let i = 0; i < demoAthletes.length; i++) {
-        const da = demoAthletes[i];
-        const hash = await hashPassword('pass123');
-        users.push({
-          id: 2000 + i,
-          name: da.name,
-          email: da.email,
-          passHash: hash,
-          role: da.role,
-          status: da.status,
-          inviteToken: 'tok_' + da.name.replace(/\s+/g, '').toLowerCase(),
-          feeStatus: 'paid',
-          elo: da.elo,
-          dominantHand: 'Right-Handed',
-          club: da.club,
-          avatar: 'U',
-          invitedBy: 'admin',
-          createdAt: new Date().toLocaleDateString()
-        });
-      }
       saveUsersDB(users);
     }
   } catch (e) {}
@@ -7366,7 +7327,18 @@ function openPlayerIdBadgesModal() {
   const container = document.getElementById('idBadgesGridContainer');
   if (!modal || !container) return;
 
-  const players = (state.players && state.players.length) ? state.players : ['Parag Das', 'Rifat Haque', 'Rashed', 'Sifat', 'Saiful', 'Toufiq'];
+  const users = (typeof getUsersDB === 'function') ? getUsersDB() : [];
+  const players = (state.players && state.players.length) ? state.players : users.map(u => u.name);
+
+  if (!players || !players.length) {
+    container.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:36px;color:var(--clr-text-muted);">
+        No registered athletes found. Add players in Tournament Setup or Member Registry to generate passes.
+      </div>
+    `;
+    modal.showModal();
+    return;
+  }
 
   container.innerHTML = players.map(p => {
     const avatarHtml = typeof getPlayerAvatarHtml === 'function' ? getPlayerAvatarHtml(p, 48) : '';
@@ -7374,7 +7346,7 @@ function openPlayerIdBadgesModal() {
       <div style="border:2px solid #111827;border-radius:10px;padding:16px;background:#ffffff;color:#111827;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.1);">
         <div style="font-size:0.7rem;font-weight:900;letter-spacing:1px;color:#059669;text-transform:uppercase;">BADMINTON CUP · OFFICIAL PASS</div>
         <div style="margin:12px auto;display:flex;justify-content:center;">${avatarHtml}</div>
-        <div style="font-size:1.15rem;font-weight:900;color:#111827;">${p}</div>
+        <div style="font-size:1.15rem;font-weight:900;color:#111827;">${escapeHtml(p)}</div>
         <div style="font-size:0.75rem;color:#4b5563;font-weight:700;margin-top:2px;">ATHLETE · BWF REGISTERED</div>
         <div style="margin-top:12px;border-top:1px dashed #d1d5db;padding-top:8px;font-family:monospace;font-size:0.7rem;letter-spacing:4px;color:#6b7280;">||| | |||| | ||| ||</div>
       </div>
@@ -7490,7 +7462,24 @@ function initPoolDrawCanvas() {
   const canvas = document.getElementById('poolDrawCanvas');
   if (!canvas || !canvas.getContext) return;
   const ctx = canvas.getContext('2d');
-  const players = (state.players && state.players.length) ? state.players : ['Parag', 'Rifat', 'Rashed', 'Sifat', 'Saiful', 'Toufiq', 'Jakir', 'Jobayer'];
+  const users = (typeof getUsersDB === 'function') ? getUsersDB() : [];
+  const players = (state.players && state.players.length) ? state.players : users.map(u => u.name);
+
+  if (!players || players.length === 0) {
+    ctx.clearRect(0, 0, 240, 240);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+    ctx.beginPath();
+    ctx.arc(120, 120, 110, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'var(--clr-border)';
+    ctx.stroke();
+    ctx.fillStyle = 'var(--clr-text-muted)';
+    ctx.font = '12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('No players in roster', 120, 125);
+    return;
+  }
+
   const numSlices = players.length;
   const sliceAngle = (2 * Math.PI) / numSlices;
   const colors = ['#10b981', '#06b6d4', '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6', '#14b8a6', '#f97316'];
@@ -7522,6 +7511,14 @@ function initPoolDrawCanvas() {
 
 function spinPoolDrawWheel() {
   if (isWheelSpinning) return;
+  const users = (typeof getUsersDB === 'function') ? getUsersDB() : [];
+  const players = (state.players && state.players.length) ? state.players : users.map(u => u.name);
+
+  if (!players || players.length === 0) {
+    showToast('Add players to roster before spinning the draw wheel.', 'warning');
+    return;
+  }
+
   isWheelSpinning = true;
   const resText = document.getElementById('wheelCurrentDrawnText');
   if (resText) resText.textContent = 'Spinning...';
@@ -7541,7 +7538,6 @@ function spinPoolDrawWheel() {
       requestAnimationFrame(animate);
     } else {
       isWheelSpinning = false;
-      const players = (state.players && state.players.length) ? state.players : ['Parag', 'Rifat', 'Rashed', 'Sifat', 'Saiful', 'Toufiq', 'Jakir', 'Jobayer'];
       const picked = players[Math.floor(Math.random() * players.length)];
       if (resText) resText.textContent = `🎯 Selected: ${picked}!`;
       playSound('point');
