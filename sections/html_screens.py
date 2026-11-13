@@ -64,11 +64,6 @@ SCREENS_CONTENT = """
     </button>
 
     <!-- More / Menu Button -->
-    <select id="headerLangSelect" class="btn btn-ghost btn-xs" onchange="setAppLanguage(this.value)" style="padding:2px 6px;font-size:0.75rem;cursor:pointer;background:rgba(255,255,255,0.06);color:var(--clr-text);" title="Change Language / ভাষা পরিবর্তন">
-      <option value="en">🇺🇸 EN</option>
-      <option value="bn">🇧🇩 BN</option>
-      <option value="es">🇪🇸 ES</option>
-    </select>
     <button class="btn btn-ghost btn-xs" id="headerMoreBtn" onclick="openMoreMenu()" title="More Tools & Menu">
       <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
       <span data-i18n="navMore">Menu</span>
@@ -164,8 +159,8 @@ SCREENS_CONTENT = """
           </div>
         </div>
         <div>
-          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Registration Fee / Athlete</label>
-          <input type="text" id="tournamentFeeInput" class="modal-input" value="$20.00" placeholder="$20.00 or 250 Coins">
+          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Tournament Entry / Buy-in (Points)</label>
+          <input type="number" id="tournamentFeeInput" class="modal-input" value="50" min="0" step="5" placeholder="e.g. 50 Points">
         </div>
       </div>
 
@@ -1258,6 +1253,9 @@ SCREENS_CONTENT = """
         </button>
       </div>
     </div>
+
+    <!-- Tournament Entry & Buy-in Card (Points) -->
+    <div id="playerTournamentBuyInCard" class="card" style="margin-bottom:16px;"></div>
 
     <!-- Next Scheduled Fixture Callout Card -->
     <div id="playerNextFixtureCard" class="card" style="background:linear-gradient(135deg, rgba(34,197,94,0.12), rgba(13,31,45,0.7));border-color:var(--clr-green);margin-bottom:20px;"></div>

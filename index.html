@@ -3613,11 +3613,6 @@ body.battery-saver .mobile-bottom-nav {
     </button>
 
     <!-- More / Menu Button -->
-    <select id="headerLangSelect" class="btn btn-ghost btn-xs" onchange="setAppLanguage(this.value)" style="padding:2px 6px;font-size:0.75rem;cursor:pointer;background:rgba(255,255,255,0.06);color:var(--clr-text);" title="Change Language / ভাষা পরিবর্তন">
-      <option value="en">🇺🇸 EN</option>
-      <option value="bn">🇧🇩 BN</option>
-      <option value="es">🇪🇸 ES</option>
-    </select>
     <button class="btn btn-ghost btn-xs" id="headerMoreBtn" onclick="openMoreMenu()" title="More Tools & Menu">
       <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
       <span data-i18n="navMore">Menu</span>
@@ -3713,8 +3708,8 @@ body.battery-saver .mobile-bottom-nav {
           </div>
         </div>
         <div>
-          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Registration Fee / Athlete</label>
-          <input type="text" id="tournamentFeeInput" class="modal-input" value="$20.00" placeholder="$20.00 or 250 Coins">
+          <label style="font-size:0.8rem;font-weight:700;color:var(--clr-text-muted);display:block;margin-bottom:6px;">Tournament Entry / Buy-in (Points)</label>
+          <input type="number" id="tournamentFeeInput" class="modal-input" value="50" min="0" step="5" placeholder="e.g. 50 Points">
         </div>
       </div>
 
@@ -4808,6 +4803,9 @@ body.battery-saver .mobile-bottom-nav {
       </div>
     </div>
 
+    <!-- Tournament Entry & Buy-in Card (Points) -->
+    <div id="playerTournamentBuyInCard" class="card" style="margin-bottom:16px;"></div>
+
     <!-- Next Scheduled Fixture Callout Card -->
     <div id="playerNextFixtureCard" class="card" style="background:linear-gradient(135deg, rgba(34,197,94,0.12), rgba(13,31,45,0.7));border-color:var(--clr-green);margin-bottom:20px;"></div>
 
@@ -5720,6 +5718,20 @@ body.battery-saver .mobile-bottom-nav {
         <option value="15" selected>15 Points (13 Hope Ball · 14 Game Ball · 15 Win)</option>
         <option value="21">21 Points (Standard BWF)</option>
         <option value="11">11 Points (Express Knockout)</option>
+      </select>
+    </div>
+
+    <div class="modal-form-item">
+      <label style="display:flex;justify-content:space-between;align-items:center;">
+        <span>Points Buy-in / Stake</span>
+        <span style="font-size:0.75rem;color:var(--clr-gold);font-weight:700;">Winner takes full pot!</span>
+      </label>
+      <select id="challengeBuyInSelect" class="modal-input">
+        <option value="0">Friendly (0 PTS - Free)</option>
+        <option value="10">10 PTS Buy-in (Pot: 20 PTS)</option>
+        <option value="25" selected>25 PTS Buy-in (Pot: 50 PTS)</option>
+        <option value="50">50 PTS Buy-in (Pot: 100 PTS)</option>
+        <option value="100">100 PTS Buy-in (Pot: 200 PTS)</option>
       </select>
     </div>
 
@@ -6710,7 +6722,7 @@ const state = {
   audioEnabled: true,
   handicapEnabled: false,
   courtFlipped: false,
-  entryFee: '$20.00',
+  entryFee: 50,
   poolA: [],
   poolB: [],
   players: [],
@@ -7321,6 +7333,7 @@ function postNewChallenge() {
   const category = document.getElementById('challengeCategorySelect').value;
   const points = parseInt(document.getElementById('challengePointsSelect').value) || 21;
   const note = document.getElementById('challengeNoteInput').value.trim() || 'Court 1';
+  const buyIn = parseInt(document.getElementById('challengeBuyInSelect')?.value) || 0;
 
   const partnerInput = document.getElementById('challengePartnerName');
   const partnerName = (category === 'doubles' && partnerInput) ? partnerInput.value.trim() : '';
@@ -7328,19 +7341,35 @@ function postNewChallenge() {
   const pin = isPrivate ? (document.getElementById('challengePinInput')?.value.trim() || '') : '';
 
   const creatorDisplayName = partnerName ? `${name} / ${partnerName}` : name;
+  const payerName = currentUser ? currentUser.name : name;
+
+  // Verify points balance for buy-in stake
+  if (buyIn > 0) {
+    const curBalance = getUserCoins(payerName);
+    if (curBalance < buyIn) {
+      showToast(`⚠️ Insufficient points to open this challenge! You have ${curBalance} PTS, but need ${buyIn} PTS.`, 'warning');
+      return;
+    }
+    setUserCoins(curBalance - buyIn, payerName);
+    recordTransaction(payerName, 'challenge_stake', buyIn, curBalance - buyIn, `Staked ${buyIn} PTS for challenge pot`);
+  }
+
   const list = getChallengesDB();
   const newChal = {
     id: 'ch_' + Date.now().toString(36),
     creator: creatorDisplayName,
+    creatorPayer: payerName,
     partner: partnerName,
     category,
     points,
+    buyIn,
     note,
     isPrivate,
     pin,
     createdTimestamp: Date.now(),
     status: 'open',
     opponent: null,
+    opponentPayer: null,
     createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   };
 
@@ -7348,7 +7377,8 @@ function postNewChallenge() {
   saveChallengesDB(list);
   document.getElementById('newChallengeModal').close();
   renderChallengesBoard();
-  showToast('Challenge opened! Waiting for a challenger.');
+  updateBettingUI();
+  showToast(`Challenge opened! ${buyIn > 0 ? buyIn + ' PTS staked (Pot: ' + (buyIn * 2) + ' PTS). ' : ''}Waiting for a challenger.`, 'success');
 }
 
 let activeChallengeFilter = 'all';
@@ -7442,6 +7472,21 @@ async function cancelChallenge(chalId) {
   const confirmed = await appConfirm(`Cancel challenge between ${chal.creator}${chal.opponent ? ' and ' + chal.opponent : ''}?`, 'Cancel Challenge', 'Cancel Match', true);
   if (!confirmed) return;
 
+  // Refund points buy-in to participants if not yet concluded
+  if (chal.buyIn && chal.buyIn > 0 && !chal.payoutProcessed) {
+    const creatorPayer = chal.creatorPayer || chal.creator;
+    const curCBal = getUserCoins(creatorPayer);
+    setUserCoins(curCBal + chal.buyIn, creatorPayer);
+    recordTransaction(creatorPayer, 'challenge_refund', chal.buyIn, curCBal + chal.buyIn, `Refunded ${chal.buyIn} PTS for cancelled challenge`);
+
+    if (chal.opponent) {
+      const oppPayer = chal.opponentPayer || chal.opponent;
+      const curOBal = getUserCoins(oppPayer);
+      setUserCoins(curOBal + chal.buyIn, oppPayer);
+      recordTransaction(oppPayer, 'challenge_refund', chal.buyIn, curOBal + chal.buyIn, `Refunded ${chal.buyIn} PTS for cancelled challenge`);
+    }
+  }
+
   if (chal.matchId) refundMatchBets(chal.matchId);
   const updatedList = list.filter(c => c.id !== chalId);
   saveChallengesDB(updatedList);
@@ -7452,7 +7497,8 @@ async function cancelChallenge(chalId) {
   }
 
   renderChallengesBoard();
-  showToast('Challenge cancelled successfully.', 'info');
+  updateBettingUI();
+  showToast('Challenge cancelled successfully. Points refunded.', 'info');
 }
 
 function copyChallengeInviteLink(chalId) {
@@ -7502,7 +7548,19 @@ function executeAcceptChallenge(id) {
     return;
   }
 
+  // Deduct points buy-in from contender if challenge has a stake
+  if (chal.buyIn && chal.buyIn > 0) {
+    const curBal = getUserCoins(joinerName);
+    if (curBal < chal.buyIn) {
+      showToast(`⚠️ Insufficient points to accept this challenge! You need ${chal.buyIn} PTS to join (Your balance: ${curBal} PTS).`, 'warning');
+      return;
+    }
+    setUserCoins(curBal - chal.buyIn, joinerName);
+    recordTransaction(joinerName, 'challenge_stake', chal.buyIn, curBal - chal.buyIn, `Staked ${chal.buyIn} PTS to accept challenge vs ${chal.creator}`);
+  }
+
   chal.opponent = joinerName.trim();
+  chal.opponentPayer = joinerName.trim();
   chal.status = 'accepted';
 
   // Automatically create match and link
@@ -7513,6 +7571,7 @@ function executeAcceptChallenge(id) {
   saveChallengesDB(list);
   saveState();
   renderChallengesBoard();
+  updateBettingUI();
   showToast(`⚡ Match Accepted! Launching live referee court for ${chal.creator} vs ${joinerName}...`, 'success');
   
   setTimeout(() => {
@@ -7565,6 +7624,17 @@ function renderChallengesBoard() {
         c.status = 'completed';
         c.winner = match.winner === 'a' ? match.a : match.b;
       }
+      if (match && match.winner && (c.buyIn || 0) > 0 && !c.payoutProcessed) {
+        c.payoutProcessed = true;
+        c.status = 'completed';
+        c.winner = match.winner === 'a' ? match.a : match.b;
+        const pot = c.buyIn * 2;
+        const winnerPayer = (c.winner.toLowerCase() === (c.creator || '').toLowerCase()) ? (c.creatorPayer || c.creator) : (c.opponentPayer || c.opponent);
+        const wBal = getUserCoins(winnerPayer);
+        setUserCoins(wBal + pot, winnerPayer);
+        recordTransaction(winnerPayer, 'challenge_win', pot, wBal + pot, `🏆 Won challenge pot (${pot} PTS)`);
+        saveChallengesDB(list);
+      }
     }
 
     const curName = (currentUser && currentUser.name) ? currentUser.name.toLowerCase() : '';
@@ -7590,6 +7660,15 @@ function renderChallengesBoard() {
             <span style="font-weight:700;color:var(--clr-text);font-size:0.75rem;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);display:inline-flex;align-items:center;gap:4px;">
               🏸 ${c.category === 'doubles' ? 'Doubles' : 'Singles'} · ${c.points || 15} pts
             </span>
+            ${(c.buyIn && c.buyIn > 0) ? `
+              <span style="font-weight:800;color:var(--clr-gold);font-size:0.75rem;background:rgba(245,158,11,0.15);padding:3px 8px;border-radius:4px;border:1px solid rgba(245,158,11,0.35);display:inline-flex;align-items:center;gap:4px;">
+                💰 ${c.buyIn} PTS · Pot: ${c.buyIn * 2} PTS
+              </span>
+            ` : `
+              <span style="font-weight:700;color:var(--clr-text-muted);font-size:0.75rem;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.08);display:inline-flex;align-items:center;gap:4px;">
+                🤝 Friendly (0 PTS)
+              </span>
+            `}
             ${isMyMatch ? '<span style="font-size:0.72rem;color:var(--clr-gold);font-weight:800;background:rgba(245,158,11,0.14);padding:3px 8px;border-radius:4px;border:1px solid rgba(245,158,11,0.3);">★ YOUR MATCH</span>' : ''}
             ${c.isPrivate ? '<span class="challenge-pin-badge" style="font-size:0.72rem;padding:3px 8px;border-radius:4px;">🔒 PIN</span>' : ''}
           </div>
@@ -7683,7 +7762,7 @@ function renderChallengesBoard() {
               </div>
               ${!isCreator ? `
                 <button class="btn btn-primary btn-xs" style="flex-shrink:0;gap:4px;" onclick="event.stopPropagation();acceptChallenge('${c.id}')">
-                  <span>Accept</span>
+                  <span>Accept${c.buyIn > 0 ? ` (${c.buyIn} PTS)` : ''}</span>
                 </button>
               ` : `
                 <span style="font-size:0.7rem;font-weight:700;color:var(--clr-text-muted);background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:4px;flex-shrink:0;">
@@ -7706,6 +7785,7 @@ function renderChallengesBoard() {
             <span style="display:flex;align-items:center;gap:6px;">
               <span>🏆</span>
               <span>Winner: <strong>${escapeHtml(winnerName)}</strong></span>
+              ${c.buyIn > 0 ? `<span style="font-size:0.75rem;color:var(--clr-gold);background:rgba(245,158,11,0.15);padding:2px 7px;border-radius:4px;border:1px solid rgba(245,158,11,0.3);margin-left:4px;">+${c.buyIn * 2} PTS Pot Won</span>` : ''}
             </span>
             ${scoreStr ? `<span style="font-family:monospace;font-weight:800;font-size:1rem;color:var(--clr-gold);">${scoreStr}</span>` : ''}
           </div>
@@ -7725,7 +7805,7 @@ function renderChallengesBoard() {
             ` : `
               <button class="btn btn-primary btn-sm" style="flex:1;justify-content:center;font-weight:800;gap:8px;font-size:0.92rem;background:#10b981;border-color:#10b981;" onclick="acceptChallenge('${c.id}')">
                 <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                <span>Accept Challenge & Play Now</span>
+                <span>Accept Challenge & Play Now${c.buyIn > 0 ? ` (${c.buyIn} PTS)` : ''}</span>
               </button>
             `}
           ` : (c.status === 'completed' ? `
@@ -9195,6 +9275,46 @@ function renderPlayerHub() {
     eloSub.textContent = `BWF SaaS Rating · Rank #${myRankIdx !== -1 ? myRankIdx + 1 : '--'}`;
   }
 
+  // Tournament Registration & Points Buy-In Card
+  const buyInCard = document.getElementById('playerTournamentBuyInCard');
+  if (buyInCard) {
+    const fee = typeof state.entryFee === 'number' ? state.entryFee : (parseInt(state.entryFee) || 50);
+    const inA = (state.poolA || []).some(p => p.toLowerCase().includes(currentUser.name.toLowerCase()));
+    const inB = (state.poolB || []).some(p => p.toLowerCase().includes(currentUser.name.toLowerCase()));
+    const rosterA = getCleanRoster('rosterAInput');
+    const rosterB = getCleanRoster('rosterBInput');
+    const inRosterA = rosterA.some(p => p.toLowerCase().includes(currentUser.name.toLowerCase()));
+    const inRosterB = rosterB.some(p => p.toLowerCase().includes(currentUser.name.toLowerCase()));
+    const isEnrolled = inA || inB || inRosterA || inRosterB;
+    const enrolledPool = (inA || inRosterA) ? 'Pool A' : ((inB || inRosterB) ? 'Pool B' : 'Registered');
+
+    if (isEnrolled) {
+      buyInCard.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:4px 0;">
+          <div>
+            <div style="font-size:0.75rem;font-weight:900;color:var(--clr-green);letter-spacing:0.08em;text-transform:uppercase;">Tournament Registration Status</div>
+            <div style="font-size:1.15rem;font-weight:800;color:var(--clr-text);margin-top:2px;">✅ Enrolled in Official Tournament (${enrolledPool})</div>
+            <div style="font-size:0.82rem;color:var(--clr-text-muted);">Entry buy-in: ${fee} PTS paid from wallet</div>
+          </div>
+          <span class="badge badge-green" style="font-size:0.8rem;padding:6px 12px;">ACTIVE ATHLETE</span>
+        </div>
+      `;
+    } else {
+      buyInCard.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;padding:4px 0;">
+          <div>
+            <div style="font-size:0.75rem;font-weight:900;color:var(--clr-gold);letter-spacing:0.08em;text-transform:uppercase;">Tournament Registration & Buy-in</div>
+            <div style="font-size:1.15rem;font-weight:800;color:var(--clr-text);margin-top:2px;">Join the Upcoming Badminton Cup</div>
+            <div style="font-size:0.82rem;color:var(--clr-text-muted);">Entry Buy-in: <strong>${fee} PTS</strong> · Your Balance: <strong>${getUserCoins(currentUser.name)} PTS</strong></div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="joinTournamentWithPoints()" style="display:inline-flex;align-items:center;gap:6px;">
+            <span>🪙 Join Tournament (${fee} PTS)</span>
+          </button>
+        </div>
+      `;
+    }
+  }
+
   // Next scheduled match
   const nextMatch = state.matches.find(m => !m.winner && (m.a === currentUser.name || m.b === currentUser.name));
   const nextCard = document.getElementById('playerNextFixtureCard');
@@ -9876,20 +9996,20 @@ function recordTransaction(username, type, amount, balanceAfter, desc) {
    VIRTUAL COIN WALLET & MATCH PREDICTION ENGINE
    - General Users & Everyone can predict match winners and place wagers with virtual coins.
 ═══════════════════════════════════════════════════ */
-function getUserCoins() {
-  const username = currentUser ? currentUser.name : 'Guest';
+function getUserCoins(targetUsername = null) {
+  const username = targetUsername || (currentUser ? currentUser.name : 'Guest');
   const wallets = getWalletsDB();
   if (wallets[username] === undefined) {
     const stats = getLeaderboardDB()[username];
     const matchPts = (stats && stats.totalPts) ? stats.totalPts : 0;
-    wallets[username] = 100 + matchPts; // 100 free starter coins + match points earned
+    wallets[username] = 100 + matchPts; // 100 free starter coins/points + match points earned
     saveWalletsDB(wallets);
   }
   return wallets[username];
 }
 
-function setUserCoins(amount) {
-  const username = currentUser ? currentUser.name : 'Guest';
+function setUserCoins(amount, targetUsername = null) {
+  const username = targetUsername || (currentUser ? currentUser.name : 'Guest');
   const wallets = getWalletsDB();
   wallets[username] = Math.max(0, amount);
   saveWalletsDB(wallets);
@@ -10923,11 +11043,86 @@ function initiateTournament() {
   state.champion = null;
   state.runnerUp = null;
   state.thirdPlace = null;
-  state.entryFee = document.getElementById('tournamentFeeInput').value || '$20.00';
+  const feeInput = document.getElementById('tournamentFeeInput');
+  state.entryFee = feeInput ? (parseInt(feeInput.value) || 0) : 50;
+
+  // Deduct tournament entry points from registered player wallets
+  if (state.entryFee > 0) {
+    try {
+      const wallets = getWalletsDB();
+      const allEntries = [...a, ...b];
+      allEntries.forEach(entry => {
+        const ind = entry.split('/').map(s => s.trim()).filter(Boolean);
+        ind.forEach(name => {
+          if (wallets[name] !== undefined && wallets[name] >= state.entryFee) {
+            wallets[name] -= state.entryFee;
+            recordTransaction(name, 'tournament_entry', state.entryFee, wallets[name], `Tournament entry buy-in (${state.entryFee} PTS)`);
+          }
+        });
+      });
+      saveWalletsDB(wallets);
+      updateBettingUI();
+    } catch (e) {}
+  }
 
   saveState();
   showScreen('draftScreen');
   setupDraftDrums();
+}
+
+function joinTournamentWithPoints() {
+  if (!requireAuthUser('join the tournament with points')) return;
+  const username = currentUser.name;
+  const fee = typeof state.entryFee === 'number' ? state.entryFee : (parseInt(state.entryFee) || 50);
+
+  const inA = (state.poolA || []).some(p => p.toLowerCase().includes(username.toLowerCase()));
+  const inB = (state.poolB || []).some(p => p.toLowerCase().includes(username.toLowerCase()));
+  const rosterA = getCleanRoster('rosterAInput');
+  const rosterB = getCleanRoster('rosterBInput');
+  const inRosterA = rosterA.some(p => p.toLowerCase().includes(username.toLowerCase()));
+  const inRosterB = rosterB.some(p => p.toLowerCase().includes(username.toLowerCase()));
+
+  if (inA || inB || inRosterA || inRosterB) {
+    showToast('You are already registered in the tournament roster!', 'info');
+    return;
+  }
+
+  if (fee > 0) {
+    const curBalance = getUserCoins(username);
+    if (curBalance < fee) {
+      showToast(`⚠️ Insufficient points to join! You have ${curBalance} PTS, but need ${fee} PTS.`, 'warning');
+      return;
+    }
+    setUserCoins(curBalance - fee, username);
+    recordTransaction(username, 'tournament_entry', fee, curBalance - fee, `Tournament entry buy-in (${fee} PTS)`);
+  }
+
+  const countA = (state.poolA && state.poolA.length > 0) ? state.poolA.length : rosterA.length;
+  const countB = (state.poolB && state.poolB.length > 0) ? state.poolB.length : rosterB.length;
+  const targetPool = countA <= countB ? 'A' : 'B';
+
+  const inputId = targetPool === 'A' ? 'rosterAInput' : 'rosterBInput';
+  const inputEl = document.getElementById(inputId);
+  if (inputEl) {
+    const currentVal = inputEl.value.trim();
+    inputEl.value = currentVal ? currentVal + '\n' + username : username;
+    updatePlayerCounts();
+  }
+
+  if (state.matches.length > 0) {
+    if (targetPool === 'A') {
+      if (!state.poolA) state.poolA = [];
+      state.poolA.push(username);
+    } else {
+      if (!state.poolB) state.poolB = [];
+      state.poolB.push(username);
+    }
+  }
+
+  saveState();
+  showToast(`🎉 Welcome to the Tournament, ${username}! Enrolled in Pool ${targetPool}${fee > 0 ? ' (' + fee + ' PTS buy-in deducted)' : ''}.`, 'success');
+  renderPlayerHub();
+  updateBettingUI();
 }
 
 let draftIntervalA = null;
@@ -12559,6 +12754,27 @@ function recordMatchStats(match) {
     updateBettingUI();
   } catch (e) {}
 
+  // Award open challenge buy-in pot to winner
+  try {
+    const list = getChallengesDB();
+    const chal = list.find(c => c.matchId === match.id ||
+      (c.creator && c.opponent && ((c.creator.toLowerCase() === match.a.toLowerCase() && c.opponent.toLowerCase() === match.b.toLowerCase()) || (c.creator.toLowerCase() === match.b.toLowerCase() && c.opponent.toLowerCase() === match.a.toLowerCase())))
+    );
+    if (chal && (chal.buyIn || 0) > 0 && !chal.payoutProcessed) {
+      chal.payoutProcessed = true;
+      chal.status = 'completed';
+      chal.winner = winner;
+      const pot = chal.buyIn * 2;
+      const winnerPayer = (winner.toLowerCase() === (chal.creator || '').toLowerCase()) ? (chal.creatorPayer || chal.creator) : (chal.opponentPayer || chal.opponent);
+      const wBal = getUserCoins(winnerPayer);
+      setUserCoins(wBal + pot, winnerPayer);
+      recordTransaction(winnerPayer, 'challenge_win', pot, wBal + pot, `🏆 Won challenge pot vs ${loser} (${pot} PTS)`);
+      saveChallengesDB(list);
+      showToast(`🏆 ${winner} won the challenge pot of ${pot} PTS!`, 'success');
+      updateBettingUI();
+    }
+  } catch (e) {}
+
   // Synchronize updated Elo directly to registered user accounts
   try {
     const users = getUsersDB();
@@ -13515,20 +13731,16 @@ const APP_TRANSLATIONS = {
   }
 };
 
-let currentAppLanguage = localStorage.getItem('badminton_app_lang') || 'en';
+let currentAppLanguage = 'en';
 
 function setAppLanguage(lang) {
-  if (!APP_TRANSLATIONS[lang]) lang = 'en';
-  currentAppLanguage = lang;
-  localStorage.setItem('badminton_app_lang', lang);
-  applyTranslations(lang);
-  const select = document.getElementById('headerLangSelect');
-  if (select) select.value = lang;
-  showToast(`Language switched to ${lang === 'bn' ? 'বাংলা' : (lang === 'es' ? 'Español' : 'English')}`);
+  currentAppLanguage = 'en';
+  localStorage.setItem('badminton_app_lang', 'en');
+  applyTranslations('en');
 }
 
-function applyTranslations(lang) {
-  const dict = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.en;
+function applyTranslations(lang = 'en') {
+  const dict = APP_TRANSLATIONS.en || {};
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     if (dict[key]) el.textContent = dict[key];

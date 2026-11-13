@@ -541,6 +541,20 @@ DIALOGS_CONTENT = """
     </div>
 
     <div class="modal-form-item">
+      <label style="display:flex;justify-content:space-between;align-items:center;">
+        <span>Points Buy-in / Stake</span>
+        <span style="font-size:0.75rem;color:var(--clr-gold);font-weight:700;">Winner takes full pot!</span>
+      </label>
+      <select id="challengeBuyInSelect" class="modal-input">
+        <option value="0">Friendly (0 PTS - Free)</option>
+        <option value="10">10 PTS Buy-in (Pot: 20 PTS)</option>
+        <option value="25" selected>25 PTS Buy-in (Pot: 50 PTS)</option>
+        <option value="50">50 PTS Buy-in (Pot: 100 PTS)</option>
+        <option value="100">100 PTS Buy-in (Pot: 200 PTS)</option>
+      </select>
+    </div>
+
+    <div class="modal-form-item">
       <label data-i18n="challengeNoteLabel">Note / Venue</label>
       <input type="text" id="challengeNoteInput" class="modal-input" placeholder="e.g. Court 1 / School ground after tiffin">
     </div>
