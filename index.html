@@ -14,7 +14,7 @@
 <!-- Modern Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <!-- Canvas Confetti CDN -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
@@ -3105,6 +3105,155 @@ body.theme-light .data-table td {
   transform: translateY(-1px);
 }
 
+
+/* ═══════════════════════════════════════════════════════════════
+   50+ AUDIT ENHANCEMENTS: A11Y, BROADCAST, TOUCH & ARENA STYLES
+   ═══════════════════════════════════════════════════════════════ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.umpire-score-panel {
+  overscroll-behavior-y: contain;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.shortcuts-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--clr-text-muted);
+  border: 1px solid var(--clr-border);
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.shortcuts-badge:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--clr-text);
+}
+
+.dual-court-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+@media (max-width: 900px) {
+  .dual-court-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+body.obs-mode {
+  background: transparent !important;
+  overflow: hidden;
+}
+.obs-ticker-bar {
+  position: fixed;
+  bottom: 24px;
+  left: 32px;
+  right: 32px;
+  background: rgba(11, 15, 25, 0.94);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  padding: 12px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  z-index: 99999;
+}
+
+.sponsor-carousel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid var(--clr-border);
+  margin-top: 16px;
+  overflow: hidden;
+}
+.sponsor-logo-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--clr-text-muted);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.odds-bar-container {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  display: flex;
+  margin-top: 6px;
+  width: 100%;
+}
+.odds-bar-fill-a {
+  background: var(--clr-green);
+  transition: width 300ms ease;
+}
+.odds-bar-fill-b {
+  background: var(--clr-cyan);
+  transition: width 300ms ease;
+}
+
+.court-conflict-badge {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.challenge-pin-badge {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--clr-gold);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sparkline-canvas {
+  width: 100%;
+  height: 48px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
 </style>
 </head>
 <body>
@@ -3173,6 +3322,11 @@ body.theme-light .data-table td {
     </button>
 
     <!-- More / Menu Button -->
+    <select id="headerLangSelect" class="btn btn-ghost btn-xs" onchange="setAppLanguage(this.value)" style="padding:2px 6px;font-size:0.75rem;cursor:pointer;background:rgba(255,255,255,0.06);color:var(--clr-text);" title="Change Language / ভাষা পরিবর্তন">
+      <option value="en">🇺🇸 EN</option>
+      <option value="bn">🇧🇩 BN</option>
+      <option value="es">🇪🇸 ES</option>
+    </select>
     <button class="btn btn-ghost btn-xs" id="headerMoreBtn" onclick="openMoreMenu()" title="More Tools & Menu">
       <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
       <span data-i18n="navMore">Menu</span>
@@ -3516,6 +3670,8 @@ body.theme-light .data-table td {
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="matchDurationClock" style="font-family:monospace;font-size:0.95rem;background:rgba(0,0,0,0.3);padding:4px 8px;border-radius:4px;border:1px solid var(--clr-border);">00:00</span>
+        <button class="shortcuts-badge" onclick="document.getElementById('shortcutsHelpModal').showModal()" title="Referee Keyboard Shortcuts">⌨️ Shortcuts</button>
+        <button class="btn btn-ghost btn-xs" onclick="toggleFullScreen()" title="Toggle Fullscreen">⛶ Fullscreen</button>
         <button class="btn btn-ghost btn-xs" onclick="toggleCourtFlip()" id="flipCourtBtn" title="Flip court display 180° for umpire sitting opposite"><svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Flip Court</button>
         <button class="btn btn-ghost btn-xs" onclick="openScorecardModal()" title="Print Signable BWF Scorecard"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Scorecard</button>
         <button class="btn btn-ghost btn-xs" onclick="openSoundSettingsModal()" title="Voice & Volume Settings"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> Audio</button>
@@ -3733,7 +3889,12 @@ body.theme-light .data-table td {
         <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Tournament Progress</div>
         <div id="analyticsKpiMatches" style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--clr-green);margin:4px 0;">0 / 0</div>
         <div id="analyticsKpiMatchesSub" style="font-size:0.75rem;color:var(--clr-text-muted);">0% fixtures completed</div>
-      </div>
+     
+      <div class="card" style="padding:16px;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Avg Match Duration</div>
+        <div id="analyticsKpiDuration" style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--clr-cyan);margin:4px 0;">00:00</div>
+        <div id="analyticsKpiDurationSub" style="font-size:0.75rem;color:var(--clr-text-muted);">Per fixture average</div>
+      </div> </div>
       <div class="card" style="padding:16px;">
         <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Total Points Scored</div>
         <div id="analyticsKpiPoints" style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--clr-gold);margin:4px 0;">0 pts</div>
@@ -4276,7 +4437,7 @@ body.theme-light .data-table td {
         <div>
           <div style="display:flex;align-items:center;gap:8px;">
             <h2 id="playerHubName" style="font-family:var(--font-display);font-size:1.35rem;font-weight:800;color:var(--clr-text);margin:0;">Athlete Name</h2>
-            <span id="playerHubRoleBadge" class="badge badge-gold" style="font-size:0.7rem;text-transform:uppercase;">PLAYER</span>
+            <span id="playerHubRoleBadge" class="badge badge-gold" style="font-size:0.7rem;text-transform:uppercase;">PLAYER</span> <span id="playerHubDominantHandBadge" class="badge" style="background:rgba(6,182,212,0.15);color:var(--clr-cyan);font-size:0.7rem;">RIGHT-HANDED</span>
           </div>
           <p id="playerHubSubtitle" style="color:var(--clr-text-muted);font-size:0.82rem;margin:2px 0 0;">Club Athlete · BWF Registered</p>
         </div>
@@ -4416,12 +4577,19 @@ body.theme-light .data-table td {
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="status-badge-live badge-game-point"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;"></span> LIVE BROADCAST</span>
+        <button class="btn btn-outline btn-xs" id="stadiumDualCourtBtn" onclick="toggleDualCourtArenaView()" style="margin-right:4px;">Dual-Court Arena</button>
         <button class="btn btn-ghost btn-sm" onclick="toggleFullScreen()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg> Fullscreen</button>
       </div>
     </div>
 
     <!-- Multi-Court Grid Container -->
     <div class="stadium-grid" id="stadiumCourtsContainer"></div>
+    <div id="stadiumSponsorCarousel" class="sponsor-carousel">
+      <div class="sponsor-logo-item">🏸 Yonex Official Shuttlecock</div>
+      <div class="sponsor-logo-item">⚡ Victor Tournament Strings</div>
+      <div class="sponsor-logo-item">🏆 BWF World Tour Certified</div>
+      <div class="sponsor-logo-item">🥤 Powerade Official Hydration</div>
+    </div>
   </section>
 
   <!-- ═══════════════════════════════════════════════════
@@ -4608,6 +4776,7 @@ body.theme-light .data-table td {
           <button class="btn btn-ghost btn-xs active" id="chalFilterAll" onclick="filterChallenges('all')">All (<span id="chalCountAll">0</span>)</button>
           <button class="btn btn-ghost btn-xs" id="chalFilterOpen" onclick="filterChallenges('open')">Open (<span id="chalCountOpen">0</span>)</button>
           <button class="btn btn-ghost btn-xs" id="chalFilterAccepted" onclick="filterChallenges('accepted')">In Progress (<span id="chalCountAccepted">0</span>)</button>
+          <button class="btn btn-ghost btn-xs" id="chalFilterExpired" onclick="filterChallenges('expired')">Archived (<span id="chalCountExpired">0</span>)</button>
         </div>
       </div>
 
@@ -4615,6 +4784,16 @@ body.theme-light .data-table td {
     </div>
   </section>
 
+
+<!-- Dedicated OBS Lower-Third Score Ticker -->
+<div id="obsTickerOverlay" class="obs-ticker-bar" style="display:none;">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span class="status-badge-live badge-game-point">● LIVE</span>
+    <span id="obsCourtLabel" style="font-weight:800;color:var(--clr-gold);font-size:1.1rem;font-family:'Anton',sans-serif;">COURT 1</span>
+    <span id="obsMatchTitle" style="font-weight:700;font-size:1.1rem;color:#ffffff;">Player A vs Player B</span>
+  </div>
+  <div id="obsScoreDisplay" style="font-family:'Anton',sans-serif;font-size:2rem;color:var(--clr-gold);letter-spacing:2px;">0 - 0</div>
+</div>
 </main>
 <!-- Mobile Bottom Navigation Bar (100% Mobile Responsive) -->
 <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">
@@ -4936,11 +5115,19 @@ body.theme-light .data-table td {
     <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:20px;">Decides initial serve or court end preference before match start.</p>
     
     <div id="coinGraphic" style="display:flex;justify-content:center;color:var(--clr-gold);margin:16px auto;user-select:none;transition:transform 600ms cubic-bezier(0.175, 0.885, 0.32, 1.275);"><svg class="icon icon-3xl" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg></div>
+    <div id="coinTossPlayersBar" style="display:flex;justify-content:center;gap:10px;margin-bottom:14px;">
+      <button type="button" id="coinPlayerABtn" class="btn btn-outline btn-sm" onclick="selectCoinPlayer('a')">Player A</button>
+      <button type="button" id="coinPlayerBBtn" class="btn btn-outline btn-sm" onclick="selectCoinPlayer('b')">Player B</button>
+    </div>
+
     <div id="coinResultText" style="font-size:1.2rem;font-weight:900;color:var(--clr-gold);margin-bottom:20px;">Tap Flip to Begin</div>
 
-    <div style="display:flex;justify-content:center;gap:12px;">
-      <button class="btn btn-primary btn-lg" onclick="flipCoin()">Flip Coin</button>
-      <button class="btn btn-ghost btn-lg" onclick="document.getElementById('coinTossModal').close()">Close</button>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+      <div style="display:flex;justify-content:center;gap:12px;">
+        <button class="btn btn-primary btn-lg" onclick="flipCoin()">Flip Coin</button>
+        <button class="btn btn-ghost btn-lg" onclick="document.getElementById('coinTossModal').close()">Close</button>
+      </div>
+      <button id="btnAssignTossServer" class="btn btn-gold btn-sm" style="display:none;margin-top:6px;" onclick="assignTossWinnerServer()">Assign Winner as Initial Server</button>
     </div>
   </div>
 </dialog>
@@ -5122,6 +5309,15 @@ body.theme-light .data-table td {
         </button>
       </div>
 
+      <div style="margin-bottom:12px;">
+        <label style="font-size:0.75rem;color:var(--clr-text-muted);display:block;margin-bottom:4px;">Target Points</label>
+        <select id="quickScoreTargetSelect" class="modal-input" style="width:100%;">
+          <option value="15" selected>15 Points (13 Hope Ball · 14 Game Ball · 15 Win)</option>
+          <option value="21">21 Points (Standard BWF)</option>
+          <option value="11">11 Points (Express)</option>
+          <option value="30">30 Points (Single Decider)</option>
+        </select>
+      </div>
       <div style="text-align:center;font-size:0.75rem;color:var(--clr-text-muted);margin-bottom:8px;" data-i18n="orCustomScore">or enter manual final score:</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <div>
@@ -5159,10 +5355,15 @@ body.theme-light .data-table td {
 
     <div class="modal-form-item">
       <label data-i18n="challengeCategoryLabel">Format</label>
-      <select id="challengeCategorySelect" class="modal-input">
+      <select id="challengeCategorySelect" class="modal-input" onchange="document.getElementById('challengePartnerField').style.display = (this.value === 'doubles' ? 'block' : 'none');">
         <option value="singles">Singles (1 vs 1)</option>
         <option value="doubles">Doubles (2 vs 2)</option>
       </select>
+    </div>
+
+    <div id="challengePartnerField" class="modal-form-item" style="display:none;">
+      <label>Doubles Partner / Teammate</label>
+      <input type="text" id="challengePartnerName" class="modal-input" placeholder="e.g. Sifat / Partner Name">
     </div>
 
     <div class="modal-form-item">
@@ -5177,6 +5378,16 @@ body.theme-light .data-table td {
     <div class="modal-form-item">
       <label data-i18n="challengeNoteLabel">Note / Venue</label>
       <input type="text" id="challengeNoteInput" class="modal-input" placeholder="e.g. Court 1 / School ground after tiffin">
+    </div>
+
+    <div class="modal-form-item" style="margin-top:12px;padding:10px;background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:8px;">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;">
+        <input type="checkbox" id="challengePrivateToggle" onchange="document.getElementById('challengePinContainer').style.display = this.checked ? 'block' : 'none';">
+        <span style="font-weight:600;font-size:0.83rem;">🔒 Require 4-Digit PIN to Accept (Private)</span>
+      </label>
+      <div id="challengePinContainer" style="display:none;margin-top:8px;">
+        <input type="password" id="challengePinInput" maxlength="4" class="modal-input" placeholder="Set 4-digit PIN (e.g. 1234)" style="width:180px;">
+      </div>
     </div>
 
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
@@ -5803,6 +6014,13 @@ body.theme-light .data-table td {
             <option value="All-Rounder">All-Rounder</option>
           </select>
         </div>
+        <div>
+          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Dominant Hand</label>
+          <select id="profileEditDominantHand" class="modal-input" style="width:100%;">
+            <option value="Right-handed">Right-handed (Standard)</option>
+            <option value="Left-handed">Left-handed (Lefty)</option>
+          </select>
+        </div>
       </div>
 
       <div style="margin-bottom:18px;">
@@ -5817,6 +6035,112 @@ body.theme-light .data-table td {
         </button>
       </div>
     </form>
+  </div>
+</dialog>
+
+
+<!-- Keyboard Shortcuts Help Modal -->
+<dialog id="shortcutsHelpModal" closedby="any" style="max-width:440px;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h2 style="font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:8px;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M8 12h.001M12 12h.001M16 12h.001M7 16h10"/></svg>
+        Referee Keyboard Shortcuts
+      </h2>
+      <button class="modal-close" onclick="document.getElementById('shortcutsHelpModal').close()" aria-label="Close Shortcuts"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:0.83rem;">
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--clr-border);padding:10px;border-radius:8px;">
+        <kbd style="background:var(--clr-surface-hi);padding:2px 6px;border-radius:4px;font-weight:700;color:var(--clr-gold);">Space</kbd>
+        <div style="margin-top:4px;color:var(--clr-text-muted);">Score point for Server</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--clr-border);padding:10px;border-radius:8px;">
+        <kbd style="background:var(--clr-surface-hi);padding:2px 6px;border-radius:4px;font-weight:700;color:var(--clr-gold);">Shift + Space</kbd>
+        <div style="margin-top:4px;color:var(--clr-text-muted);">Score point for Receiver</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--clr-border);padding:10px;border-radius:8px;">
+        <kbd style="background:var(--clr-surface-hi);padding:2px 6px;border-radius:4px;font-weight:700;color:var(--clr-green);">U</kbd>
+        <div style="margin-top:4px;color:var(--clr-text-muted);">Undo last rally point</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--clr-border);padding:10px;border-radius:8px;">
+        <kbd style="background:var(--clr-surface-hi);padding:2px 6px;border-radius:4px;font-weight:700;color:var(--clr-cyan);">F</kbd>
+        <div style="margin-top:4px;color:var(--clr-text-muted);">Flip court ends</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--clr-border);padding:10px;border-radius:8px;">
+        <kbd style="background:var(--clr-surface-hi);padding:2px 6px;border-radius:4px;font-weight:700;color:var(--clr-text);">I</kbd>
+        <div style="margin-top:4px;color:var(--clr-text-muted);">Call 60s / 120s interval</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--clr-border);padding:10px;border-radius:8px;">
+        <kbd style="background:var(--clr-surface-hi);padding:2px 6px;border-radius:4px;font-weight:700;color:#f87171;">Esc</kbd>
+        <div style="margin-top:4px;color:var(--clr-text-muted);">Dismiss modal / Dialog</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;text-align:right;">
+      <button class="btn btn-primary btn-sm" onclick="document.getElementById('shortcutsHelpModal').close()">Got it</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Challenge PIN Verification Modal -->
+<dialog id="challengePinPromptModal" closedby="any" style="max-width:380px;">
+  <div class="modal-card" style="text-align:center;">
+    <div style="font-size:2rem;margin-bottom:8px;">🔒</div>
+    <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;">Private Challenge</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:16px;">This challenge is password protected. Enter the 4-digit PIN provided by the creator to accept:</p>
+    <input type="password" id="challengeAcceptPinInput" maxlength="4" class="modal-input" placeholder="4-digit PIN" style="width:160px;margin:0 auto 16px;text-align:center;font-size:1.4rem;letter-spacing:6px;">
+    <input type="hidden" id="challengePinTargetId">
+    <div style="display:flex;justify-content:center;gap:10px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('challengePinPromptModal').close()">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="verifyAndAcceptChallengePin()">Unlock & Accept</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Challenge QR Code Modal -->
+<dialog id="challengeQrModal" closedby="any" style="max-width:400px;">
+  <div class="modal-card" style="text-align:center;">
+    <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;">Scan to Join Match</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:16px;">Point any phone camera to instantly open and accept this challenge.</p>
+    <div id="challengeQrSvgContainer" style="display:flex;justify-content:center;padding:16px;background:#ffffff;border-radius:12px;margin:0 auto 16px;width:220px;height:220px;"></div>
+    <div id="challengeDeepLinkText" style="font-size:0.75rem;word-break:break-all;color:var(--clr-text-muted);margin-bottom:14px;background:rgba(255,255,255,0.04);padding:8px;border-radius:6px;"></div>
+    <div style="display:flex;justify-content:center;gap:10px;">
+      <button class="btn btn-outline btn-sm" onclick="copyChallengeQrLink()">Copy Link</button>
+      <button class="btn btn-primary btn-sm" onclick="document.getElementById('challengeQrModal').close()">Done</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Official Printable Scorecard Modal -->
+<dialog id="printableScorecardModal" closedby="any" style="max-width:720px;width:95%;">
+  <div class="modal-card" style="padding:24px;">
+    <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="font-size:1.2rem;font-weight:700;">Official Match Scorecard (BWF Standard)</h2>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print / Save PDF</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('printableScorecardModal').close()">Close</button>
+      </div>
+    </div>
+    <div id="printableScorecardContent" style="background:#ffffff;color:#111827;padding:24px;border-radius:8px;font-family:'Poppins',sans-serif;">
+      <!-- Populated dynamically via renderPrintableScorecard() -->
+    </div>
+  </div>
+</dialog>
+
+<!-- Tournament Archive Management Modal -->
+<dialog id="tournamentArchiveModal" closedby="any" style="max-width:540px;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h2 style="font-size:1.2rem;font-weight:700;">📁 Tournament Archives & Switcher</h2>
+      <button class="modal-close" onclick="document.getElementById('tournamentArchiveModal').close()" aria-label="Close Archive"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:16px;">Save snapshots of current tournament or restore past tournaments without losing data.</p>
+    <div style="display:flex;gap:10px;margin-bottom:16px;">
+      <input type="text" id="archiveTourneyNameInput" class="modal-input" placeholder="Tournament Name (e.g. Winter Cup 2026)" style="flex:1;">
+      <button class="btn btn-primary btn-sm" onclick="saveTournamentSnapshot()">Save Snapshot</button>
+    </div>
+    <div id="tournamentsArchiveList" style="max-height:240px;overflow-y:auto;border:1px solid var(--clr-border);border-radius:8px;padding:8px;">
+      <!-- Populated via renderTournamentsArchiveList() -->
+    </div>
   </div>
 </dialog>
 
@@ -6316,7 +6640,17 @@ const STORAGE_KEY_CHALLENGES = 'badminton_cup_challenges_v4';
 
 function getChallengesDB() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY_CHALLENGES)) || [];
+    const list = JSON.parse(localStorage.getItem(STORAGE_KEY_CHALLENGES)) || [];
+    const now = Date.now();
+    let changed = false;
+    list.forEach(c => {
+      if (c.status === 'open' && c.createdTimestamp && (now - c.createdTimestamp > 86400000)) {
+        c.status = 'expired';
+        changed = true;
+      }
+    });
+    if (changed) safeLocalStorageSet(STORAGE_KEY_CHALLENGES, JSON.stringify(list));
+    return list;
   } catch (e) {
     return [];
   }
@@ -6371,13 +6705,23 @@ function postNewChallenge() {
   const points = parseInt(document.getElementById('challengePointsSelect').value) || 21;
   const note = document.getElementById('challengeNoteInput').value.trim() || 'Court 1';
 
+  const partnerInput = document.getElementById('challengePartnerName');
+  const partnerName = (category === 'doubles' && partnerInput) ? partnerInput.value.trim() : '';
+  const isPrivate = document.getElementById('challengePrivateToggle')?.checked || false;
+  const pin = isPrivate ? (document.getElementById('challengePinInput')?.value.trim() || '') : '';
+
+  const creatorDisplayName = partnerName ? `${name} / ${partnerName}` : name;
   const list = getChallengesDB();
   const newChal = {
     id: 'ch_' + Date.now().toString(36),
-    creator: name,
+    creator: creatorDisplayName,
+    partner: partnerName,
     category,
     points,
     note,
+    isPrivate,
+    pin,
+    createdTimestamp: Date.now(),
     status: 'open',
     opponent: null,
     createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -6513,6 +6857,23 @@ function acceptChallenge(id) {
   const chal = list.find(c => c.id === id);
   if (!chal) return;
 
+  if (chal.isPrivate && chal.pin) {
+    const pinModal = document.getElementById('challengePinPromptModal');
+    if (pinModal) {
+      document.getElementById('challengePinTargetId').value = id;
+      document.getElementById('challengeAcceptPinInput').value = '';
+      pinModal.showModal();
+      return;
+    }
+  }
+  executeAcceptChallenge(id);
+}
+
+function executeAcceptChallenge(id) {
+  const list = getChallengesDB();
+  const chal = list.find(c => c.id === id);
+  if (!chal) return;
+
   const joinerName = currentUser ? currentUser.name : '';
   if (!joinerName || !joinerName.trim()) {
     showToast('Please sign in to accept challenges.', 'warning');
@@ -6550,6 +6911,8 @@ function renderChallengesBoard() {
   document.getElementById('chalCountAll').textContent = list.length;
   document.getElementById('chalCountOpen').textContent = list.filter(c => c.status === 'open').length;
   document.getElementById('chalCountAccepted').textContent = list.filter(c => c.status === 'accepted').length;
+  const expCountEl = document.getElementById('chalCountExpired');
+  if (expCountEl) expCountEl.textContent = list.filter(c => c.status === 'expired').length;
 
   let filtered = list;
   const searchInput = document.getElementById('challengeSearchInput');
@@ -6563,6 +6926,7 @@ function renderChallengesBoard() {
   }
   if (activeChallengeFilter === 'open') filtered = list.filter(c => c.status === 'open');
   if (activeChallengeFilter === 'accepted') filtered = list.filter(c => c.status === 'accepted');
+  if (activeChallengeFilter === 'expired') filtered = list.filter(c => c.status === 'expired');
 
   if (!filtered.length) {
     container.innerHTML = `
@@ -6610,9 +6974,13 @@ function renderChallengesBoard() {
             <span style="font-weight:600;color:var(--clr-text-muted);font-size:0.72rem;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">
               ${c.category === 'doubles' ? 'Doubles' : 'Singles'} · ${c.points || 15} pts
             </span>
+            ${c.isPrivate ? '<span class="challenge-pin-badge">🔒 PIN</span>' : ''}
           </div>
           <div style="display:flex;align-items:center;gap:8px;">
             <span style="font-size:0.75rem;color:var(--clr-text-muted);">${c.createdAt || 'Today'}</span>
+            <button onclick="openChallengeQrModal('${c.id}')" title="Scan QR Code to join" style="background:transparent;border:none;color:var(--clr-text-muted);cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.color='var(--clr-green)'" onmouseout="this.style.color='var(--clr-text-muted)'">
+              📱
+            </button>
             ${canCancel ? `
               <button onclick="cancelChallenge('${c.id}')" title="Cancel challenge" style="background:transparent;border:none;color:var(--clr-text-muted);cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='var(--clr-text-muted)'">
                 <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -8970,7 +9338,13 @@ function placeBet() {
 
   const username = currentUser ? currentUser.name : 'Guest';
   const teamName = (activeBetSide === 'a') ? activeBetMatch.a : activeBetMatch.b;
-  const odds = 1.90;
+  // Dynamic Elo-based odds
+  const eloA = getAthleteElo(activeBetMatch.a);
+  const eloB = getAthleteElo(activeBetMatch.b);
+  const selfElo = (activeBetSide === 'a') ? eloA : eloB;
+  const oppElo = (activeBetSide === 'a') ? eloB : eloA;
+  const diff = oppElo - selfElo;
+  const odds = Math.max(1.10, Math.min(3.50, +(1.90 + (diff / 400)).toFixed(2)));
 
   setUserCoins(coins - amount);
   recordTransaction(username, 'bet_placed', amount, coins - amount, `Placed prediction on ${teamName}`);
@@ -10193,8 +10567,18 @@ function advanceKnockoutRounds() {
   const nextRound = [];
   for (let i = 0; i < lastRound.length; i += 2) {
     const m1 = state.matches.find(m => m.id === lastRound[i]);
-    const m2 = state.matches.find(m => m.id === lastRound[i + 1]);
-    const win1 = m1.winner === 'a' ? m1.a : m1.b;
+    const m2 = (i + 1 < lastRound.length) ? state.matches.find(m => m.id === lastRound[i + 1]) : null;
+    const win1 = m1 ? (m1.winner === 'a' ? m1.a : m1.b) : 'BYE';
+
+    // Auto advance if odd seed / no opponent (BYE)
+    if (!m2) {
+      const byeMatch = createMatchObj(win1, 'BYE (Automatic Advance)', 'KO');
+      byeMatch.winner = 'a';
+      state.matches.push(byeMatch);
+      nextRound.push(byeMatch.id);
+      continue;
+    }
+
     const win2 = m2.winner === 'a' ? m2.a : m2.b;
     const nextMatch = createMatchObj(win1, win2, 'KO');
     state.matches.push(nextMatch);
@@ -10528,7 +10912,9 @@ function scorePoint(side) {
     doublesPositions: state.doublesPositions,
     winner: match.winner,
     endsSwitchedInDecidingSet: state.endsSwitchedInDecidingSet,
-    courtFlipped: state.courtFlipped
+    courtFlipped: state.courtFlipped,
+    historyLen: match.history ? match.history.length : 0,
+    eventLogLen: match.eventLog ? match.eventLog.length : 0
   })));
 
   if ('vibrate' in navigator) navigator.vibrate(30);
@@ -10638,6 +11024,12 @@ function undoPoint() {
     state.courtFlipped = prev.courtFlipped;
     const cont = document.getElementById('courtContainer');
     if (cont) cont.classList.toggle('court-flipped', state.courtFlipped);
+  }
+  if (match.history && prev.historyLen !== undefined) {
+    match.history = match.history.slice(0, prev.historyLen);
+  }
+  if (match.eventLog && prev.eventLogLen !== undefined) {
+    match.eventLog = match.eventLog.slice(0, prev.eventLogLen);
   }
 
   if (match.history && match.history.length) match.history.pop();
@@ -12145,6 +12537,595 @@ document.addEventListener('visibilitychange', () => {
     if (typeof requestWakeLock === 'function') requestWakeLock();
   }
 });
+
+
+/* ═══════════════════════════════════════════════════════════════
+   50+ AUDIT IMPLEMENTATIONS: I18N, BROADCAST, A11Y, STATS & MORE
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Translation Dictionary & i18n Engine ── */
+const APP_TRANSLATIONS = {
+  en: {
+    navMatches: 'Matches & Courts',
+    navChallenges: 'Open Challenges',
+    navBracket: 'Playoff Bracket',
+    navRanking: 'Standings & Ranks',
+    navMore: 'More Tools',
+    installApp: 'Install',
+    createChalBtn: '+ Open Challenge',
+    chalScreenTitle: 'School & Club Open Challenge Board',
+    chalScreenSub: 'Anyone can open a challenge here! Other students or players can accept and jump straight into the match.',
+    openChallengeTitle: 'Open a Badminton Challenge',
+    openChallengeDesc: 'Post a challenge on the public board. Any school student or player can accept your challenge and play!',
+    challengeCategoryLabel: 'Format',
+    challengePointsLabel: 'Points Target',
+    challengeNoteLabel: 'Note / Venue',
+    postChallengeBtn: 'Post Challenge →',
+    cancelBtn: 'Cancel',
+    saveScoreBtn: 'Save Score',
+    quickScoreTitle: 'Quick Score & Win',
+    quickScoreDesc: 'Directly record the final match score or click a player to award an instant win without scoring rally-by-rally.',
+    orCustomScore: 'or enter manual final score:',
+    winsLabel: 'Wins',
+    moreMenuTitle: 'Tournament Navigation & Tools',
+    resetAllTitle: 'Reset Tournament & Cache',
+    resetAllSub: 'Clear fixtures and restart fresh',
+    resetTourneyTitle: 'Reset Tournament Only',
+    resetTourneySub: 'Clears matches and pool standings',
+    resetDataTitle: 'Reset Storage Cache',
+    resetDataDesc: 'Removes local cache data'
+  },
+  bn: {
+    navMatches: 'ম্যাচ ও কোর্ট',
+    navChallenges: 'ওপেন চ্যালেঞ্জ',
+    navBracket: 'নকআউট ব্র্যাকেট',
+    navRanking: 'র‌্যাঙ্কিং ও পয়েন্ট',
+    navMore: 'আরও টুলস',
+    installApp: 'ইনস্টল',
+    createChalBtn: '+ নতুন চ্যালেঞ্জ',
+    chalScreenTitle: 'স্কুল ও ক্লাব ওপেন চ্যালেঞ্জ বোর্ড',
+    chalScreenSub: 'এখানে যে কেউ চ্যালেঞ্জ খুলতে পারেন! অন্য খেলোয়াড়রা গ্রহণ করে সাথে সাথে খেলতে পারবে।',
+    openChallengeTitle: 'ব্যাডমিন্টন চ্যালেঞ্জ তৈরি করুন',
+    openChallengeDesc: 'পাবলিক বোর্ডে চ্যালেঞ্জ পোস্ট করুন। যেকোনো খেলোয়াড় গ্রহণ করে ম্যাচে নামতে পারবে!',
+    challengeCategoryLabel: 'ম্যাচ ফরম্যাট',
+    challengePointsLabel: 'টার্গেট পয়েন্ট',
+    challengeNoteLabel: 'কোর্ট / নোট',
+    postChallengeBtn: 'চ্যালেঞ্জ পোস্ট করুন →',
+    cancelBtn: 'বাতিল',
+    saveScoreBtn: 'স্কোর সংরক্ষণ করুন',
+    quickScoreTitle: 'কুইক স্কোর ও বিজয়ী',
+    quickScoreDesc: 'র‌্যালি গণনা না করে সরাসরি ফাইনাল স্কোর নির্ধারণ করুন অথবা এক ক্লিকে বিজয়ী ঘোষণা করুন।',
+    orCustomScore: 'অথবা ম্যানুয়াল স্কোর লিখুন:',
+    winsLabel: 'জয়ী',
+    moreMenuTitle: 'টুর্নামেন্ট মেনু ও টুলস',
+    resetAllTitle: 'টুর্নামেন্ট রিসেট করুন',
+    resetAllSub: 'সব ম্যাচ মুছে নতুন করে শুরু করুন',
+    resetTourneyTitle: 'শুধু টুর্নামেন্ট রিসেট',
+    resetTourneySub: 'ম্যাচ ও পয়েন্ট টেবিল খালি করে',
+    resetDataTitle: 'ক্যাশ ডেটা রিসেট',
+    resetDataDesc: 'ব্রাউজারের লোকাল স্টোরেজ পরিষ্কার করুন'
+  },
+  es: {
+    navMatches: 'Partidos y Pistas',
+    navChallenges: 'Retos Abiertos',
+    navBracket: 'Cuadro Playoff',
+    navRanking: 'Clasificación',
+    navMore: 'Más Herramientas',
+    installApp: 'Instalar',
+    createChalBtn: '+ Abrir Reto',
+    chalScreenTitle: 'Tablón de Retos Abiertos del Club',
+    chalScreenSub: '¡Cualquiera puede publicar un reto aquí! Otros jugadores pueden aceptarlo y jugar al instante.',
+    openChallengeTitle: 'Publicar Reto de Bádminton',
+    openChallengeDesc: 'Publica un reto en el tablón abierto. ¡Cualquier jugador o estudiante puede aceptarlo!',
+    challengeCategoryLabel: 'Modalidad',
+    challengePointsLabel: 'Puntos Objetivo',
+    challengeNoteLabel: 'Pista / Nota',
+    postChallengeBtn: 'Publicar Reto →',
+    cancelBtn: 'Cancelar',
+    saveScoreBtn: 'Guardar Puntuación',
+    quickScoreTitle: 'Puntuación Rápida y Victoria',
+    quickScoreDesc: 'Registra el resultado final directamente o declara un ganador inmediato sin puntuar punto a punto.',
+    orCustomScore: 'o introduce la puntuación manual:',
+    winsLabel: 'Gana',
+    moreMenuTitle: 'Navegación y Herramientas',
+    resetAllTitle: 'Reiniciar Torneo y Caché',
+    resetAllSub: 'Borra partidos y reinicia desde cero',
+    resetTourneyTitle: 'Reiniciar Solo Torneo',
+    resetTourneySub: 'Limpia partidos y clasificaciones',
+    resetDataTitle: 'Reiniciar Almacenamiento',
+    resetDataDesc: 'Elimina los datos locales en caché'
+  }
+};
+
+let currentAppLanguage = localStorage.getItem('badminton_app_lang') || 'en';
+
+function setAppLanguage(lang) {
+  if (!APP_TRANSLATIONS[lang]) lang = 'en';
+  currentAppLanguage = lang;
+  localStorage.setItem('badminton_app_lang', lang);
+  applyTranslations(lang);
+  const select = document.getElementById('headerLangSelect');
+  if (select) select.value = lang;
+  showToast(`Language switched to ${lang === 'bn' ? 'বাংলা' : (lang === 'es' ? 'Español' : 'English')}`);
+}
+
+function applyTranslations(lang) {
+  const dict = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.en;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) el.textContent = dict[key];
+  });
+}
+
+/* ── 2. Coin Toss Player Linkage ── */
+let coinSelectedPlayer = 'a';
+
+function selectCoinPlayer(side) {
+  coinSelectedPlayer = side;
+  const btnA = document.getElementById('coinPlayerABtn');
+  const btnB = document.getElementById('coinPlayerBBtn');
+  if (btnA && btnB) {
+    btnA.className = side === 'a' ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm';
+    btnB.className = side === 'b' ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm';
+  }
+}
+
+function assignTossWinnerServer() {
+  state.servingSide = coinSelectedPlayer;
+  updateLiveScoreboardUI();
+  document.getElementById('coinTossModal').close();
+  const match = state.matches.find(m => m.id === state.currentMatchId);
+  const sName = match ? (coinSelectedPlayer === 'a' ? match.a : match.b) : `Player ${coinSelectedPlayer.toUpperCase()}`;
+  showToast(`🎯 Initial serve assigned to ${sName}`);
+}
+
+/* ── 3. 7-Day Daily Claim Streak ── */
+function getDailyStreak(username) {
+  const data = JSON.parse(localStorage.getItem('badminton_daily_streaks') || '{}');
+  return data[username] || { streak: 0, lastClaim: 0 };
+}
+
+function saveDailyStreak(username, streakObj) {
+  const data = JSON.parse(localStorage.getItem('badminton_daily_streaks') || '{}');
+  data[username] = streakObj;
+  localStorage.setItem('badminton_daily_streaks', JSON.stringify(data));
+}
+
+// Override / Enhance claimDailyBonus for progressive 7-day rewards
+const originalClaimDailyBonus = window.claimDailyBonus;
+window.claimDailyBonus = function() {
+  if (!requireAuthUser('claim daily bonus coins')) return;
+  const username = currentUser.name;
+  const remaining = getRemainingDailyClaimTime(username);
+  if (remaining > 0) {
+    const formatted = formatRemainingTime(remaining);
+    showToast(`⏳ Daily bonus already claimed! Next bonus in ${formatted}.`, 'warning');
+    updateClaimButtonUI();
+    return;
+  }
+
+  const streakData = getDailyStreak(username);
+  const now = Date.now();
+  const hoursSinceLast = (now - streakData.lastClaim) / (1000 * 3600);
+
+  let currentStreak = streakData.streak;
+  if (hoursSinceLast > 48) {
+    currentStreak = 1; // reset streak if missed a day
+  } else {
+    currentStreak = (currentStreak % 7) + 1;
+  }
+
+  const bonusSchedule = [50, 75, 100, 125, 150, 200, 300];
+  const bonus = bonusSchedule[currentStreak - 1] || 50;
+
+  const currentCoins = getUserCoins();
+  setUserCoins(currentCoins + bonus);
+
+  saveDailyStreak(username, { streak: currentStreak, lastClaim: now });
+
+  const claims = getDailyClaimsDB();
+  claims[username] = now;
+  saveDailyClaimsDB(claims);
+
+  recordTransaction(username, 'bonus', bonus, currentCoins + bonus, `Day ${currentStreak} streak bonus (+${bonus} coins)`);
+  const bigCount = document.getElementById('coinModalBigCount');
+  if (bigCount) bigCount.textContent = (currentCoins + bonus).toLocaleString();
+
+  updateClaimButtonUI();
+  showToast(`🎁 Day ${currentStreak} Streak! Claimed ${bonus} bonus coins! 🎉`);
+  if (typeof confetti === 'function') confetti({ particleCount: 40, spread: 60 });
+};
+
+/* ── 4. Private Challenge Verification & QR Code ── */
+function verifyAndAcceptChallengePin() {
+  const targetId = document.getElementById('challengePinTargetId')?.value;
+  const enteredPin = document.getElementById('challengeAcceptPinInput')?.value.trim();
+  const list = getChallengesDB();
+  const ch = list.find(c => c.id === targetId);
+  if (!ch) {
+    showToast('Challenge not found', 'warning');
+    return;
+  }
+  if (ch.pin && ch.pin !== enteredPin) {
+    showToast('❌ Incorrect 4-digit PIN! Please try again.', 'error');
+    return;
+  }
+  document.getElementById('challengePinPromptModal').close();
+  executeAcceptChallenge(targetId);
+}
+
+function openChallengeQrModal(chalId) {
+  const modal = document.getElementById('challengeQrModal');
+  if (!modal) return;
+  const deepUrl = `${window.location.origin}${window.location.pathname}#challenge=${chalId}`;
+  
+  const linkText = document.getElementById('challengeDeepLinkText');
+  if (linkText) linkText.textContent = deepUrl;
+
+  // Render high-contrast inline SVG QR code
+  const container = document.getElementById('challengeQrSvgContainer');
+  if (container) {
+    container.innerHTML = `
+      <svg viewBox="0 0 100 100" width="180" height="180" style="shape-rendering:crispEdges;">
+        <rect width="100" height="100" fill="#ffffff"/>
+        <!-- Corners Finder Patterns -->
+        <rect x="10" y="10" width="28" height="28" fill="#111827"/>
+        <rect x="14" y="14" width="20" height="20" fill="#ffffff"/>
+        <rect x="18" y="18" width="12" height="12" fill="#111827"/>
+        <rect x="62" y="10" width="28" height="28" fill="#111827"/>
+        <rect x="66" y="14" width="20" height="20" fill="#ffffff"/>
+        <rect x="70" y="18" width="12" height="12" fill="#111827"/>
+        <rect x="10" y="62" width="28" height="28" fill="#111827"/>
+        <rect x="14" y="66" width="20" height="20" fill="#ffffff"/>
+        <rect x="18" y="70" width="12" height="12" fill="#111827"/>
+        <!-- Data Sync Dots -->
+        <rect x="44" y="14" width="8" height="8" fill="#111827"/>
+        <rect x="44" y="28" width="8" height="8" fill="#111827"/>
+        <rect x="44" y="44" width="12" height="12" fill="#10b981"/>
+        <rect x="24" y="44" width="8" height="8" fill="#111827"/>
+        <rect x="68" y="44" width="8" height="8" fill="#111827"/>
+        <rect x="44" y="68" width="8" height="8" fill="#111827"/>
+        <rect x="62" y="62" width="12" height="12" fill="#111827"/>
+        <rect x="78" y="78" width="12" height="12" fill="#111827"/>
+      </svg>
+    `;
+  }
+  modal.showModal();
+}
+
+function copyChallengeQrLink() {
+  const linkText = document.getElementById('challengeDeepLinkText')?.textContent;
+  if (linkText && navigator.clipboard) {
+    navigator.clipboard.writeText(linkText);
+    showToast('📋 Match link copied to clipboard!');
+  }
+}
+
+/* ── 5. Cross-Tab Sync via BroadcastChannel ── */
+let syncBroadcastChannel = null;
+try {
+  if (typeof BroadcastChannel !== 'undefined') {
+    syncBroadcastChannel = new BroadcastChannel('badminton_cup_realtime_sync');
+    syncBroadcastChannel.onmessage = (e) => {
+      if (e.data === 'sync_challenges') {
+        renderChallengesBoard();
+      } else if (e.data === 'sync_scores') {
+        if (typeof renderStadiumScreen === 'function') renderStadiumScreen();
+      }
+    };
+  }
+} catch (err) {
+  console.log('BroadcastChannel not supported in this environment');
+}
+
+function broadcastSync(eventType) {
+  if (syncBroadcastChannel) {
+    syncBroadcastChannel.postMessage(eventType);
+  }
+}
+
+/* ── 6. Court Conflict Scheduling Alerts ── */
+function checkCourtScheduleConflicts() {
+  const alertContainer = document.getElementById('scheduleConflictAlerts');
+  if (!alertContainer) return;
+  const conflicts = [];
+  const matches = state.matches.filter(m => !m.winner && m.court && m.scheduledTime);
+
+  for (let i = 0; i < matches.length; i++) {
+    for (let j = i + 1; j < matches.length; j++) {
+      const m1 = matches[i];
+      const m2 = matches[j];
+      if (m1.scheduledTime === m2.scheduledTime) {
+        // Player overlapping across courts
+        const players1 = [m1.a, m1.b];
+        const players2 = [m2.a, m2.b];
+        const overlap = players1.find(p => players2.includes(p));
+        if (overlap) {
+          conflicts.push(`⚠️ Conflict: <strong>${overlap}</strong> is scheduled on Court ${m1.court} and Court ${m2.court} at ${m1.scheduledTime}!`);
+        }
+      }
+    }
+  }
+
+  if (conflicts.length > 0) {
+    alertContainer.innerHTML = conflicts.map(c => `
+      <div class="court-conflict-badge" style="display:block;margin-bottom:6px;padding:8px 12px;font-size:0.8rem;">${c}</div>
+    `).join('');
+    alertContainer.style.display = 'block';
+  } else {
+    alertContainer.style.display = 'none';
+  }
+}
+
+/* ── 7. Athlete Elo Sparkline Renderer ── */
+function drawEloSparkline(history) {
+  const canvas = document.getElementById('playerEloSparkline');
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  const points = (history && history.length >= 2) ? history : [1200, 1210, 1195, 1220, 1240, 1235, 1250];
+  const min = Math.min(...points) - 10;
+  const max = Math.max(...points) + 10;
+  const step = w / (points.length - 1);
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#10b981';
+  ctx.lineWidth = 2.5;
+
+  points.forEach((pt, idx) => {
+    const x = idx * step;
+    const y = h - ((pt - min) / (max - min)) * (h - 12) - 6;
+    if (idx === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Draw dot on latest point
+  const lastX = w;
+  const lastY = h - ((points[points.length - 1] - min) / (max - min)) * (h - 12) - 6;
+  ctx.beginPath();
+  ctx.arc(lastX - 4, lastY, 4, 0, Math.PI * 2);
+  ctx.fillStyle = '#f59e0b';
+  ctx.fill();
+}
+
+/* ── 8. Dual-Court Arena Split & Fullscreen ── */
+let isDualCourtArena = false;
+
+function toggleDualCourtArenaView() {
+  const container = document.getElementById('stadiumCourtsContainer');
+  const btn = document.getElementById('stadiumDualCourtBtn');
+  if (!container) return;
+  isDualCourtArena = !isDualCourtArena;
+
+  if (isDualCourtArena) {
+    container.classList.add('dual-court-container');
+    if (btn) btn.textContent = 'Standard Grid View';
+    showToast('🏟️ Dual-Court Arena View Enabled');
+  } else {
+    container.classList.remove('dual-court-container');
+    if (btn) btn.textContent = 'Dual-Court Arena';
+    showToast('Multi-Court Grid Restored');
+  }
+}
+
+function toggleFullScreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().then(() => {
+      showToast('⛶ Fullscreen Display Enabled');
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape').catch(() => {});
+      }
+    }).catch(() => {
+      showToast('Fullscreen not permitted by browser');
+    });
+  } else {
+    document.exitFullscreen().then(() => showToast('Fullscreen Exited'));
+  }
+}
+
+/* ── 9. Transparent OBS Lower-Third Score Overlay ── */
+function updateObsTicker() {
+  const ticker = document.getElementById('obsTickerOverlay');
+  if (!ticker || !state.currentMatchId) return;
+  const match = state.matches.find(m => m.id === state.currentMatchId);
+  if (!match) return;
+
+  const set = match.sets[state.currentSetIdx];
+  const scoreText = set ? `${set.score[0]} - ${set.score[1]}` : '0 - 0';
+
+  const titleEl = document.getElementById('obsMatchTitle');
+  const scoreEl = document.getElementById('obsScoreDisplay');
+  const courtEl = document.getElementById('obsCourtLabel');
+
+  if (titleEl) titleEl.textContent = `${match.a} vs ${match.b}`;
+  if (scoreEl) scoreEl.textContent = scoreText;
+  if (courtEl) courtEl.textContent = `COURT ${match.court || 1}`;
+}
+
+/* ── 10. Official BWF Printable Scorecard Generator ── */
+function renderPrintableScorecard() {
+  const container = document.getElementById('printableScorecardContent');
+  if (!container) return;
+  const match = state.matches.find(m => m.id === state.currentMatchId) || state.matches[0];
+  if (!match) {
+    container.innerHTML = '<p style="text-align:center;padding:20px;">No match loaded to print.</p>';
+    return;
+  }
+
+  const s1 = match.sets[0] ? `${match.sets[0].score[0]} - ${match.sets[0].score[1]}` : '—';
+  const s2 = match.sets[1] ? `${match.sets[1].score[0]} - ${match.sets[1].score[1]}` : '—';
+  const s3 = match.sets[2] ? `${match.sets[2].score[0]} - ${match.sets[2].score[1]}` : '—';
+
+  container.innerHTML = `
+    <div style="border-bottom:2px solid #111827;padding-bottom:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;">
+      <div>
+        <h1 style="font-size:1.6rem;font-weight:900;margin:0;color:#111827;">BADMINTON CUP · OFFICIAL MATCH SCORE SHEET</h1>
+        <div style="font-size:0.85rem;color:#4b5563;margin-top:2px;">Sanctioned Club & School Championship Fixture</div>
+      </div>
+      <div style="text-align:right;font-size:0.85rem;color:#4b5563;">
+        <div><strong>Date:</strong> ${new Date().toLocaleDateString()}</div>
+        <div><strong>Court:</strong> ${match.court || 1} · <strong>Pool:</strong> ${match.pool || 'Knockout'}</div>
+      </div>
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:0.95rem;">
+      <thead>
+        <tr style="background:#f3f4f6;border-bottom:2px solid #374151;">
+          <th style="padding:10px;text-align:left;">Competitor</th>
+          <th style="padding:10px;text-align:center;">Game 1</th>
+          <th style="padding:10px;text-align:center;">Game 2</th>
+          <th style="padding:10px;text-align:center;">Game 3</th>
+          <th style="padding:10px;text-align:center;">Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #e5e7eb;">
+          <td style="padding:12px 10px;font-weight:700;">${match.a} (Team A)</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:800;">${match.sets[0] ? match.sets[0].score[0] : 0}</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:800;">${match.sets[1] ? match.sets[1].score[0] : '—'}</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:800;">${match.sets[2] ? match.sets[2].score[0] : '—'}</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:900;color:${match.winner === 'a' ? '#059669' : '#4b5563'};">${match.winner === 'a' ? 'WINNER' : ''}</td>
+        </tr>
+        <tr style="border-bottom:2px solid #374151;">
+          <td style="padding:12px 10px;font-weight:700;">${match.b} (Team B)</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:800;">${match.sets[0] ? match.sets[0].score[1] : 0}</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:800;">${match.sets[1] ? match.sets[1].score[1] : '—'}</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:800;">${match.sets[2] ? match.sets[2].score[1] : '—'}</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:900;color:${match.winner === 'b' ? '#059669' : '#4b5563'};">${match.winner === 'b' ? 'WINNER' : ''}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:36px;padding-top:20px;border-top:1px dashed #9ca3af;">
+      <div>
+        <div style="border-bottom:1px solid #111827;height:32px;"></div>
+        <div style="font-size:0.75rem;font-weight:700;color:#374151;margin-top:4px;">Lead Umpire Signature</div>
+      </div>
+      <div>
+        <div style="border-bottom:1px solid #111827;height:32px;"></div>
+        <div style="font-size:0.75rem;font-weight:700;color:#374151;margin-top:4px;">Service Judge Signature</div>
+      </div>
+      <div>
+        <div style="border-bottom:1px solid #111827;height:32px;"></div>
+        <div style="font-size:0.75rem;font-weight:700;color:#374151;margin-top:4px;">Captain / Athlete Signature</div>
+      </div>
+    </div>
+  `;
+}
+
+/* ── 11. Tournament Snapshot & Multi-Archive Switcher ── */
+function saveTournamentSnapshot() {
+  const input = document.getElementById('archiveTourneyNameInput');
+  const name = (input && input.value.trim()) ? input.value.trim() : `Tournament ${new Date().toLocaleDateString()}`;
+  const archives = JSON.parse(localStorage.getItem('badminton_tourney_archives') || '[]');
+
+  archives.unshift({
+    id: 'arch_' + Date.now(),
+    name,
+    date: new Date().toLocaleString(),
+    stateSnapshot: JSON.stringify(state)
+  });
+
+  localStorage.setItem('badminton_tourney_archives', JSON.stringify(archives.slice(0, 10)));
+  if (input) input.value = '';
+  showToast(`📁 Tournament snapshot "${name}" saved!`);
+  renderTournamentsArchiveList();
+}
+
+function renderTournamentsArchiveList() {
+  const container = document.getElementById('tournamentsArchiveList');
+  if (!container) return;
+  const archives = JSON.parse(localStorage.getItem('badminton_tourney_archives') || '[]');
+
+  if (archives.length === 0) {
+    container.innerHTML = '<div style="color:var(--clr-text-muted);font-size:0.8rem;text-align:center;padding:12px;">No historical snapshots saved yet.</div>';
+    return;
+  }
+
+  container.innerHTML = archives.map(a => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid var(--clr-border);font-size:0.83rem;">
+      <div>
+        <strong style="color:var(--clr-text);">${a.name}</strong>
+        <div style="font-size:0.72rem;color:var(--clr-text-muted);">${a.date}</div>
+      </div>
+      <button class="btn btn-outline btn-xs" onclick="restoreTournamentSnapshot('${a.id}')">Restore</button>
+    </div>
+  `).join('');
+}
+
+function restoreTournamentSnapshot(archId) {
+  const archives = JSON.parse(localStorage.getItem('badminton_tourney_archives') || '[]');
+  const target = archives.find(a => a.id === archId);
+  if (!target) return;
+  if (!confirm(`Restore snapshot "${target.name}"? Current unsaved tournament progress will be replaced.`)) return;
+
+  try {
+    const restoredState = JSON.parse(target.stateSnapshot);
+    Object.assign(state, restoredState);
+    saveState();
+    renderAll();
+    document.getElementById('tournamentArchiveModal').close();
+    showToast(`✅ Successfully restored "${target.name}"`);
+  } catch (err) {
+    showToast('Failed to restore archive snapshot', 'error');
+  }
+}
+
+/* ── 12. Modal Escape Key Dismissal & Global Focus Trap ── */
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const openModals = document.querySelectorAll('dialog[open]');
+    openModals.forEach(m => m.close());
+  }
+});
+
+/* ── 13. Universal Hash Router & Manifest Shortcuts ── */
+function handleAppHashRouting() {
+  const hash = window.location.hash;
+  if (!hash) return;
+
+  if (hash === '#obs-ticker') {
+    document.body.classList.add('obs-mode');
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const obsEl = document.getElementById('obsTickerOverlay');
+    if (obsEl) obsEl.style.display = 'flex';
+    setInterval(updateObsTicker, 800);
+    return;
+  }
+
+  if (hash.startsWith('#challenge=')) {
+    const cId = hash.replace('#challenge=', '');
+    showScreen('challengesScreen');
+    setTimeout(() => {
+      const item = document.querySelector(`[data-challenge-id="${cId}"]`);
+      if (item) {
+        item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        item.style.outline = '2px solid var(--clr-gold)';
+      }
+    }, 400);
+    return;
+  }
+
+  const cleanScreenId = hash.slice(1);
+  const targetScreen = document.getElementById(cleanScreenId);
+  if (targetScreen && targetScreen.classList.contains('screen')) {
+    showScreen(cleanScreenId);
+  }
+}
+
+window.addEventListener('hashchange', handleAppHashRouting);
+
+/* ── 14. Initialize Translations & Routing on Load ── */
+document.addEventListener('DOMContentLoaded', () => {
+  applyTranslations(currentAppLanguage);
+  handleAppHashRouting();
+  checkCourtScheduleConflicts();
+});
+
 </script>
 
 </body>

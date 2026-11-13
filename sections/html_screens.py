@@ -64,6 +64,11 @@ SCREENS_CONTENT = """
     </button>
 
     <!-- More / Menu Button -->
+    <select id="headerLangSelect" class="btn btn-ghost btn-xs" onchange="setAppLanguage(this.value)" style="padding:2px 6px;font-size:0.75rem;cursor:pointer;background:rgba(255,255,255,0.06);color:var(--clr-text);" title="Change Language / ভাষা পরিবর্তন">
+      <option value="en">🇺🇸 EN</option>
+      <option value="bn">🇧🇩 BN</option>
+      <option value="es">🇪🇸 ES</option>
+    </select>
     <button class="btn btn-ghost btn-xs" id="headerMoreBtn" onclick="openMoreMenu()" title="More Tools & Menu">
       <svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
       <span data-i18n="navMore">Menu</span>
@@ -407,6 +412,8 @@ SCREENS_CONTENT = """
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span id="matchDurationClock" style="font-family:monospace;font-size:0.95rem;background:rgba(0,0,0,0.3);padding:4px 8px;border-radius:4px;border:1px solid var(--clr-border);">00:00</span>
+        <button class="shortcuts-badge" onclick="document.getElementById('shortcutsHelpModal').showModal()" title="Referee Keyboard Shortcuts">⌨️ Shortcuts</button>
+        <button class="btn btn-ghost btn-xs" onclick="toggleFullScreen()" title="Toggle Fullscreen">⛶ Fullscreen</button>
         <button class="btn btn-ghost btn-xs" onclick="toggleCourtFlip()" id="flipCourtBtn" title="Flip court display 180° for umpire sitting opposite"><svg class="icon icon-xs" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg> Flip Court</button>
         <button class="btn btn-ghost btn-xs" onclick="openScorecardModal()" title="Print Signable BWF Scorecard"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Scorecard</button>
         <button class="btn btn-ghost btn-xs" onclick="openSoundSettingsModal()" title="Voice & Volume Settings"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> Audio</button>
@@ -624,7 +631,12 @@ SCREENS_CONTENT = """
         <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Tournament Progress</div>
         <div id="analyticsKpiMatches" style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--clr-green);margin:4px 0;">0 / 0</div>
         <div id="analyticsKpiMatchesSub" style="font-size:0.75rem;color:var(--clr-text-muted);">0% fixtures completed</div>
-      </div>
+     
+      <div class="card" style="padding:16px;">
+        <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Avg Match Duration</div>
+        <div id="analyticsKpiDuration" style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--clr-cyan);margin:4px 0;">00:00</div>
+        <div id="analyticsKpiDurationSub" style="font-size:0.75rem;color:var(--clr-text-muted);">Per fixture average</div>
+      </div> </div>
       <div class="card" style="padding:16px;">
         <div style="font-size:0.72rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;">Total Points Scored</div>
         <div id="analyticsKpiPoints" style="font-family:var(--font-display);font-size:1.8rem;font-weight:800;color:var(--clr-gold);margin:4px 0;">0 pts</div>
@@ -1167,7 +1179,7 @@ SCREENS_CONTENT = """
         <div>
           <div style="display:flex;align-items:center;gap:8px;">
             <h2 id="playerHubName" style="font-family:var(--font-display);font-size:1.35rem;font-weight:800;color:var(--clr-text);margin:0;">Athlete Name</h2>
-            <span id="playerHubRoleBadge" class="badge badge-gold" style="font-size:0.7rem;text-transform:uppercase;">PLAYER</span>
+            <span id="playerHubRoleBadge" class="badge badge-gold" style="font-size:0.7rem;text-transform:uppercase;">PLAYER</span> <span id="playerHubDominantHandBadge" class="badge" style="background:rgba(6,182,212,0.15);color:var(--clr-cyan);font-size:0.7rem;">RIGHT-HANDED</span>
           </div>
           <p id="playerHubSubtitle" style="color:var(--clr-text-muted);font-size:0.82rem;margin:2px 0 0;">Club Athlete · BWF Registered</p>
         </div>
@@ -1307,12 +1319,19 @@ SCREENS_CONTENT = """
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="status-badge-live badge-game-point"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;"></span> LIVE BROADCAST</span>
+        <button class="btn btn-outline btn-xs" id="stadiumDualCourtBtn" onclick="toggleDualCourtArenaView()" style="margin-right:4px;">Dual-Court Arena</button>
         <button class="btn btn-ghost btn-sm" onclick="toggleFullScreen()"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg> Fullscreen</button>
       </div>
     </div>
 
     <!-- Multi-Court Grid Container -->
     <div class="stadium-grid" id="stadiumCourtsContainer"></div>
+    <div id="stadiumSponsorCarousel" class="sponsor-carousel">
+      <div class="sponsor-logo-item">🏸 Yonex Official Shuttlecock</div>
+      <div class="sponsor-logo-item">⚡ Victor Tournament Strings</div>
+      <div class="sponsor-logo-item">🏆 BWF World Tour Certified</div>
+      <div class="sponsor-logo-item">🥤 Powerade Official Hydration</div>
+    </div>
   </section>
 
   <!-- ═══════════════════════════════════════════════════
@@ -1499,6 +1518,7 @@ SCREENS_CONTENT = """
           <button class="btn btn-ghost btn-xs active" id="chalFilterAll" onclick="filterChallenges('all')">All (<span id="chalCountAll">0</span>)</button>
           <button class="btn btn-ghost btn-xs" id="chalFilterOpen" onclick="filterChallenges('open')">Open (<span id="chalCountOpen">0</span>)</button>
           <button class="btn btn-ghost btn-xs" id="chalFilterAccepted" onclick="filterChallenges('accepted')">In Progress (<span id="chalCountAccepted">0</span>)</button>
+          <button class="btn btn-ghost btn-xs" id="chalFilterExpired" onclick="filterChallenges('expired')">Archived (<span id="chalCountExpired">0</span>)</button>
         </div>
       </div>
 
@@ -1506,6 +1526,16 @@ SCREENS_CONTENT = """
     </div>
   </section>
 
+
+<!-- Dedicated OBS Lower-Third Score Ticker -->
+<div id="obsTickerOverlay" class="obs-ticker-bar" style="display:none;">
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span class="status-badge-live badge-game-point">● LIVE</span>
+    <span id="obsCourtLabel" style="font-weight:800;color:var(--clr-gold);font-size:1.1rem;font-family:'Anton',sans-serif;">COURT 1</span>
+    <span id="obsMatchTitle" style="font-weight:700;font-size:1.1rem;color:#ffffff;">Player A vs Player B</span>
+  </div>
+  <div id="obsScoreDisplay" style="font-family:'Anton',sans-serif;font-size:2rem;color:var(--clr-gold);letter-spacing:2px;">0 - 0</div>
+</div>
 </main>
 <!-- Mobile Bottom Navigation Bar (100% Mobile Responsive) -->
 <nav class="mobile-bottom-nav" id="mobileBottomNav" aria-label="Mobile Navigation">

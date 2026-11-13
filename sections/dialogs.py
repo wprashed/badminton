@@ -294,11 +294,19 @@ DIALOGS_CONTENT = """
     <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:20px;">Decides initial serve or court end preference before match start.</p>
     
     <div id="coinGraphic" style="display:flex;justify-content:center;color:var(--clr-gold);margin:16px auto;user-select:none;transition:transform 600ms cubic-bezier(0.175, 0.885, 0.32, 1.275);"><svg class="icon icon-3xl" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg></div>
+    <div id="coinTossPlayersBar" style="display:flex;justify-content:center;gap:10px;margin-bottom:14px;">
+      <button type="button" id="coinPlayerABtn" class="btn btn-outline btn-sm" onclick="selectCoinPlayer('a')">Player A</button>
+      <button type="button" id="coinPlayerBBtn" class="btn btn-outline btn-sm" onclick="selectCoinPlayer('b')">Player B</button>
+    </div>
+
     <div id="coinResultText" style="font-size:1.2rem;font-weight:900;color:var(--clr-gold);margin-bottom:20px;">Tap Flip to Begin</div>
 
-    <div style="display:flex;justify-content:center;gap:12px;">
-      <button class="btn btn-primary btn-lg" onclick="flipCoin()">Flip Coin</button>
-      <button class="btn btn-ghost btn-lg" onclick="document.getElementById('coinTossModal').close()">Close</button>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+      <div style="display:flex;justify-content:center;gap:12px;">
+        <button class="btn btn-primary btn-lg" onclick="flipCoin()">Flip Coin</button>
+        <button class="btn btn-ghost btn-lg" onclick="document.getElementById('coinTossModal').close()">Close</button>
+      </div>
+      <button id="btnAssignTossServer" class="btn btn-gold btn-sm" style="display:none;margin-top:6px;" onclick="assignTossWinnerServer()">Assign Winner as Initial Server</button>
     </div>
   </div>
 </dialog>
@@ -480,6 +488,15 @@ DIALOGS_CONTENT = """
         </button>
       </div>
 
+      <div style="margin-bottom:12px;">
+        <label style="font-size:0.75rem;color:var(--clr-text-muted);display:block;margin-bottom:4px;">Target Points</label>
+        <select id="quickScoreTargetSelect" class="modal-input" style="width:100%;">
+          <option value="15" selected>15 Points (13 Hope Ball · 14 Game Ball · 15 Win)</option>
+          <option value="21">21 Points (Standard BWF)</option>
+          <option value="11">11 Points (Express)</option>
+          <option value="30">30 Points (Single Decider)</option>
+        </select>
+      </div>
       <div style="text-align:center;font-size:0.75rem;color:var(--clr-text-muted);margin-bottom:8px;" data-i18n="orCustomScore">or enter manual final score:</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <div>
@@ -517,10 +534,15 @@ DIALOGS_CONTENT = """
 
     <div class="modal-form-item">
       <label data-i18n="challengeCategoryLabel">Format</label>
-      <select id="challengeCategorySelect" class="modal-input">
+      <select id="challengeCategorySelect" class="modal-input" onchange="document.getElementById('challengePartnerField').style.display = (this.value === 'doubles' ? 'block' : 'none');">
         <option value="singles">Singles (1 vs 1)</option>
         <option value="doubles">Doubles (2 vs 2)</option>
       </select>
+    </div>
+
+    <div id="challengePartnerField" class="modal-form-item" style="display:none;">
+      <label>Doubles Partner / Teammate</label>
+      <input type="text" id="challengePartnerName" class="modal-input" placeholder="e.g. Sifat / Partner Name">
     </div>
 
     <div class="modal-form-item">
@@ -535,6 +557,16 @@ DIALOGS_CONTENT = """
     <div class="modal-form-item">
       <label data-i18n="challengeNoteLabel">Note / Venue</label>
       <input type="text" id="challengeNoteInput" class="modal-input" placeholder="e.g. Court 1 / School ground after tiffin">
+    </div>
+
+    <div class="modal-form-item" style="margin-top:12px;padding:10px;background:rgba(255,255,255,0.03);border:1px solid var(--clr-border);border-radius:8px;">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;margin:0;">
+        <input type="checkbox" id="challengePrivateToggle" onchange="document.getElementById('challengePinContainer').style.display = this.checked ? 'block' : 'none';">
+        <span style="font-weight:600;font-size:0.83rem;">🔒 Require 4-Digit PIN to Accept (Private)</span>
+      </label>
+      <div id="challengePinContainer" style="display:none;margin-top:8px;">
+        <input type="password" id="challengePinInput" maxlength="4" class="modal-input" placeholder="Set 4-digit PIN (e.g. 1234)" style="width:180px;">
+      </div>
     </div>
 
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px;">
@@ -1161,6 +1193,13 @@ DIALOGS_CONTENT = """
             <option value="All-Rounder">All-Rounder</option>
           </select>
         </div>
+        <div>
+          <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;margin-bottom:4px;">Dominant Hand</label>
+          <select id="profileEditDominantHand" class="modal-input" style="width:100%;">
+            <option value="Right-handed">Right-handed (Standard)</option>
+            <option value="Left-handed">Left-handed (Lefty)</option>
+          </select>
+        </div>
       </div>
 
       <div style="margin-bottom:18px;">
@@ -1175,6 +1214,112 @@ DIALOGS_CONTENT = """
         </button>
       </div>
     </form>
+  </div>
+</dialog>
+
+
+<!-- Keyboard Shortcuts Help Modal -->
+<dialog id="shortcutsHelpModal" closedby="any" style="max-width:440px;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h2 style="font-size:1.15rem;font-weight:700;display:flex;align-items:center;gap:8px;">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M8 12h.001M12 12h.001M16 12h.001M7 16h10"/></svg>
+        Referee Keyboard Shortcuts
+      </h2>
+      <button class="modal-close" onclick="document.getElementById('shortcutsHelpModal').close()" aria-label="Close Shortcuts"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:0.83rem;">
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--clr-border);padding:10px;border-radius:8px;">
+        <kbd style="background:var(--clr-surface-hi);padding:2px 6px;border-radius:4px;font-weight:700;color:var(--clr-gold);">Space</kbd>
+        <div style="margin-top:4px;color:var(--clr-text-muted);">Score point for Server</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--clr-border);padding:10px;border-radius:8px;">
+        <kbd style="background:var(--clr-surface-hi);padding:2px 6px;border-radius:4px;font-weight:700;color:var(--clr-gold);">Shift + Space</kbd>
+        <div style="margin-top:4px;color:var(--clr-text-muted);">Score point for Receiver</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--clr-border);padding:10px;border-radius:8px;">
+        <kbd style="background:var(--clr-surface-hi);padding:2px 6px;border-radius:4px;font-weight:700;color:var(--clr-green);">U</kbd>
+        <div style="margin-top:4px;color:var(--clr-text-muted);">Undo last rally point</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--clr-border);padding:10px;border-radius:8px;">
+        <kbd style="background:var(--clr-surface-hi);padding:2px 6px;border-radius:4px;font-weight:700;color:var(--clr-cyan);">F</kbd>
+        <div style="margin-top:4px;color:var(--clr-text-muted);">Flip court ends</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--clr-border);padding:10px;border-radius:8px;">
+        <kbd style="background:var(--clr-surface-hi);padding:2px 6px;border-radius:4px;font-weight:700;color:var(--clr-text);">I</kbd>
+        <div style="margin-top:4px;color:var(--clr-text-muted);">Call 60s / 120s interval</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--clr-border);padding:10px;border-radius:8px;">
+        <kbd style="background:var(--clr-surface-hi);padding:2px 6px;border-radius:4px;font-weight:700;color:#f87171;">Esc</kbd>
+        <div style="margin-top:4px;color:var(--clr-text-muted);">Dismiss modal / Dialog</div>
+      </div>
+    </div>
+    <div style="margin-top:16px;text-align:right;">
+      <button class="btn btn-primary btn-sm" onclick="document.getElementById('shortcutsHelpModal').close()">Got it</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Challenge PIN Verification Modal -->
+<dialog id="challengePinPromptModal" closedby="any" style="max-width:380px;">
+  <div class="modal-card" style="text-align:center;">
+    <div style="font-size:2rem;margin-bottom:8px;">🔒</div>
+    <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;">Private Challenge</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:16px;">This challenge is password protected. Enter the 4-digit PIN provided by the creator to accept:</p>
+    <input type="password" id="challengeAcceptPinInput" maxlength="4" class="modal-input" placeholder="4-digit PIN" style="width:160px;margin:0 auto 16px;text-align:center;font-size:1.4rem;letter-spacing:6px;">
+    <input type="hidden" id="challengePinTargetId">
+    <div style="display:flex;justify-content:center;gap:10px;">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('challengePinPromptModal').close()">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="verifyAndAcceptChallengePin()">Unlock & Accept</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Challenge QR Code Modal -->
+<dialog id="challengeQrModal" closedby="any" style="max-width:400px;">
+  <div class="modal-card" style="text-align:center;">
+    <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:6px;">Scan to Join Match</h2>
+    <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:16px;">Point any phone camera to instantly open and accept this challenge.</p>
+    <div id="challengeQrSvgContainer" style="display:flex;justify-content:center;padding:16px;background:#ffffff;border-radius:12px;margin:0 auto 16px;width:220px;height:220px;"></div>
+    <div id="challengeDeepLinkText" style="font-size:0.75rem;word-break:break-all;color:var(--clr-text-muted);margin-bottom:14px;background:rgba(255,255,255,0.04);padding:8px;border-radius:6px;"></div>
+    <div style="display:flex;justify-content:center;gap:10px;">
+      <button class="btn btn-outline btn-sm" onclick="copyChallengeQrLink()">Copy Link</button>
+      <button class="btn btn-primary btn-sm" onclick="document.getElementById('challengeQrModal').close()">Done</button>
+    </div>
+  </div>
+</dialog>
+
+<!-- Official Printable Scorecard Modal -->
+<dialog id="printableScorecardModal" closedby="any" style="max-width:720px;width:95%;">
+  <div class="modal-card" style="padding:24px;">
+    <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="font-size:1.2rem;font-weight:700;">Official Match Scorecard (BWF Standard)</h2>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="window.print()">🖨️ Print / Save PDF</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('printableScorecardModal').close()">Close</button>
+      </div>
+    </div>
+    <div id="printableScorecardContent" style="background:#ffffff;color:#111827;padding:24px;border-radius:8px;font-family:'Poppins',sans-serif;">
+      <!-- Populated dynamically via renderPrintableScorecard() -->
+    </div>
+  </div>
+</dialog>
+
+<!-- Tournament Archive Management Modal -->
+<dialog id="tournamentArchiveModal" closedby="any" style="max-width:540px;">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+      <h2 style="font-size:1.2rem;font-weight:700;">📁 Tournament Archives & Switcher</h2>
+      <button class="modal-close" onclick="document.getElementById('tournamentArchiveModal').close()" aria-label="Close Archive"><svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <p style="color:var(--clr-text-muted);font-size:0.83rem;margin-bottom:16px;">Save snapshots of current tournament or restore past tournaments without losing data.</p>
+    <div style="display:flex;gap:10px;margin-bottom:16px;">
+      <input type="text" id="archiveTourneyNameInput" class="modal-input" placeholder="Tournament Name (e.g. Winter Cup 2026)" style="flex:1;">
+      <button class="btn btn-primary btn-sm" onclick="saveTournamentSnapshot()">Save Snapshot</button>
+    </div>
+    <div id="tournamentsArchiveList" style="max-height:240px;overflow-y:auto;border:1px solid var(--clr-border);border-radius:8px;padding:8px;">
+      <!-- Populated via renderTournamentsArchiveList() -->
+    </div>
   </div>
 </dialog>
 

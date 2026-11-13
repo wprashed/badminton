@@ -494,7 +494,17 @@ const STORAGE_KEY_CHALLENGES = 'badminton_cup_challenges_v4';
 
 function getChallengesDB() {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY_CHALLENGES)) || [];
+    const list = JSON.parse(localStorage.getItem(STORAGE_KEY_CHALLENGES)) || [];
+    const now = Date.now();
+    let changed = false;
+    list.forEach(c => {
+      if (c.status === 'open' && c.createdTimestamp && (now - c.createdTimestamp > 86400000)) {
+        c.status = 'expired';
+        changed = true;
+      }
+    });
+    if (changed) safeLocalStorageSet(STORAGE_KEY_CHALLENGES, JSON.stringify(list));
+    return list;
   } catch (e) {
     return [];
   }
@@ -549,13 +559,23 @@ function postNewChallenge() {
   const points = parseInt(document.getElementById('challengePointsSelect').value) || 21;
   const note = document.getElementById('challengeNoteInput').value.trim() || 'Court 1';
 
+  const partnerInput = document.getElementById('challengePartnerName');
+  const partnerName = (category === 'doubles' && partnerInput) ? partnerInput.value.trim() : '';
+  const isPrivate = document.getElementById('challengePrivateToggle')?.checked || false;
+  const pin = isPrivate ? (document.getElementById('challengePinInput')?.value.trim() || '') : '';
+
+  const creatorDisplayName = partnerName ? `${name} / ${partnerName}` : name;
   const list = getChallengesDB();
   const newChal = {
     id: 'ch_' + Date.now().toString(36),
-    creator: name,
+    creator: creatorDisplayName,
+    partner: partnerName,
     category,
     points,
     note,
+    isPrivate,
+    pin,
+    createdTimestamp: Date.now(),
     status: 'open',
     opponent: null,
     createdAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -691,6 +711,23 @@ function acceptChallenge(id) {
   const chal = list.find(c => c.id === id);
   if (!chal) return;
 
+  if (chal.isPrivate && chal.pin) {
+    const pinModal = document.getElementById('challengePinPromptModal');
+    if (pinModal) {
+      document.getElementById('challengePinTargetId').value = id;
+      document.getElementById('challengeAcceptPinInput').value = '';
+      pinModal.showModal();
+      return;
+    }
+  }
+  executeAcceptChallenge(id);
+}
+
+function executeAcceptChallenge(id) {
+  const list = getChallengesDB();
+  const chal = list.find(c => c.id === id);
+  if (!chal) return;
+
   const joinerName = currentUser ? currentUser.name : '';
   if (!joinerName || !joinerName.trim()) {
     showToast('Please sign in to accept challenges.', 'warning');
@@ -728,6 +765,8 @@ function renderChallengesBoard() {
   document.getElementById('chalCountAll').textContent = list.length;
   document.getElementById('chalCountOpen').textContent = list.filter(c => c.status === 'open').length;
   document.getElementById('chalCountAccepted').textContent = list.filter(c => c.status === 'accepted').length;
+  const expCountEl = document.getElementById('chalCountExpired');
+  if (expCountEl) expCountEl.textContent = list.filter(c => c.status === 'expired').length;
 
   let filtered = list;
   const searchInput = document.getElementById('challengeSearchInput');
@@ -741,6 +780,7 @@ function renderChallengesBoard() {
   }
   if (activeChallengeFilter === 'open') filtered = list.filter(c => c.status === 'open');
   if (activeChallengeFilter === 'accepted') filtered = list.filter(c => c.status === 'accepted');
+  if (activeChallengeFilter === 'expired') filtered = list.filter(c => c.status === 'expired');
 
   if (!filtered.length) {
     container.innerHTML = `
@@ -788,9 +828,13 @@ function renderChallengesBoard() {
             <span style="font-weight:600;color:var(--clr-text-muted);font-size:0.72rem;background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px;">
               ${c.category === 'doubles' ? 'Doubles' : 'Singles'} · ${c.points || 15} pts
             </span>
+            ${c.isPrivate ? '<span class="challenge-pin-badge">🔒 PIN</span>' : ''}
           </div>
           <div style="display:flex;align-items:center;gap:8px;">
             <span style="font-size:0.75rem;color:var(--clr-text-muted);">${c.createdAt || 'Today'}</span>
+            <button onclick="openChallengeQrModal('${c.id}')" title="Scan QR Code to join" style="background:transparent;border:none;color:var(--clr-text-muted);cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.color='var(--clr-green)'" onmouseout="this.style.color='var(--clr-text-muted)'">
+              📱
+            </button>
             ${canCancel ? `
               <button onclick="cancelChallenge('${c.id}')" title="Cancel challenge" style="background:transparent;border:none;color:var(--clr-text-muted);cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;border-radius:4px;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='var(--clr-text-muted)'">
                 <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -3148,7 +3192,13 @@ function placeBet() {
 
   const username = currentUser ? currentUser.name : 'Guest';
   const teamName = (activeBetSide === 'a') ? activeBetMatch.a : activeBetMatch.b;
-  const odds = 1.90;
+  // Dynamic Elo-based odds
+  const eloA = getAthleteElo(activeBetMatch.a);
+  const eloB = getAthleteElo(activeBetMatch.b);
+  const selfElo = (activeBetSide === 'a') ? eloA : eloB;
+  const oppElo = (activeBetSide === 'a') ? eloB : eloA;
+  const diff = oppElo - selfElo;
+  const odds = Math.max(1.10, Math.min(3.50, +(1.90 + (diff / 400)).toFixed(2)));
 
   setUserCoins(coins - amount);
   recordTransaction(username, 'bet_placed', amount, coins - amount, `Placed prediction on ${teamName}`);
@@ -4371,8 +4421,18 @@ function advanceKnockoutRounds() {
   const nextRound = [];
   for (let i = 0; i < lastRound.length; i += 2) {
     const m1 = state.matches.find(m => m.id === lastRound[i]);
-    const m2 = state.matches.find(m => m.id === lastRound[i + 1]);
-    const win1 = m1.winner === 'a' ? m1.a : m1.b;
+    const m2 = (i + 1 < lastRound.length) ? state.matches.find(m => m.id === lastRound[i + 1]) : null;
+    const win1 = m1 ? (m1.winner === 'a' ? m1.a : m1.b) : 'BYE';
+
+    // Auto advance if odd seed / no opponent (BYE)
+    if (!m2) {
+      const byeMatch = createMatchObj(win1, 'BYE (Automatic Advance)', 'KO');
+      byeMatch.winner = 'a';
+      state.matches.push(byeMatch);
+      nextRound.push(byeMatch.id);
+      continue;
+    }
+
     const win2 = m2.winner === 'a' ? m2.a : m2.b;
     const nextMatch = createMatchObj(win1, win2, 'KO');
     state.matches.push(nextMatch);
@@ -4706,7 +4766,9 @@ function scorePoint(side) {
     doublesPositions: state.doublesPositions,
     winner: match.winner,
     endsSwitchedInDecidingSet: state.endsSwitchedInDecidingSet,
-    courtFlipped: state.courtFlipped
+    courtFlipped: state.courtFlipped,
+    historyLen: match.history ? match.history.length : 0,
+    eventLogLen: match.eventLog ? match.eventLog.length : 0
   })));
 
   if ('vibrate' in navigator) navigator.vibrate(30);
@@ -4816,6 +4878,12 @@ function undoPoint() {
     state.courtFlipped = prev.courtFlipped;
     const cont = document.getElementById('courtContainer');
     if (cont) cont.classList.toggle('court-flipped', state.courtFlipped);
+  }
+  if (match.history && prev.historyLen !== undefined) {
+    match.history = match.history.slice(0, prev.historyLen);
+  }
+  if (match.eventLog && prev.eventLogLen !== undefined) {
+    match.eventLog = match.eventLog.slice(0, prev.eventLogLen);
   }
 
   if (match.history && match.history.length) match.history.pop();
@@ -6323,5 +6391,594 @@ document.addEventListener('visibilitychange', () => {
     if (typeof requestWakeLock === 'function') requestWakeLock();
   }
 });
+
+
+/* ═══════════════════════════════════════════════════════════════
+   50+ AUDIT IMPLEMENTATIONS: I18N, BROADCAST, A11Y, STATS & MORE
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 1. Translation Dictionary & i18n Engine ── */
+const APP_TRANSLATIONS = {
+  en: {
+    navMatches: 'Matches & Courts',
+    navChallenges: 'Open Challenges',
+    navBracket: 'Playoff Bracket',
+    navRanking: 'Standings & Ranks',
+    navMore: 'More Tools',
+    installApp: 'Install',
+    createChalBtn: '+ Open Challenge',
+    chalScreenTitle: 'School & Club Open Challenge Board',
+    chalScreenSub: 'Anyone can open a challenge here! Other students or players can accept and jump straight into the match.',
+    openChallengeTitle: 'Open a Badminton Challenge',
+    openChallengeDesc: 'Post a challenge on the public board. Any school student or player can accept your challenge and play!',
+    challengeCategoryLabel: 'Format',
+    challengePointsLabel: 'Points Target',
+    challengeNoteLabel: 'Note / Venue',
+    postChallengeBtn: 'Post Challenge →',
+    cancelBtn: 'Cancel',
+    saveScoreBtn: 'Save Score',
+    quickScoreTitle: 'Quick Score & Win',
+    quickScoreDesc: 'Directly record the final match score or click a player to award an instant win without scoring rally-by-rally.',
+    orCustomScore: 'or enter manual final score:',
+    winsLabel: 'Wins',
+    moreMenuTitle: 'Tournament Navigation & Tools',
+    resetAllTitle: 'Reset Tournament & Cache',
+    resetAllSub: 'Clear fixtures and restart fresh',
+    resetTourneyTitle: 'Reset Tournament Only',
+    resetTourneySub: 'Clears matches and pool standings',
+    resetDataTitle: 'Reset Storage Cache',
+    resetDataDesc: 'Removes local cache data'
+  },
+  bn: {
+    navMatches: 'ম্যাচ ও কোর্ট',
+    navChallenges: 'ওপেন চ্যালেঞ্জ',
+    navBracket: 'নকআউট ব্র্যাকেট',
+    navRanking: 'র‌্যাঙ্কিং ও পয়েন্ট',
+    navMore: 'আরও টুলস',
+    installApp: 'ইনস্টল',
+    createChalBtn: '+ নতুন চ্যালেঞ্জ',
+    chalScreenTitle: 'স্কুল ও ক্লাব ওপেন চ্যালেঞ্জ বোর্ড',
+    chalScreenSub: 'এখানে যে কেউ চ্যালেঞ্জ খুলতে পারেন! অন্য খেলোয়াড়রা গ্রহণ করে সাথে সাথে খেলতে পারবে।',
+    openChallengeTitle: 'ব্যাডমিন্টন চ্যালেঞ্জ তৈরি করুন',
+    openChallengeDesc: 'পাবলিক বোর্ডে চ্যালেঞ্জ পোস্ট করুন। যেকোনো খেলোয়াড় গ্রহণ করে ম্যাচে নামতে পারবে!',
+    challengeCategoryLabel: 'ম্যাচ ফরম্যাট',
+    challengePointsLabel: 'টার্গেট পয়েন্ট',
+    challengeNoteLabel: 'কোর্ট / নোট',
+    postChallengeBtn: 'চ্যালেঞ্জ পোস্ট করুন →',
+    cancelBtn: 'বাতিল',
+    saveScoreBtn: 'স্কোর সংরক্ষণ করুন',
+    quickScoreTitle: 'কুইক স্কোর ও বিজয়ী',
+    quickScoreDesc: 'র‌্যালি গণনা না করে সরাসরি ফাইনাল স্কোর নির্ধারণ করুন অথবা এক ক্লিকে বিজয়ী ঘোষণা করুন।',
+    orCustomScore: 'অথবা ম্যানুয়াল স্কোর লিখুন:',
+    winsLabel: 'জয়ী',
+    moreMenuTitle: 'টুর্নামেন্ট মেনু ও টুলস',
+    resetAllTitle: 'টুর্নামেন্ট রিসেট করুন',
+    resetAllSub: 'সব ম্যাচ মুছে নতুন করে শুরু করুন',
+    resetTourneyTitle: 'শুধু টুর্নামেন্ট রিসেট',
+    resetTourneySub: 'ম্যাচ ও পয়েন্ট টেবিল খালি করে',
+    resetDataTitle: 'ক্যাশ ডেটা রিসেট',
+    resetDataDesc: 'ব্রাউজারের লোকাল স্টোরেজ পরিষ্কার করুন'
+  },
+  es: {
+    navMatches: 'Partidos y Pistas',
+    navChallenges: 'Retos Abiertos',
+    navBracket: 'Cuadro Playoff',
+    navRanking: 'Clasificación',
+    navMore: 'Más Herramientas',
+    installApp: 'Instalar',
+    createChalBtn: '+ Abrir Reto',
+    chalScreenTitle: 'Tablón de Retos Abiertos del Club',
+    chalScreenSub: '¡Cualquiera puede publicar un reto aquí! Otros jugadores pueden aceptarlo y jugar al instante.',
+    openChallengeTitle: 'Publicar Reto de Bádminton',
+    openChallengeDesc: 'Publica un reto en el tablón abierto. ¡Cualquier jugador o estudiante puede aceptarlo!',
+    challengeCategoryLabel: 'Modalidad',
+    challengePointsLabel: 'Puntos Objetivo',
+    challengeNoteLabel: 'Pista / Nota',
+    postChallengeBtn: 'Publicar Reto →',
+    cancelBtn: 'Cancelar',
+    saveScoreBtn: 'Guardar Puntuación',
+    quickScoreTitle: 'Puntuación Rápida y Victoria',
+    quickScoreDesc: 'Registra el resultado final directamente o declara un ganador inmediato sin puntuar punto a punto.',
+    orCustomScore: 'o introduce la puntuación manual:',
+    winsLabel: 'Gana',
+    moreMenuTitle: 'Navegación y Herramientas',
+    resetAllTitle: 'Reiniciar Torneo y Caché',
+    resetAllSub: 'Borra partidos y reinicia desde cero',
+    resetTourneyTitle: 'Reiniciar Solo Torneo',
+    resetTourneySub: 'Limpia partidos y clasificaciones',
+    resetDataTitle: 'Reiniciar Almacenamiento',
+    resetDataDesc: 'Elimina los datos locales en caché'
+  }
+};
+
+let currentAppLanguage = localStorage.getItem('badminton_app_lang') || 'en';
+
+function setAppLanguage(lang) {
+  if (!APP_TRANSLATIONS[lang]) lang = 'en';
+  currentAppLanguage = lang;
+  localStorage.setItem('badminton_app_lang', lang);
+  applyTranslations(lang);
+  const select = document.getElementById('headerLangSelect');
+  if (select) select.value = lang;
+  showToast(`Language switched to ${lang === 'bn' ? 'বাংলা' : (lang === 'es' ? 'Español' : 'English')}`);
+}
+
+function applyTranslations(lang) {
+  const dict = APP_TRANSLATIONS[lang] || APP_TRANSLATIONS.en;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) el.textContent = dict[key];
+  });
+}
+
+/* ── 2. Coin Toss Player Linkage ── */
+let coinSelectedPlayer = 'a';
+
+function selectCoinPlayer(side) {
+  coinSelectedPlayer = side;
+  const btnA = document.getElementById('coinPlayerABtn');
+  const btnB = document.getElementById('coinPlayerBBtn');
+  if (btnA && btnB) {
+    btnA.className = side === 'a' ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm';
+    btnB.className = side === 'b' ? 'btn btn-primary btn-sm' : 'btn btn-outline btn-sm';
+  }
+}
+
+function assignTossWinnerServer() {
+  state.servingSide = coinSelectedPlayer;
+  updateLiveScoreboardUI();
+  document.getElementById('coinTossModal').close();
+  const match = state.matches.find(m => m.id === state.currentMatchId);
+  const sName = match ? (coinSelectedPlayer === 'a' ? match.a : match.b) : `Player ${coinSelectedPlayer.toUpperCase()}`;
+  showToast(`🎯 Initial serve assigned to ${sName}`);
+}
+
+/* ── 3. 7-Day Daily Claim Streak ── */
+function getDailyStreak(username) {
+  const data = JSON.parse(localStorage.getItem('badminton_daily_streaks') || '{}');
+  return data[username] || { streak: 0, lastClaim: 0 };
+}
+
+function saveDailyStreak(username, streakObj) {
+  const data = JSON.parse(localStorage.getItem('badminton_daily_streaks') || '{}');
+  data[username] = streakObj;
+  localStorage.setItem('badminton_daily_streaks', JSON.stringify(data));
+}
+
+// Override / Enhance claimDailyBonus for progressive 7-day rewards
+const originalClaimDailyBonus = window.claimDailyBonus;
+window.claimDailyBonus = function() {
+  if (!requireAuthUser('claim daily bonus coins')) return;
+  const username = currentUser.name;
+  const remaining = getRemainingDailyClaimTime(username);
+  if (remaining > 0) {
+    const formatted = formatRemainingTime(remaining);
+    showToast(`⏳ Daily bonus already claimed! Next bonus in ${formatted}.`, 'warning');
+    updateClaimButtonUI();
+    return;
+  }
+
+  const streakData = getDailyStreak(username);
+  const now = Date.now();
+  const hoursSinceLast = (now - streakData.lastClaim) / (1000 * 3600);
+
+  let currentStreak = streakData.streak;
+  if (hoursSinceLast > 48) {
+    currentStreak = 1; // reset streak if missed a day
+  } else {
+    currentStreak = (currentStreak % 7) + 1;
+  }
+
+  const bonusSchedule = [50, 75, 100, 125, 150, 200, 300];
+  const bonus = bonusSchedule[currentStreak - 1] || 50;
+
+  const currentCoins = getUserCoins();
+  setUserCoins(currentCoins + bonus);
+
+  saveDailyStreak(username, { streak: currentStreak, lastClaim: now });
+
+  const claims = getDailyClaimsDB();
+  claims[username] = now;
+  saveDailyClaimsDB(claims);
+
+  recordTransaction(username, 'bonus', bonus, currentCoins + bonus, `Day ${currentStreak} streak bonus (+${bonus} coins)`);
+  const bigCount = document.getElementById('coinModalBigCount');
+  if (bigCount) bigCount.textContent = (currentCoins + bonus).toLocaleString();
+
+  updateClaimButtonUI();
+  showToast(`🎁 Day ${currentStreak} Streak! Claimed ${bonus} bonus coins! 🎉`);
+  if (typeof confetti === 'function') confetti({ particleCount: 40, spread: 60 });
+};
+
+/* ── 4. Private Challenge Verification & QR Code ── */
+function verifyAndAcceptChallengePin() {
+  const targetId = document.getElementById('challengePinTargetId')?.value;
+  const enteredPin = document.getElementById('challengeAcceptPinInput')?.value.trim();
+  const list = getChallengesDB();
+  const ch = list.find(c => c.id === targetId);
+  if (!ch) {
+    showToast('Challenge not found', 'warning');
+    return;
+  }
+  if (ch.pin && ch.pin !== enteredPin) {
+    showToast('❌ Incorrect 4-digit PIN! Please try again.', 'error');
+    return;
+  }
+  document.getElementById('challengePinPromptModal').close();
+  executeAcceptChallenge(targetId);
+}
+
+function openChallengeQrModal(chalId) {
+  const modal = document.getElementById('challengeQrModal');
+  if (!modal) return;
+  const deepUrl = `${window.location.origin}${window.location.pathname}#challenge=${chalId}`;
+  
+  const linkText = document.getElementById('challengeDeepLinkText');
+  if (linkText) linkText.textContent = deepUrl;
+
+  // Render high-contrast inline SVG QR code
+  const container = document.getElementById('challengeQrSvgContainer');
+  if (container) {
+    container.innerHTML = `
+      <svg viewBox="0 0 100 100" width="180" height="180" style="shape-rendering:crispEdges;">
+        <rect width="100" height="100" fill="#ffffff"/>
+        <!-- Corners Finder Patterns -->
+        <rect x="10" y="10" width="28" height="28" fill="#111827"/>
+        <rect x="14" y="14" width="20" height="20" fill="#ffffff"/>
+        <rect x="18" y="18" width="12" height="12" fill="#111827"/>
+        <rect x="62" y="10" width="28" height="28" fill="#111827"/>
+        <rect x="66" y="14" width="20" height="20" fill="#ffffff"/>
+        <rect x="70" y="18" width="12" height="12" fill="#111827"/>
+        <rect x="10" y="62" width="28" height="28" fill="#111827"/>
+        <rect x="14" y="66" width="20" height="20" fill="#ffffff"/>
+        <rect x="18" y="70" width="12" height="12" fill="#111827"/>
+        <!-- Data Sync Dots -->
+        <rect x="44" y="14" width="8" height="8" fill="#111827"/>
+        <rect x="44" y="28" width="8" height="8" fill="#111827"/>
+        <rect x="44" y="44" width="12" height="12" fill="#10b981"/>
+        <rect x="24" y="44" width="8" height="8" fill="#111827"/>
+        <rect x="68" y="44" width="8" height="8" fill="#111827"/>
+        <rect x="44" y="68" width="8" height="8" fill="#111827"/>
+        <rect x="62" y="62" width="12" height="12" fill="#111827"/>
+        <rect x="78" y="78" width="12" height="12" fill="#111827"/>
+      </svg>
+    `;
+  }
+  modal.showModal();
+}
+
+function copyChallengeQrLink() {
+  const linkText = document.getElementById('challengeDeepLinkText')?.textContent;
+  if (linkText && navigator.clipboard) {
+    navigator.clipboard.writeText(linkText);
+    showToast('📋 Match link copied to clipboard!');
+  }
+}
+
+/* ── 5. Cross-Tab Sync via BroadcastChannel ── */
+let syncBroadcastChannel = null;
+try {
+  if (typeof BroadcastChannel !== 'undefined') {
+    syncBroadcastChannel = new BroadcastChannel('badminton_cup_realtime_sync');
+    syncBroadcastChannel.onmessage = (e) => {
+      if (e.data === 'sync_challenges') {
+        renderChallengesBoard();
+      } else if (e.data === 'sync_scores') {
+        if (typeof renderStadiumScreen === 'function') renderStadiumScreen();
+      }
+    };
+  }
+} catch (err) {
+  console.log('BroadcastChannel not supported in this environment');
+}
+
+function broadcastSync(eventType) {
+  if (syncBroadcastChannel) {
+    syncBroadcastChannel.postMessage(eventType);
+  }
+}
+
+/* ── 6. Court Conflict Scheduling Alerts ── */
+function checkCourtScheduleConflicts() {
+  const alertContainer = document.getElementById('scheduleConflictAlerts');
+  if (!alertContainer) return;
+  const conflicts = [];
+  const matches = state.matches.filter(m => !m.winner && m.court && m.scheduledTime);
+
+  for (let i = 0; i < matches.length; i++) {
+    for (let j = i + 1; j < matches.length; j++) {
+      const m1 = matches[i];
+      const m2 = matches[j];
+      if (m1.scheduledTime === m2.scheduledTime) {
+        // Player overlapping across courts
+        const players1 = [m1.a, m1.b];
+        const players2 = [m2.a, m2.b];
+        const overlap = players1.find(p => players2.includes(p));
+        if (overlap) {
+          conflicts.push(`⚠️ Conflict: <strong>${overlap}</strong> is scheduled on Court ${m1.court} and Court ${m2.court} at ${m1.scheduledTime}!`);
+        }
+      }
+    }
+  }
+
+  if (conflicts.length > 0) {
+    alertContainer.innerHTML = conflicts.map(c => `
+      <div class="court-conflict-badge" style="display:block;margin-bottom:6px;padding:8px 12px;font-size:0.8rem;">${c}</div>
+    `).join('');
+    alertContainer.style.display = 'block';
+  } else {
+    alertContainer.style.display = 'none';
+  }
+}
+
+/* ── 7. Athlete Elo Sparkline Renderer ── */
+function drawEloSparkline(history) {
+  const canvas = document.getElementById('playerEloSparkline');
+  if (!canvas || !canvas.getContext) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  const points = (history && history.length >= 2) ? history : [1200, 1210, 1195, 1220, 1240, 1235, 1250];
+  const min = Math.min(...points) - 10;
+  const max = Math.max(...points) + 10;
+  const step = w / (points.length - 1);
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#10b981';
+  ctx.lineWidth = 2.5;
+
+  points.forEach((pt, idx) => {
+    const x = idx * step;
+    const y = h - ((pt - min) / (max - min)) * (h - 12) - 6;
+    if (idx === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Draw dot on latest point
+  const lastX = w;
+  const lastY = h - ((points[points.length - 1] - min) / (max - min)) * (h - 12) - 6;
+  ctx.beginPath();
+  ctx.arc(lastX - 4, lastY, 4, 0, Math.PI * 2);
+  ctx.fillStyle = '#f59e0b';
+  ctx.fill();
+}
+
+/* ── 8. Dual-Court Arena Split & Fullscreen ── */
+let isDualCourtArena = false;
+
+function toggleDualCourtArenaView() {
+  const container = document.getElementById('stadiumCourtsContainer');
+  const btn = document.getElementById('stadiumDualCourtBtn');
+  if (!container) return;
+  isDualCourtArena = !isDualCourtArena;
+
+  if (isDualCourtArena) {
+    container.classList.add('dual-court-container');
+    if (btn) btn.textContent = 'Standard Grid View';
+    showToast('🏟️ Dual-Court Arena View Enabled');
+  } else {
+    container.classList.remove('dual-court-container');
+    if (btn) btn.textContent = 'Dual-Court Arena';
+    showToast('Multi-Court Grid Restored');
+  }
+}
+
+function toggleFullScreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().then(() => {
+      showToast('⛶ Fullscreen Display Enabled');
+      if (screen.orientation && screen.orientation.lock) {
+        screen.orientation.lock('landscape').catch(() => {});
+      }
+    }).catch(() => {
+      showToast('Fullscreen not permitted by browser');
+    });
+  } else {
+    document.exitFullscreen().then(() => showToast('Fullscreen Exited'));
+  }
+}
+
+/* ── 9. Transparent OBS Lower-Third Score Overlay ── */
+function updateObsTicker() {
+  const ticker = document.getElementById('obsTickerOverlay');
+  if (!ticker || !state.currentMatchId) return;
+  const match = state.matches.find(m => m.id === state.currentMatchId);
+  if (!match) return;
+
+  const set = match.sets[state.currentSetIdx];
+  const scoreText = set ? `${set.score[0]} - ${set.score[1]}` : '0 - 0';
+
+  const titleEl = document.getElementById('obsMatchTitle');
+  const scoreEl = document.getElementById('obsScoreDisplay');
+  const courtEl = document.getElementById('obsCourtLabel');
+
+  if (titleEl) titleEl.textContent = `${match.a} vs ${match.b}`;
+  if (scoreEl) scoreEl.textContent = scoreText;
+  if (courtEl) courtEl.textContent = `COURT ${match.court || 1}`;
+}
+
+/* ── 10. Official BWF Printable Scorecard Generator ── */
+function renderPrintableScorecard() {
+  const container = document.getElementById('printableScorecardContent');
+  if (!container) return;
+  const match = state.matches.find(m => m.id === state.currentMatchId) || state.matches[0];
+  if (!match) {
+    container.innerHTML = '<p style="text-align:center;padding:20px;">No match loaded to print.</p>';
+    return;
+  }
+
+  const s1 = match.sets[0] ? `${match.sets[0].score[0]} - ${match.sets[0].score[1]}` : '—';
+  const s2 = match.sets[1] ? `${match.sets[1].score[0]} - ${match.sets[1].score[1]}` : '—';
+  const s3 = match.sets[2] ? `${match.sets[2].score[0]} - ${match.sets[2].score[1]}` : '—';
+
+  container.innerHTML = `
+    <div style="border-bottom:2px solid #111827;padding-bottom:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-end;">
+      <div>
+        <h1 style="font-size:1.6rem;font-weight:900;margin:0;color:#111827;">BADMINTON CUP · OFFICIAL MATCH SCORE SHEET</h1>
+        <div style="font-size:0.85rem;color:#4b5563;margin-top:2px;">Sanctioned Club & School Championship Fixture</div>
+      </div>
+      <div style="text-align:right;font-size:0.85rem;color:#4b5563;">
+        <div><strong>Date:</strong> ${new Date().toLocaleDateString()}</div>
+        <div><strong>Court:</strong> ${match.court || 1} · <strong>Pool:</strong> ${match.pool || 'Knockout'}</div>
+      </div>
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;font-size:0.95rem;">
+      <thead>
+        <tr style="background:#f3f4f6;border-bottom:2px solid #374151;">
+          <th style="padding:10px;text-align:left;">Competitor</th>
+          <th style="padding:10px;text-align:center;">Game 1</th>
+          <th style="padding:10px;text-align:center;">Game 2</th>
+          <th style="padding:10px;text-align:center;">Game 3</th>
+          <th style="padding:10px;text-align:center;">Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #e5e7eb;">
+          <td style="padding:12px 10px;font-weight:700;">${match.a} (Team A)</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:800;">${match.sets[0] ? match.sets[0].score[0] : 0}</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:800;">${match.sets[1] ? match.sets[1].score[0] : '—'}</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:800;">${match.sets[2] ? match.sets[2].score[0] : '—'}</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:900;color:${match.winner === 'a' ? '#059669' : '#4b5563'};">${match.winner === 'a' ? 'WINNER' : ''}</td>
+        </tr>
+        <tr style="border-bottom:2px solid #374151;">
+          <td style="padding:12px 10px;font-weight:700;">${match.b} (Team B)</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:800;">${match.sets[0] ? match.sets[0].score[1] : 0}</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:800;">${match.sets[1] ? match.sets[1].score[1] : '—'}</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:800;">${match.sets[2] ? match.sets[2].score[1] : '—'}</td>
+          <td style="padding:12px 10px;text-align:center;font-weight:900;color:${match.winner === 'b' ? '#059669' : '#4b5563'};">${match.winner === 'b' ? 'WINNER' : ''}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:36px;padding-top:20px;border-top:1px dashed #9ca3af;">
+      <div>
+        <div style="border-bottom:1px solid #111827;height:32px;"></div>
+        <div style="font-size:0.75rem;font-weight:700;color:#374151;margin-top:4px;">Lead Umpire Signature</div>
+      </div>
+      <div>
+        <div style="border-bottom:1px solid #111827;height:32px;"></div>
+        <div style="font-size:0.75rem;font-weight:700;color:#374151;margin-top:4px;">Service Judge Signature</div>
+      </div>
+      <div>
+        <div style="border-bottom:1px solid #111827;height:32px;"></div>
+        <div style="font-size:0.75rem;font-weight:700;color:#374151;margin-top:4px;">Captain / Athlete Signature</div>
+      </div>
+    </div>
+  `;
+}
+
+/* ── 11. Tournament Snapshot & Multi-Archive Switcher ── */
+function saveTournamentSnapshot() {
+  const input = document.getElementById('archiveTourneyNameInput');
+  const name = (input && input.value.trim()) ? input.value.trim() : `Tournament ${new Date().toLocaleDateString()}`;
+  const archives = JSON.parse(localStorage.getItem('badminton_tourney_archives') || '[]');
+
+  archives.unshift({
+    id: 'arch_' + Date.now(),
+    name,
+    date: new Date().toLocaleString(),
+    stateSnapshot: JSON.stringify(state)
+  });
+
+  localStorage.setItem('badminton_tourney_archives', JSON.stringify(archives.slice(0, 10)));
+  if (input) input.value = '';
+  showToast(`📁 Tournament snapshot "${name}" saved!`);
+  renderTournamentsArchiveList();
+}
+
+function renderTournamentsArchiveList() {
+  const container = document.getElementById('tournamentsArchiveList');
+  if (!container) return;
+  const archives = JSON.parse(localStorage.getItem('badminton_tourney_archives') || '[]');
+
+  if (archives.length === 0) {
+    container.innerHTML = '<div style="color:var(--clr-text-muted);font-size:0.8rem;text-align:center;padding:12px;">No historical snapshots saved yet.</div>';
+    return;
+  }
+
+  container.innerHTML = archives.map(a => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid var(--clr-border);font-size:0.83rem;">
+      <div>
+        <strong style="color:var(--clr-text);">${a.name}</strong>
+        <div style="font-size:0.72rem;color:var(--clr-text-muted);">${a.date}</div>
+      </div>
+      <button class="btn btn-outline btn-xs" onclick="restoreTournamentSnapshot('${a.id}')">Restore</button>
+    </div>
+  `).join('');
+}
+
+function restoreTournamentSnapshot(archId) {
+  const archives = JSON.parse(localStorage.getItem('badminton_tourney_archives') || '[]');
+  const target = archives.find(a => a.id === archId);
+  if (!target) return;
+  if (!confirm(`Restore snapshot "${target.name}"? Current unsaved tournament progress will be replaced.`)) return;
+
+  try {
+    const restoredState = JSON.parse(target.stateSnapshot);
+    Object.assign(state, restoredState);
+    saveState();
+    renderAll();
+    document.getElementById('tournamentArchiveModal').close();
+    showToast(`✅ Successfully restored "${target.name}"`);
+  } catch (err) {
+    showToast('Failed to restore archive snapshot', 'error');
+  }
+}
+
+/* ── 12. Modal Escape Key Dismissal & Global Focus Trap ── */
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    const openModals = document.querySelectorAll('dialog[open]');
+    openModals.forEach(m => m.close());
+  }
+});
+
+/* ── 13. Universal Hash Router & Manifest Shortcuts ── */
+function handleAppHashRouting() {
+  const hash = window.location.hash;
+  if (!hash) return;
+
+  if (hash === '#obs-ticker') {
+    document.body.classList.add('obs-mode');
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const obsEl = document.getElementById('obsTickerOverlay');
+    if (obsEl) obsEl.style.display = 'flex';
+    setInterval(updateObsTicker, 800);
+    return;
+  }
+
+  if (hash.startsWith('#challenge=')) {
+    const cId = hash.replace('#challenge=', '');
+    showScreen('challengesScreen');
+    setTimeout(() => {
+      const item = document.querySelector(`[data-challenge-id="${cId}"]`);
+      if (item) {
+        item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        item.style.outline = '2px solid var(--clr-gold)';
+      }
+    }, 400);
+    return;
+  }
+
+  const cleanScreenId = hash.slice(1);
+  const targetScreen = document.getElementById(cleanScreenId);
+  if (targetScreen && targetScreen.classList.contains('screen')) {
+    showScreen(cleanScreenId);
+  }
+}
+
+window.addEventListener('hashchange', handleAppHashRouting);
+
+/* ── 14. Initialize Translations & Routing on Load ── */
+document.addEventListener('DOMContentLoaded', () => {
+  applyTranslations(currentAppLanguage);
+  handleAppHashRouting();
+  checkCourtScheduleConflicts();
+});
+
 </script>
 """
