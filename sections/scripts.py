@@ -543,6 +543,10 @@ function triggerLetCall() {
    QUICK SCORE & MANUAL WIN LOGIC (Foosball Simplicity)
 ═══════════════════════════════════════════════════ */
 function openQuickScoreModal(matchId) {
+  if (!isAdminUser()) {
+    showToast('Manual score overrides are restricted to Tournament Director / Admin.', 'warning');
+    return;
+  }
   const match = state.matches.find(m => m.id === matchId);
   if (!match) return;
   document.getElementById('quickMatchId').value = match.id;
@@ -556,7 +560,10 @@ function openQuickScoreModal(matchId) {
 }
 
 function awardInstantWinner(side, specificMatchId = null) {
-  if (!requireAuthUser('play or record match scores')) return;
+  if (!isAdminUser()) {
+    showToast('Awarding instant wins is restricted to Tournament Director / Admin.', 'warning');
+    return;
+  }
   const matchId = specificMatchId || document.getElementById('quickMatchId')?.value;
   const match = state.matches.find(m => m.id === matchId);
   if (!match) return;
@@ -594,7 +601,10 @@ function awardInstantWinner(side, specificMatchId = null) {
 }
 
 function saveQuickCustomScore() {
-  if (!requireAuthUser('record match scores')) return;
+  if (!isAdminUser()) {
+    showToast('Direct score overrides are restricted to Tournament Director / Admin.', 'warning');
+    return;
+  }
   const matchId = document.getElementById('quickMatchId').value;
   const match = state.matches.find(m => m.id === matchId);
   if (!match) return;
@@ -901,15 +911,19 @@ function enterChallengeQuickScore(chalId) {
 }
 
 async function cancelChallenge(chalId) {
+  if (!requireAuthUser('manage challenges')) return;
   const list = getChallengesDB();
   const chal = list.find(c => c.id === chalId);
   if (!chal) return;
 
-  const canManage = !currentUser || (
-    currentUser.name.toLowerCase() === chal.creator.toLowerCase() ||
-    (chal.opponent && currentUser.name.toLowerCase() === chal.opponent.toLowerCase()) ||
-    currentUser.role === 'admin' || currentUser.role === 'super_admin'
-  );
+  const myName = currentUser.name.toLowerCase();
+  const creatorNames = (chal.creator || '').toLowerCase().split(/[\/&,]/).map(s => s.trim());
+  const oppNames = (chal.opponent || '').toLowerCase().split(/[\/&,]/).map(s => s.trim());
+  const isParticipant = creatorNames.includes(myName) || oppNames.includes(myName) ||
+    (chal.creatorPayer && chal.creatorPayer.toLowerCase() === myName) ||
+    (chal.opponentPayer && chal.opponentPayer.toLowerCase() === myName);
+
+  const canManage = isParticipant || isAdminUser();
 
   if (!canManage) {
     showToast('Only challenge participants or an Admin can cancel this challenge.', 'warning');
@@ -1563,15 +1577,22 @@ function renderTournamentSwitcher() {
   const list = getTournamentsDB();
   const currentId = state.tournamentId || 'main';
 
+  const isAdmin = (typeof isAdminUser === 'function') ? isAdminUser() : false;
+  const newOpt = isAdmin ? `<option value="__NEW__">+ New Tournament...</option>` : '';
   const html = list.map(t =>
     `<option value="${t.id}" ${t.id === currentId ? 'selected' : ''}>${window.escapeHtml ? window.escapeHtml(t.title) : t.title}</option>`
-  ).join('') + `<option value="__NEW__">+ New Tournament...</option>`;
+  ).join('') + newOpt;
 
   selects.forEach(s => { s.innerHTML = html; });
 }
 
 function switchActiveTournament(targetId) {
   if (targetId === '__NEW__') {
+    if (!isAdminUser()) {
+      showToast('Creating new tournaments is restricted to Tournament Director / Admin.', 'error');
+      renderTournamentSwitcher();
+      return;
+    }
     const title = prompt('Enter New Tournament Name:', 'Summer Badminton Open 2026');
     if (!title || !title.trim()) {
       renderTournamentSwitcher();
@@ -2162,6 +2183,10 @@ function openAdminDashboardWithGuard() {
    ADMIN INVITATION & USER MANAGEMENT ENGINE (ITEMS 1–10)
 ═══════════════════════════════════════════════════ */
 function openInviteUserModal() {
+  if (!isAdminUser()) {
+    requireAdmin('Invite Users');
+    return;
+  }
   document.getElementById('inviteFullNameInput').value = '';
   document.getElementById('inviteEmailInput').value = '';
   document.getElementById('inviteClubInput').value = '';
@@ -2170,6 +2195,10 @@ function openInviteUserModal() {
 
 function handleInviteUserSubmit(e) {
   e.preventDefault();
+  if (!isAdminUser()) {
+    showToast('Inviting users is restricted to Tournament Director / Admin.', 'error');
+    return;
+  }
   const name = document.getElementById('inviteFullNameInput').value.trim();
   const email = document.getElementById('inviteEmailInput').value.trim().toLowerCase();
   const role = document.getElementById('inviteRoleSelect').value;
@@ -2265,6 +2294,10 @@ function resendInvitationEmail(userId) {
 }
 
 function revokeInvitation(userId) {
+  if (!isAdminUser()) {
+    showToast('Restricted to Director / Admin.', 'error');
+    return;
+  }
   const users = getUsersDB();
   const user = users.find(u => u.id === userId);
   if (!user) return;
@@ -2277,6 +2310,10 @@ function revokeInvitation(userId) {
 }
 
 async function deleteUserRecord(userId) {
+  if (!isAdminUser()) {
+    showToast('Restricted to Director / Admin.', 'error');
+    return;
+  }
   const users = getUsersDB();
   const user = users.find(u => u.id === userId);
   if (!user) return;
@@ -2302,6 +2339,10 @@ async function deleteUserRecord(userId) {
 }
 
 function toggleUserFeePayment(userId) {
+  if (!isAdminUser()) {
+    showToast('Restricted to Director / Admin.', 'error');
+    return;
+  }
   const users = getUsersDB();
   const user = users.find(u => u.id === userId);
   if (user) {
@@ -2315,10 +2356,18 @@ function toggleUserFeePayment(userId) {
 
 // Bulk CSV User Invitation (Item 6)
 function openBulkInviteModal() {
+  if (!isAdminUser()) {
+    requireAdmin('Bulk Invite Users');
+    return;
+  }
   document.getElementById('bulkInviteModal').showModal();
 }
 
 function processBulkInviteCsv() {
+  if (!isAdminUser()) {
+    showToast('Restricted to Director / Admin.', 'error');
+    return;
+  }
   const raw = document.getElementById('bulkInviteCsvTextarea').value;
   const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
   if (!lines.length) {
@@ -3387,6 +3436,10 @@ function renderAdminDashboard() {
 }
 
 function resetSingleMatch(matchId) {
+  if (!isAdminUser()) {
+    showToast('Resetting match results is restricted to Tournament Director / Admin.', 'error');
+    return;
+  }
   const match = state.matches.find(m => m.id === matchId);
   if (!match) return;
   if (confirm(`Reset match ${match.a} vs ${match.b} back to pending? Any wagers will be refunded.`)) {
@@ -3428,12 +3481,20 @@ function resetSingleMatch(matchId) {
 }
 
 function openScoreOverrideModal() {
+  if (!isAdminUser()) {
+    requireAdmin('Score Override');
+    return;
+  }
   const sel = document.getElementById('overrideMatchSelect');
   sel.innerHTML = state.matches.map(m => `<option value="${m.id}">${m.a} vs ${m.b} (${m.pool})</option>`).join('');
   document.getElementById('scoreOverrideModal').showModal();
 }
 
 function saveManualScoreOverride() {
+  if (!isAdminUser()) {
+    showToast('Score overrides are restricted to Tournament Director / Admin.', 'error');
+    return;
+  }
   const matchId = document.getElementById('overrideMatchSelect').value;
   const setsRaw = document.getElementById('overrideSetsInput').value.trim();
   const winSide = document.getElementById('overrideWinnerSelect').value;
@@ -3471,6 +3532,10 @@ function saveManualScoreOverride() {
 }
 
 function toggleUserRole(userId) {
+  if (!isAdminUser()) {
+    showToast('Changing roles is restricted to Tournament Director / Admin.', 'error');
+    return;
+  }
   const users = getUsersDB();
   const user = users.find(u => u.id === userId);
   if (user) {
@@ -3548,6 +3613,10 @@ function submitSuggestedScore() {
 }
 
 function approveScoreSuggestion(suggId) {
+  if (!isAdminUser()) {
+    showToast('Approving score suggestions is restricted to Tournament Director / Admin.', 'error');
+    return;
+  }
   const suggs = getSuggestionsDB();
   const sugg = suggs.find(s => s.id === suggId);
   if (!sugg) return;
@@ -3576,6 +3645,10 @@ function approveScoreSuggestion(suggId) {
 }
 
 function rejectScoreSuggestion(suggId) {
+  if (!isAdminUser()) {
+    showToast('Rejecting score suggestions is restricted to Tournament Director / Admin.', 'error');
+    return;
+  }
   const suggs = getSuggestionsDB();
   saveSuggestionsDB(suggs.filter(s => s.id !== suggId));
   logAdminAudit(`Rejected score suggestion ID ${suggId}`);
@@ -3584,6 +3657,10 @@ function rejectScoreSuggestion(suggId) {
 }
 
 function downloadTournamentBackupJSON() {
+  if (!isAdminUser()) {
+    requireAdmin('Backup Tournament Data');
+    return;
+  }
   const backup = {
     version: '4.0',
     exportDate: new Date().toISOString(),
@@ -3602,10 +3679,18 @@ function downloadTournamentBackupJSON() {
 }
 
 function triggerRestoreBackupJSON() {
+  if (!isAdminUser()) {
+    requireAdmin('Restore Tournament Data');
+    return;
+  }
   document.getElementById('restoreBackupInput').click();
 }
 
 function handleRestoreBackupFile(e) {
+  if (!isAdminUser()) {
+    showToast('Restoring backup data is restricted to Tournament Director / Admin.', 'error');
+    return;
+  }
   const file = e.target.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -4270,12 +4355,13 @@ function renderScorecardsScreen() {
   if (!container) return;
 
   if (!state.matches.length) {
+    const isAdmin = (typeof isAdminUser === 'function') ? isAdminUser() : false;
     container.innerHTML = `
       <div class="empty-state-card" style="grid-column:1/-1;">
         <div class="empty-state-icon">${svgIcon("clipboard", "icon-3xl")}</div>
         <div class="empty-state-title">No Match Records Created Yet</div>
-        <div class="empty-state-desc">Generate fixtures to produce official printable BWF scorecards.</div>
-        <button class="btn btn-primary btn-sm" onclick="showScreen('setupScreen')">Setup Tournament &rarr;</button>
+        <div class="empty-state-desc">${isAdmin ? 'Generate fixtures to produce official printable BWF scorecards.' : 'Official match scorecards will appear here once scheduled by the Tournament Director.'}</div>
+        ${isAdmin ? `<button class="btn btn-primary btn-sm" onclick="handleSetupNav()">Setup Tournament &rarr;</button>` : ''}
       </div>
     `;
     return;
@@ -4362,10 +4448,20 @@ function isAdminUser() {
 
 function requireAdmin(actionName, onAllowed) {
   if (isAdminUser()) {
-    onAllowed();
-    return;
+    if (typeof onAllowed === 'function') onAllowed();
+    return true;
   }
-  showToast(`${actionName} is restricted to Director / Admin.`, 'error');
+  showToast(`${actionName || 'This section'} is restricted to Tournament Director / Admin.`, 'error');
+  const guardModal = document.getElementById('adminAuthGuardModal');
+  const guardLabel = document.getElementById('guardActionName');
+  if (guardLabel && actionName) guardLabel.textContent = actionName;
+  if (guardModal) {
+    if (typeof guardModal.showModal === 'function') guardModal.showModal();
+    else guardModal.style.display = 'block';
+  } else {
+    openAuthModal();
+  }
+  return false;
 }
 
 function handleSetupNav() {
@@ -4377,7 +4473,7 @@ function handleDraftNav() {
 }
 
 function handleResetNav() {
-  openDataResetModal();
+  requireAdmin('Reset & Delete Data', () => openDataResetModal());
 }
 
 function quickSwitchToAdmin() {
@@ -4400,6 +4496,25 @@ function toggleRoleDemo() {
 }
 
 function showScreen(screenId) {
+  if (screenId === 'setupScreen' || screenId === 'draftScreen' || screenId === 'adminDashboardScreen') {
+    if (!isAdminUser()) {
+      const screenLabels = {
+        setupScreen: 'Tournament Setup & Roster',
+        draftScreen: 'Pool Draw Machine',
+        adminDashboardScreen: 'Director Admin Dashboard'
+      };
+      requireAdmin(screenLabels[screenId] || 'Director Section');
+      return;
+    }
+  }
+  if (screenId === 'playerHubScreen') {
+    if (!currentUser) {
+      showToast('Please sign in to access your Athlete Profile and Stacks.', 'info');
+      openAuthModal();
+      return;
+    }
+  }
+
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const target = document.getElementById(screenId);
   if (target) {
@@ -4686,6 +4801,10 @@ function getCleanRoster(textareaId) {
 }
 
 function clearRosters() {
+  if (!isAdminUser()) {
+    requireAdmin('Modify Rosters');
+    return;
+  }
   const rA = document.getElementById('rosterAInput');
   const rB = document.getElementById('rosterBInput');
   if (rA) rA.value = '';
@@ -4695,6 +4814,10 @@ function clearRosters() {
 }
 
 function loadDemoData() {
+  if (!isAdminUser()) {
+    requireAdmin('Load Registered Athletes');
+    return;
+  }
   // Load registered athletes into rosters if any exist
   const users = (typeof getUsersDB === 'function') ? getUsersDB() : [];
   const athletes = users.filter(u => u.name && u.name.toLowerCase() !== 'admin');
@@ -4717,6 +4840,10 @@ function loadDemoData() {
 }
 
 function openBulkRosterModal() {
+  if (!isAdminUser()) {
+    requireAdmin('Bulk Roster');
+    return;
+  }
   document.getElementById('bulkRosterModal').showModal();
 }
 function exportCurrentRosterToBulk() {
@@ -4725,6 +4852,10 @@ function exportCurrentRosterToBulk() {
   document.getElementById('bulkRosterTextarea').value = [...a, ...b].join('\n');
 }
 function applyBulkRoster() {
+  if (!isAdminUser()) {
+    requireAdmin('Apply Roster');
+    return;
+  }
   const raw = document.getElementById('bulkRosterTextarea').value;
   const list = raw.split(/[\n,]/).map(s => s.trim()).filter(s => s.length > 0);
   if (!list.length) {
@@ -4743,6 +4874,10 @@ function applyBulkRoster() {
    TOURNAMENT DRAFT & ROUND ROBIN
 ═══════════════════════════════════════════════════ */
 function initiateTournament() {
+  if (!isAdminUser()) {
+    requireAdmin('Start Tournament');
+    return;
+  }
   const dup = checkRosterDuplicates();
   if (dup.crossDuplicates.length > 0) {
     const names = dup.crossDuplicates.map(n => `"${n}"`).join(', ');
@@ -5285,6 +5420,10 @@ function renderGroupMatches() {
 }
 
 function simulateAllGroupGames() {
+  if (!isAdminUser()) {
+    requireAdmin('Auto-Simulate Group Matches');
+    return;
+  }
   state.matches.filter(m => (m.pool === 'A' || m.pool === 'B') && !m.winner).forEach(m => {
     const aWins = Math.random() > 0.5;
     m.winner = aWins ? 'a' : 'b';
@@ -5309,6 +5448,10 @@ function simulateAllGroupGames() {
    KNOCKOUT BRACKET GENERATION
 ═══════════════════════════════════════════════════ */
 function generateKnockoutFromGroups() {
+  if (!isAdminUser()) {
+    requireAdmin('Generate Knockout Bracket');
+    return;
+  }
   const standingsA = computePoolStandings(state.poolA, 'A');
   const standingsB = computePoolStandings(state.poolB, 'B');
 
@@ -5489,6 +5632,10 @@ function renderBracket() {
 }
 
 function simulateAllKnockout() {
+  if (!isAdminUser()) {
+    requireAdmin('Auto-Resolve Knockout Matches');
+    return;
+  }
   state.matches.filter(m => (m.pool === 'KO' || m.pool === 'BRONZE') && !m.winner && m.a !== 'BYE' && m.b !== 'BYE').forEach(m => {
     const aWins = Math.random() > 0.5;
     m.winner = aWins ? 'a' : 'b';
@@ -5540,9 +5687,34 @@ function releaseWakeLock() {
    LIVE UMPIRE SCOREBOARD
 ═══════════════════════════════════════════════════ */
 function startUmpireMatch(matchId) {
-  if (!requireAuthUser('referee or score matches')) return;
   const match = state.matches.find(m => m.id === matchId);
   if (!match) return;
+
+  const isChallenge = match.pool === 'CHALLENGE' || (match.id && (match.id.startsWith('ch_') || match.id.startsWith('chal_')));
+
+  if (!isChallenge) {
+    if (!isAdminUser()) {
+      const myName = currentUser ? currentUser.name.toLowerCase() : '';
+      const isPlayerInMatch = myName && (
+        match.a.toLowerCase().split(/[\/&,]/).map(s => s.trim()).includes(myName) ||
+        match.b.toLowerCase().split(/[\/&,]/).map(s => s.trim()).includes(myName)
+      );
+      if (!isPlayerInMatch) {
+        if (!currentUser) {
+          showToast('Please sign in to referee or score matches.', 'warning');
+          openAuthModal();
+        } else {
+          showToast('Refereeing official tournament matches is restricted to Tournament Director / Admin.', 'warning');
+          if (state.currentMatchId === matchId || (match.sets && match.sets.some(s => (s.score[0] > 0 || s.score[1] > 0)))) {
+            showScreen('stadiumScreen');
+          }
+        }
+        return;
+      }
+    }
+  } else {
+    if (!requireAuthUser('referee or score matches')) return;
+  }
 
   state.currentMatchId = matchId;
   state.currentSetIdx = match.sets.length - 1;
@@ -6928,6 +7100,10 @@ function refreshCurrentViews() {
 }
 
 function openDataResetModal() {
+  if (!isAdminUser()) {
+    requireAdmin('Reset & Delete Data');
+    return;
+  }
   const modal = document.getElementById('dataResetModal');
   if (modal) {
     if (typeof modal.showModal === 'function') modal.showModal();
@@ -6936,6 +7112,10 @@ function openDataResetModal() {
 }
 
 function resetCurrentTournamentOnly() {
+  if (!isAdminUser()) {
+    showToast('Resetting tournament is restricted to Director / Admin.', 'error');
+    return;
+  }
   const confirmed = confirm(
     "Reset current tournament matches?\n\n" +
     "This will clear all match results, live scores, and playoff brackets back to the setup stage. Registered athletes, user accounts, and point balances will be kept."
@@ -6972,6 +7152,10 @@ function resetCurrentTournamentOnly() {
 }
 
 function resetOpenChallengesOnly() {
+  if (!isAdminUser()) {
+    showToast('Clearing challenges is restricted to Director / Admin.', 'error');
+    return;
+  }
   const confirmed = confirm(
     "Clear all Open Challenges?\n\n" +
     "This will remove all open, active, and completed challenge games from the public challenge board."
@@ -6990,6 +7174,10 @@ function resetOpenChallengesOnly() {
 }
 
 function deleteAllAppData() {
+  if (!isAdminUser()) {
+    showToast('Factory reset is restricted to Director / Admin.', 'error');
+    return;
+  }
   const confirmed = confirm(
     "⚠️ PERMANENTLY DELETE ALL DATA?\n\n" +
     "This will completely erase:\n" +
@@ -7353,6 +7541,7 @@ function promptInstallPWA() {
 }
 
 function openMoreMenu() {
+  updateRoleVisibility();
   renderTournamentSwitcher();
   const modal = document.getElementById('moreMenuModal');
   if (modal) modal.showModal();

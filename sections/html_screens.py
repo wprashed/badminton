@@ -364,7 +364,7 @@ SCREENS_CONTENT = """
           <div id="rosterBalanceSummary" style="font-size:0.8rem;color:var(--clr-text-muted);font-weight:600;">
             0 Athletes Entered
           </div>
-          <button type="button" class="btn btn-ghost btn-sm" onclick="openDataResetModal()" style="color:#f87171;gap:5px;" title="Reset Tournament or Delete All Data"><svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> <span>Reset / Delete Data</span></button>
+          <button type="button" class="btn btn-ghost btn-sm admin-only-item" onclick="handleResetNav()" style="color:#f87171;gap:5px;" title="Reset Tournament or Delete All Data"><svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> <span>Reset / Delete Data</span></button>
           <button type="button" class="btn btn-primary btn-lg" id="startTournamentBtn" onclick="initiateTournament()" style="font-weight:800;gap:8px;padding:12px 26px;background:linear-gradient(135deg, #10b981, #059669);box-shadow:0 4px 16px rgba(16,185,129,0.35);">
             <span>Start Tournament</span>
             <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -1262,7 +1262,7 @@ SCREENS_CONTENT = """
       <div style="display:flex;justify-content:center;gap:12px;margin-top:20px;flex-wrap:wrap;">
         <button class="btn btn-gold btn-lg" onclick="openSharePosterModal()"><svg class="icon icon-xs" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Generate Victory Poster</button>
         <button class="btn btn-ghost" onclick="showScreen('leaderboardScreen')">View Global Leaderboard</button>
-        <button class="btn btn-ghost" onclick="handleSetupNav()">Start New Cup</button>
+        <button class="btn btn-ghost admin-only-item" onclick="handleSetupNav()">Start New Cup</button>
       </div>
     </div>
   </section>
@@ -1541,7 +1541,7 @@ SCREENS_CONTENT = """
       <button class="btn btn-outline btn-xs" onclick="document.getElementById('poolDrawWheelModal').showModal();initPoolDrawCanvas();">🎡 Live Pool Draw Wheel</button>
       <button class="btn btn-outline btn-xs" onclick="toggleAmoledBatterySaver()">🔋 AMOLED Battery Saver</button>
       <button class="btn btn-outline btn-xs" onclick="pruneOldMatchHistory()">🧹 Prune & Compress Storage</button>
-      <button class="btn btn-danger-reset btn-xs" onclick="openDataResetModal()">🗑️ Reset / Delete Data</button>
+      <button class="btn btn-danger-reset btn-xs admin-only-item" onclick="handleResetNav()">🗑️ Reset / Delete Data</button>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
       <div>
