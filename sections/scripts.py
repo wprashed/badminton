@@ -4367,10 +4367,6 @@ function handleDraftNav() {
 }
 
 function handleResetNav() {
-  if (!isAdminUser()) {
-    showToast('Only Admin (Rashed) can reset tournament data.', 'error');
-    return;
-  }
   openDataResetModal();
 }
 
@@ -6921,27 +6917,137 @@ function refreshCurrentViews() {
   updateBettingUI();
 }
 
-async function resetTournamentState() {
-  if (!isAdminUser()) {
-    showToast('Only Admin (Rashed) can reset tournament data.', 'error');
-    return;
+function openDataResetModal() {
+  const modal = document.getElementById('dataResetModal');
+  if (modal) {
+    if (typeof modal.showModal === 'function') modal.showModal();
+    else modal.style.display = 'block';
   }
-  const confirmed = await appConfirm('Clear current tournament data? Active pending predictions will be refunded.', 'Clear Tournament Data', 'Confirm Reset', true);
+}
+
+function resetCurrentTournamentOnly() {
+  const confirmed = confirm(
+    "Reset current tournament matches?\n\n" +
+    "This will clear all match results, live scores, and playoff brackets back to the setup stage. Registered athletes, user accounts, and point balances will be kept."
+  );
   if (!confirmed) return;
-  if (true) {
+
+  try {
     const bets = getBetsDB();
     const wallets = getWalletsDB();
+    let changed = false;
     bets.filter(b => b.status === 'pending').forEach(b => {
       b.status = 'refunded';
       wallets[b.username] = (wallets[b.username] || 0) + b.stake;
       recordTransaction(b.username, 'refund', b.stake, wallets[b.username], 'Tournament reset refund');
+      changed = true;
     });
-    saveBetsDB(bets);
-    saveWalletsDB(wallets);
+    if (changed) {
+      saveBetsDB(bets);
+      saveWalletsDB(wallets);
+    }
+  } catch (e) {}
 
-    localStorage.removeItem(STORAGE_KEY_STATE);
-    location.reload();
+  state.matches = [];
+  state.champion = null;
+  state.currentMatchId = null;
+  saveState();
+
+  const modal = document.getElementById('dataResetModal');
+  if (modal && modal.open) modal.close();
+
+  showToast('Tournament matches reset back to setup.', 'info');
+  showScreen('setupScreen');
+  refreshCurrentViews();
+}
+
+function resetOpenChallengesOnly() {
+  const confirmed = confirm(
+    "Clear all Open Challenges?\n\n" +
+    "This will remove all open, active, and completed challenge games from the public challenge board."
+  );
+  if (!confirmed) return;
+
+  try {
+    localStorage.removeItem(STORAGE_KEY_CHALLENGES);
+  } catch (e) {}
+
+  const modal = document.getElementById('dataResetModal');
+  if (modal && modal.open) modal.close();
+
+  showToast('Open challenges board cleared.', 'info');
+  if (typeof renderChallengesScreen === 'function') renderChallengesScreen();
+}
+
+function deleteAllAppData() {
+  const confirmed = confirm(
+    "⚠️ PERMANENTLY DELETE ALL DATA?\n\n" +
+    "This will completely erase:\n" +
+    "• All Tournaments, Fixtures & Match Scores\n" +
+    "• All Open Challenges & Challenge Matches\n" +
+    "• All Registered Athletes & User Accounts\n" +
+    "• All Point Balances, Wallets & Prediction History\n" +
+    "• All Cumulative Leaderboard Stats & Local Storage Cache\n\n" +
+    "The application will be completely reset to a clean, fresh installation.\n\n" +
+    "Click OK to permanently delete everything."
+  );
+  if (!confirmed) return;
+
+  try {
+    const keys = [
+      STORAGE_KEY_STATE,
+      STORAGE_KEY_USERS,
+      STORAGE_KEY_STATS,
+      STORAGE_KEY_AUTH,
+      STORAGE_KEY_THEME,
+      STORAGE_KEY_BETS,
+      STORAGE_KEY_WALLETS,
+      STORAGE_KEY_TXS,
+      STORAGE_KEY_SUGGESTIONS,
+      STORAGE_KEY_SETTINGS,
+      STORAGE_KEY_TOURNAMENTS,
+      STORAGE_KEY_CHALLENGES,
+      'badminton_audit_log_v4',
+      'badminton_daily_claims_v4',
+      'badminton_court_schedules_v4',
+      'badminton_sound_mute',
+      'badminton_obs_overlay_token',
+      'badminton_app_lang',
+      'badminton_cup_cur_user_v4',
+      'badminton_cup_cur_user_v5'
+    ];
+    keys.forEach(k => {
+      try { localStorage.removeItem(k); } catch (e) {}
+    });
+
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k && (k.startsWith('badminton') || k.startsWith('cup_'))) {
+        try { localStorage.removeItem(k); } catch (e) {}
+      }
+    }
+
+    currentUser = null;
+    state.matches = [];
+    state.poolA = [];
+    state.poolB = [];
+    state.players = [];
+    state.champion = null;
+
+    showToast('All data deleted successfully. Restarting fresh...', 'success');
+    setTimeout(() => {
+      window.location.reload();
+    }, 400);
+  } catch (err) {
+    console.error('Error deleting data:', err);
+    window.location.reload();
   }
+}
+
+const resetEverythingFullFactory = deleteAllAppData;
+
+async function resetTournamentState() {
+  openDataResetModal();
 }
 
 /* ═══════════════════════════════════════════════════
