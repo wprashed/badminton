@@ -66,7 +66,7 @@ window.svgIcon = svgIcon;
 const STORAGE_KEY_STATE = 'badminton_cup_state_v4';
 const STORAGE_KEY_USERS = 'badminton_cup_users_v4';
 const STORAGE_KEY_STATS = 'badminton_cup_stats_v4';
-const STORAGE_KEY_AUTH = 'badminton_cup_cur_user_v4';
+const STORAGE_KEY_AUTH = 'badminton_cup_cur_user_v5';
 const STORAGE_KEY_THEME = 'badminton_cup_theme_pref';
 const STORAGE_KEY_BETS = 'badminton_cup_bets_v4';
 const STORAGE_KEY_WALLETS = 'badminton_cup_wallets_v4';
@@ -2023,14 +2023,15 @@ function ensureDemoUsersSeeded() {
   });
   saveChallengesDB(chalList);
 
-  // If no currentUser is saved, default to Rashed as Admin
-  if (!currentUser) {
-    setCurrentUser(rashed);
-  }
+  // Do NOT automatically log in as admin when browsing
 }
 
 function loadAuthUser() {
   try {
+    // Clean up legacy auto-login session if present
+    if (localStorage.getItem('badminton_cup_cur_user_v4')) {
+      localStorage.removeItem('badminton_cup_cur_user_v4');
+    }
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY_AUTH));
     if (saved) {
       const users = getUsersDB();
