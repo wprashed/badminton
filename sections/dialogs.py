@@ -580,8 +580,8 @@ DIALOGS_CONTENT = """
 <!-- ═══════════════════════════════════════════════════
    FULL DATA RESET & START OVER MODAL
 ═══════════════════════════════════════════════════ -->
-<dialog id="dataResetModal" closedby="any" style="max-width:480px;width:92%;">
-  <div class="modal-card" style="padding:22px 20px;">
+<dialog id="dataResetModal" closedby="any" style="max-width:520px;width:92%;">
+  <div class="modal-card" style="padding:22px 22px 18px;box-sizing:border-box;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
       <h2 style="font-size:1.25rem;font-weight:800;color:#ef4444;display:flex;align-items:center;gap:8px;margin:0;">
         <svg class="icon icon-sm" viewBox="0 0 24 24" style="stroke:currentColor;"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
@@ -595,36 +595,45 @@ DIALOGS_CONTENT = """
 
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px;">
       <!-- Option 1: Clear Tournament Matches -->
-      <button class="btn btn-ghost" style="justify-content:flex-start;text-align:left;padding:12px 14px;border:1px solid var(--clr-border);border-radius:var(--radius-sm);" onclick="resetCurrentTournamentOnly()">
-        <div>
-          <div style="font-weight:700;color:var(--clr-text);font-size:0.9rem;">1. Clear Tournament Matches Only</div>
-          <div style="font-size:0.75rem;color:var(--clr-text-muted);margin-top:2px;">Wipes match scores and bracket back to setup. Keeps registered athletes and points.</div>
+      <button type="button" class="reset-option-card" onclick="resetCurrentTournamentOnly()">
+        <div class="reset-option-icon">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg>
+        </div>
+        <div class="reset-option-body">
+          <div class="reset-option-title">1. Clear Tournament Matches Only</div>
+          <div class="reset-option-desc">Wipes match scores and bracket back to setup. Keeps registered athletes and points.</div>
         </div>
       </button>
 
       <!-- Option 2: Clear Open Challenges -->
-      <button class="btn btn-ghost" style="justify-content:flex-start;text-align:left;padding:12px 14px;border:1px solid var(--clr-border);border-radius:var(--radius-sm);" onclick="resetOpenChallengesOnly()">
-        <div>
-          <div style="font-weight:700;color:var(--clr-text);font-size:0.9rem;">2. Clear Open Challenges Board</div>
-          <div style="font-size:0.75rem;color:var(--clr-text-muted);margin-top:2px;">Removes all active, waiting, and completed matches from the public challenge board.</div>
+      <button type="button" class="reset-option-card" onclick="resetOpenChallengesOnly()">
+        <div class="reset-option-icon">
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="reset-option-body">
+          <div class="reset-option-title">2. Clear Open Challenges Board</div>
+          <div class="reset-option-desc">Removes all active, waiting, and completed matches from the public challenge board.</div>
         </div>
       </button>
 
       <!-- Option 3: Permanently Delete All Data -->
-      <button class="btn btn-danger-reset" style="justify-content:flex-start;text-align:left;padding:12px 14px;border-radius:var(--radius-sm);" onclick="deleteAllAppData()">
-        <div>
-          <div style="font-weight:800;font-size:0.92rem;display:flex;align-items:center;gap:6px;">
-            <svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-            <span>3. Delete All Data (Factory Reset)</span>
-          </div>
-          <div style="font-size:0.75rem;opacity:0.9;margin-top:2px;">Permanently deletes ALL tournaments, matches, challenges, athlete rosters, wallets, and stored data.</div>
+      <button type="button" class="reset-option-card card-danger" onclick="deleteAllAppData()">
+        <div class="reset-option-icon">
+          <svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </div>
+        <div class="reset-option-body">
+          <div class="reset-option-title">3. Delete All Data (Factory Reset)</div>
+          <div class="reset-option-desc">Permanently deletes ALL tournaments, matches, challenges, athlete rosters, wallets, and stored data.</div>
         </div>
       </button>
     </div>
 
-    <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--clr-border);padding-top:12px;">
-      <span style="font-size:0.72rem;color:var(--clr-text-muted);">⚠️ Deleting all data cannot be undone</span>
-      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('dataResetModal').close()">Cancel</button>
+    <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--clr-border);padding-top:14px;gap:12px;flex-wrap:wrap;">
+      <span style="font-size:0.75rem;color:var(--clr-text-muted);display:flex;align-items:center;gap:5px;">
+        <span>⚠️</span>
+        <span>Deleting all data cannot be undone</span>
+      </span>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('dataResetModal').close()" style="margin-left:auto;">Cancel</button>
     </div>
   </div>
 </dialog>
