@@ -5,36 +5,72 @@ DIALOGS_CONTENT = """
 ═══════════════════════════════════════════════════ -->
 
 <!-- 1. Authentication Modal -->
-<dialog id="authModal" closedby="any" aria-labelledby="authModalHeading">
-  <div class="modal-card">
-    <h2 id="authModalHeading" style="font-size:1.4rem;font-weight:900;margin-bottom:6px;">Player Account</h2>
-    <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:20px;">Sign in to access your personal tournament hub, wagers, and medals.</p>
+<dialog id="authModal" closedby="any" aria-labelledby="authModalHeading" style="max-width:420px;width:92%;">
+  <div class="modal-card" style="padding:24px 22px;">
+    <!-- Modal Header with Icon & Close Button -->
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:10px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.25);display:flex;align-items:center;justify-content:center;color:var(--clr-green);flex-shrink:0;">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <div>
+          <h2 id="authModalHeading" style="font-size:1.25rem;font-weight:900;margin:0 0 2px;color:var(--clr-text);line-height:1.2;">Player Account</h2>
+          <span id="authModalSubheading" style="font-size:0.78rem;color:var(--clr-text-muted);display:block;line-height:1.35;">Sign in to access your tournament hub & wagers.</span>
+        </div>
+      </div>
+      <button type="button" class="modal-close" onclick="closeAuthModal()" aria-label="Close" style="cursor:pointer;flex-shrink:0;">
+        <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
     
-    <div style="display:flex;justify-content:center;gap:8px;margin-bottom:18px;">
-      <button class="btn btn-xs btn-ghost active" id="tabAuthLogin" onclick="switchAuthTab('login')">Log In</button>
-      <button class="btn btn-xs btn-ghost" id="tabAuthRegister" onclick="switchAuthTab('register')">Register</button>
+    <!-- Segmented Tab Switcher (Log In vs Register) -->
+    <div class="auth-segmented-tabs">
+      <button type="button" class="auth-tab-btn active" id="tabAuthLogin" onclick="switchAuthTab('login')">Log In</button>
+      <button type="button" class="auth-tab-btn" id="tabAuthRegister" onclick="switchAuthTab('register')">Register Athlete</button>
     </div>
 
     <form method="dialog" id="authForm" onsubmit="handleAuthSubmit(event)">
-      <div class="modal-form-item">
-        <label for="authUsernameInput">Player / Team Name or Email</label>
+      <div class="modal-form-item" style="margin-bottom:14px;">
+        <label for="authUsernameInput" style="display:flex;align-items:center;gap:6px;font-size:0.78rem;font-weight:700;color:var(--clr-text-muted);margin-bottom:6px;">
+          <svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;opacity:0.75;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Player / Team Name or Email</span>
+        </label>
         <input type="text" id="authUsernameInput" class="modal-input" placeholder="e.g. Lin Dan or player@example.com" required autofocus>
       </div>
-      <div class="modal-form-item">
-        <label for="authPasswordInput">Passcode (PIN or Password)</label>
+
+      <div class="modal-form-item" style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <label for="authPasswordInput" style="display:flex;align-items:center;gap:6px;font-size:0.78rem;font-weight:700;color:var(--clr-text-muted);margin:0;">
+            <svg class="icon icon-xs" viewBox="0 0 24 24" style="stroke:currentColor;opacity:0.75;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span>Passcode (PIN or Password)</span>
+          </label>
+          <button type="button" onclick="toggleAuthPasswordVisibility()" style="background:none;border:none;color:var(--clr-text-muted);font-size:0.72rem;cursor:pointer;padding:0 4px;font-weight:600;" id="authTogglePassBtn">Show</button>
+        </div>
         <input type="password" id="authPasswordInput" class="modal-input" placeholder="••••••••" required>
+        <div style="font-size:0.73rem;color:var(--clr-text-muted);margin-top:6px;display:flex;align-items:center;gap:5px;line-height:1.35;">
+          <span style="color:var(--clr-gold);">💡</span>
+          <span>Director: username <strong style="color:var(--clr-text);">safan0</strong> · Athletes: enter name</span>
+        </div>
       </div>
 
-      <div style="display:flex;justify-content:space-between;margin-top:20px;">
-        <button type="button" class="btn btn-ghost btn-sm" onclick="closeAuthModal()">Cancel</button>
-        <button type="submit" class="btn btn-primary btn-sm" id="authSubmitBtn">Sign In</button>
+      <div style="display:flex;gap:10px;margin-top:18px;">
+        <button type="button" class="btn btn-ghost btn-sm" onclick="closeAuthModal()" style="flex:1;min-height:40px;font-weight:600;">Cancel</button>
+        <button type="submit" class="btn btn-primary btn-sm" id="authSubmitBtn" style="flex:2;min-height:40px;font-weight:800;background:linear-gradient(135deg, #10b981, #059669);box-shadow:0 4px 14px rgba(16,185,129,0.35);display:flex;align-items:center;justify-content:center;gap:6px;">
+          <span>Sign In</span>
+          <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </div>
+
+      <div style="margin-top:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;gap:6px;font-size:0.72rem;color:var(--clr-text-muted);">
+        <svg class="icon icon-xs" viewBox="0 0 24 24" style="color:var(--clr-green);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>BWF-standard role-based authentication</span>
       </div>
     </form>
   </div>
 </dialog>
 
 <!-- 2. Admin Invite User Modal (Items 1, 2, 3) -->
-<dialog id="inviteUserModal" closedby="any">
+<dialog id="inviteUserModal" closedby="any" style="max-width:480px;width:92%;">
   <div class="modal-card">
     <h2 style="font-size:1.35rem;font-weight:900;margin-bottom:6px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Invite New User / Player</h2>
     <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:16px;">The user will be created and receive an invitation email with an acceptance token.</p>
@@ -198,7 +234,7 @@ DIALOGS_CONTENT = """
 </dialog>
 
 <!-- 6. Bulk Invite CSV Modal (Item 6) -->
-<dialog id="bulkInviteModal" closedby="any">
+<dialog id="bulkInviteModal" closedby="any" style="max-width:520px;width:92%;">
   <div class="modal-card">
     <h2 style="font-size:1.35rem;font-weight:900;margin-bottom:8px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Bulk CSV User Invitations</h2>
     <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:12px;">
@@ -229,7 +265,7 @@ DIALOGS_CONTENT = """
 </dialog>
 
 <!-- 8. Manual Score Override Modal (Admin) -->
-<dialog id="scoreOverrideModal" closedby="any">
+<dialog id="scoreOverrideModal" closedby="any" style="max-width:440px;width:92%;">
   <div class="modal-card">
     <h2 style="font-size:1.4rem;font-weight:900;margin-bottom:6px;">Manual Match Score Override</h2>
     <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:16px;">Correct an official score, overturn a call, or mark a forfeit.</p>
@@ -258,7 +294,7 @@ DIALOGS_CONTENT = """
 </dialog>
 
 <!-- 9. Coin Toss Modal -->
-<dialog id="coinTossModal" closedby="any">
+<dialog id="coinTossModal" closedby="any" style="max-width:390px;width:92%;">
   <div class="modal-card" style="text-align:center;">
     <h2 style="font-size:1.4rem;font-weight:900;margin-bottom:8px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg> BWF Official Coin Toss</h2>
     <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:20px;">Decides initial serve or court end preference before match start.</p>
@@ -282,7 +318,7 @@ DIALOGS_CONTENT = """
 </dialog>
 
 <!-- 10. Match Win Modal -->
-<dialog id="matchWinModal" closedby="any">
+<dialog id="matchWinModal" closedby="any" style="max-width:440px;width:92%;">
   <div class="modal-card" style="text-align:center;">
     <div style="display:flex;justify-content:center;color:var(--clr-green);margin-bottom:8px;"><svg class="icon icon-3xl" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg></div>
     <h2 style="font-size:1.6rem;font-weight:900;margin-bottom:4px;">Match Completed!</h2>
@@ -316,7 +352,7 @@ DIALOGS_CONTENT = """
 </dialog>
 
 <!-- 12. Crowdsourced Score Suggestion Modal -->
-<dialog id="suggestScoreModal" closedby="any">
+<dialog id="suggestScoreModal" closedby="any" style="max-width:440px;width:92%;">
   <div class="modal-card">
     <h2 style="font-size:1.3rem;font-weight:900;margin-bottom:6px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Suggest Completed Match Score</h2>
     <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:16px;">Spectators & athletes can submit scores. Admins verify submissions.</p>
@@ -345,7 +381,7 @@ DIALOGS_CONTENT = """
 </dialog>
 
 <!-- 13. Walkover / Penalty Modal (Items 1, 2, 3, 4) -->
-<dialog id="walkoverModal" closedby="any">
+<dialog id="walkoverModal" closedby="any" style="max-width:420px;width:92%;">
   <div class="modal-card">
     <h2 id="walkoverModalTitle" style="font-size:1.3rem;font-weight:900;margin-bottom:6px;">Record Match Penalty / Walkover</h2>
     <p id="walkoverModalDesc" style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:16px;">Specify which side committed the offense or requested forfeit.</p>
@@ -382,7 +418,7 @@ DIALOGS_CONTENT = """
 </dialog>
 
 <!-- 17. Umpire Audio & Voice Settings Modal (Items 39 & 40) -->
-<dialog id="soundSettingsModal" closedby="any">
+<dialog id="soundSettingsModal" closedby="any" style="max-width:420px;width:92%;">
   <div class="modal-card">
     <h2 style="font-size:1.3rem;font-weight:900;margin-bottom:12px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg> Umpire Audio & Speech Settings</h2>
     
@@ -414,7 +450,7 @@ DIALOGS_CONTENT = """
 </dialog>
 
 <!-- 18. Bulk Roster Import / Export Modal (Item 34) -->
-<dialog id="bulkRosterModal" closedby="any">
+<dialog id="bulkRosterModal" closedby="any" style="max-width:520px;width:92%;">
   <div class="modal-card">
     <h2 style="font-size:1.3rem;font-weight:900;margin-bottom:8px;"><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> Bulk Roster Import / Export</h2>
     <p style="color:var(--clr-text-muted);font-size:0.85rem;margin-bottom:12px;">Paste names (one per line or comma-separated). They will be split into Pool A & Pool B.</p>

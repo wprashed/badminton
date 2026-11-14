@@ -1889,13 +1889,45 @@ function openAuthModal() {
 }
 
 function closeAuthModal() {
-  document.getElementById('authModal').close();
+  const modal = document.getElementById('authModal');
+  if (modal) modal.close();
 }
+
 function switchAuthTab(mode) {
   authMode = mode;
-  document.getElementById('tabAuthLogin').classList.toggle('active', mode === 'login');
-  document.getElementById('tabAuthRegister').classList.toggle('active', mode === 'register');
-  document.getElementById('authSubmitBtn').textContent = mode === 'login' ? 'Sign In' : 'Create Account';
+  const loginTab = document.getElementById('tabAuthLogin');
+  const regTab = document.getElementById('tabAuthRegister');
+  if (loginTab) loginTab.classList.toggle('active', mode === 'login');
+  if (regTab) regTab.classList.toggle('active', mode === 'register');
+
+  const submitBtn = document.getElementById('authSubmitBtn');
+  if (submitBtn) {
+    submitBtn.innerHTML = mode === 'login'
+      ? '<span>Sign In</span> <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>'
+      : '<span>Create Account</span> <svg class="icon icon-xs" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+  }
+
+  const heading = document.getElementById('authModalHeading');
+  const subheading = document.getElementById('authModalSubheading');
+  if (heading) heading.textContent = mode === 'login' ? 'Player Account' : 'Register Athlete';
+  if (subheading) {
+    subheading.textContent = mode === 'login'
+      ? 'Sign in to access your tournament hub & wagers.'
+      : 'Create your official athlete profile for tournament play.';
+  }
+}
+
+function toggleAuthPasswordVisibility() {
+  const input = document.getElementById('authPasswordInput');
+  const btn = document.getElementById('authTogglePassBtn');
+  if (!input) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    if (btn) btn.textContent = 'Hide';
+  } else {
+    input.type = 'password';
+    if (btn) btn.textContent = 'Show';
+  }
 }
 
 async function handleAuthSubmit(e) {

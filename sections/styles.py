@@ -1095,11 +1095,12 @@ dialog {
   color: var(--clr-text);
   border-radius: var(--radius-md);
   padding: 0;
-  max-width: 92vw;
-  width: auto;
+  max-width: min(92vw, 480px);
+  width: 92%;
   margin: auto;
-  box-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.75);
   overflow: hidden;
+  box-sizing: border-box;
 }
 dialog.modal {
   border: none !important;
@@ -1208,6 +1209,54 @@ body.theme-light .modal-input {
   outline: none;
   border-color: var(--clr-green);
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+
+/* Authentication Modal & Tab Switcher */
+#authModal {
+  max-width: 420px;
+  width: 92%;
+}
+.auth-segmented-tabs {
+  display: flex;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 18px;
+}
+body.theme-light .auth-segmented-tabs {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+.auth-tab-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  color: var(--clr-text-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+}
+.auth-tab-btn:hover {
+  color: var(--clr-text);
+}
+.auth-tab-btn.active {
+  background: var(--clr-surface-card);
+  color: var(--clr-green);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+body.theme-light .auth-tab-btn.active {
+  background: #ffffff;
+  color: #059669;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 /* Universal Modern Accessible Form Select */
