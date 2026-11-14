@@ -7482,11 +7482,11 @@ document.addEventListener('visibilitychange', () => {
 /* ── 1. Translation Dictionary & i18n Engine ── */
 const APP_TRANSLATIONS = {
   en: {
-    navMatches: 'Matches & Courts',
-    navChallenges: 'Open Challenges',
-    navBracket: 'Playoff Bracket',
-    navRanking: 'Standings & Ranks',
-    navMore: 'More Tools',
+    navMatches: 'Matches',
+    navChallenges: 'Challenges',
+    navBracket: 'Bracket',
+    navRanking: 'Standings',
+    navMore: 'More',
     installApp: 'Install',
     createChalBtn: 'Open Challenge',
     chalScreenTitle: 'School & Club Open Challenge Board',
@@ -7512,11 +7512,11 @@ const APP_TRANSLATIONS = {
     resetDataDesc: 'Removes local cache data'
   },
   bn: {
-    navMatches: 'ম্যাচ ও কোর্ট',
-    navChallenges: 'ওপেন চ্যালেঞ্জ',
-    navBracket: 'নকআউট ব্র্যাকেট',
-    navRanking: 'র‌্যাঙ্কিং ও পয়েন্ট',
-    navMore: 'আরও টুলস',
+    navMatches: 'ম্যাচ',
+    navChallenges: 'চ্যালেঞ্জ',
+    navBracket: 'ব্র্যাকেট',
+    navRanking: 'র‌্যাঙ্কিং',
+    navMore: 'মেনু',
     installApp: 'ইনস্টল',
     createChalBtn: 'নতুন চ্যালেঞ্জ',
     chalScreenTitle: 'স্কুল ও ক্লাব ওপেন চ্যালেঞ্জ বোর্ড',
@@ -7542,11 +7542,11 @@ const APP_TRANSLATIONS = {
     resetDataDesc: 'ব্রাউজারের লোকাল স্টোরেজ পরিষ্কার করুন'
   },
   es: {
-    navMatches: 'Partidos y Pistas',
-    navChallenges: 'Retos Abiertos',
-    navBracket: 'Cuadro Playoff',
-    navRanking: 'Clasificación',
-    navMore: 'Más Herramientas',
+    navMatches: 'Partidos',
+    navChallenges: 'Retos',
+    navBracket: 'Playoff',
+    navRanking: 'Posiciones',
+    navMore: 'Más',
     installApp: 'Instalar',
     createChalBtn: 'Abrir Reto',
     chalScreenTitle: 'Tablón de Retos Abiertos del Club',

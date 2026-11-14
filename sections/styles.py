@@ -1886,7 +1886,7 @@ body.theme-contrast .mobile-bottom-nav {
   align-items: center;
   justify-content: center;
   gap: 2px;
-  padding: 4px 0;
+  padding: 4px 2px;
   color: var(--clr-text-muted);
   text-decoration: none;
   background: transparent;
@@ -1894,11 +1894,23 @@ body.theme-contrast .mobile-bottom-nav {
   cursor: pointer;
   min-height: 48px;
   font-family: inherit;
-  font-size: 0.72rem;
+  font-size: 0.69rem;
   font-weight: 600;
+  white-space: nowrap !important;
   transition: color 150ms ease;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  overflow: hidden;
+}
+.mobile-nav-btn span {
+  display: block;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  max-width: 100% !important;
+  font-size: 0.68rem !important;
+  letter-spacing: -0.01em;
+  text-align: center;
 }
 .mobile-nav-btn .icon {
   width: 20px;
@@ -2298,7 +2310,12 @@ iframe[src*="netlify"] {
     padding: 4px 4px !important;
   }
   .mobile-nav-btn {
-    font-size: 0.65rem;
+    font-size: 0.64rem;
+    white-space: nowrap !important;
+  }
+  .mobile-nav-btn span {
+    font-size: 0.64rem !important;
+    white-space: nowrap !important;
   }
   .mobile-nav-btn .icon {
     width: 18px;

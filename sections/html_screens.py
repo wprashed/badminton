@@ -89,23 +89,23 @@ SCREENS_CONTENT = """
   <div class="stage-nav-inner">
     <button class="stage-tab active" id="tabNavMatches" onclick="showScreen('groupsScreen')">
       <span class="tab-icon"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M12 2l3 7h-6l3-7zM7 9l-4 8 7 5 3-4-6-9zM17 9l4 8-7 5-3-4 6-9z"/></svg></span>
-      <span data-i18n="navMatches">Matches & Courts</span>
+      <span data-i18n="navMatches">Matches</span>
     </button>
     <button class="stage-tab" id="tabNavChallenges" onclick="showScreen('challengesScreen')">
       <span class="tab-icon"><svg class="icon icon-xs" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
-      <span data-i18n="navChallenges">Open Challenges</span>
+      <span data-i18n="navChallenges">Challenges</span>
     </button>
     <button class="stage-tab" id="tabNavKnockout" onclick="showScreen('knockoutScreen')">
       <span class="tab-icon"><svg class="icon icon-xs" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H8c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h8c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-1c-.55 0-1-.45-1-1v-2.34c3.38-.6 6-3.5 6-6.99V4H4v3.67c0 3.49 2.62 6.39 6 6.99z"/></svg></span>
-      <span data-i18n="navBracket">Playoff Bracket</span>
+      <span data-i18n="navBracket">Bracket</span>
     </button>
     <button class="stage-tab" id="tabNavLeaderboard" onclick="showScreen('leaderboardScreen')">
       <span class="tab-icon"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg></span>
-      <span data-i18n="navRanking">Standings & Ranks</span>
+      <span data-i18n="navRanking">Standings</span>
     </button>
     <button class="stage-tab" id="tabNavMore" onclick="openMoreMenu()">
       <span class="tab-icon"><svg class="icon icon-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></span>
-      <span data-i18n="navMore">More Tools</span>
+      <span data-i18n="navMore">More</span>
     </button>
   </div>
 </nav>
@@ -1826,7 +1826,7 @@ SCREENS_CONTENT = """
     </button>
     <button class="mobile-nav-btn" id="mobNavLeaderboard" onclick="showScreen('leaderboardScreen')">
       <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
-      <span data-i18n="navRanking">Ranking</span>
+      <span data-i18n="navRanking">Standings</span>
     </button>
     <button class="mobile-nav-btn" id="mobNavMore" onclick="openMoreMenu()">
       <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
