@@ -623,7 +623,7 @@ DIALOGS_CONTENT = """
         </div>
         <div class="reset-option-body">
           <div class="reset-option-title">3. Delete All Data (Factory Reset)</div>
-          <div class="reset-option-desc">Permanently deletes ALL tournaments, matches, challenges, athlete rosters, wallets, and stored data.</div>
+          <div class="reset-option-desc">Permanently deletes ALL tournaments, matches, challenges, and wallets. The admin account (safan0) will be preserved.</div>
         </div>
       </button>
     </div>
@@ -631,7 +631,7 @@ DIALOGS_CONTENT = """
     <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--clr-border);padding-top:14px;gap:12px;flex-wrap:wrap;">
       <span style="font-size:0.75rem;color:var(--clr-text-muted);display:flex;align-items:center;gap:5px;">
         <span>⚠️</span>
-        <span>Deleting all data cannot be undone</span>
+        <span>Deleting all data cannot be undone (admin account safan0 is preserved)</span>
       </span>
       <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('dataResetModal').close()" style="margin-left:auto;">Cancel</button>
     </div>

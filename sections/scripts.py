@@ -1972,26 +1972,48 @@ function ensureDemoUsersSeeded() {
   // Purge any pre-seeded dummy users so only real registered users & admin exist
   users = users.filter(u => !dummyNames.has((u.name || '').trim().toLowerCase()));
 
-  // Ensure Rashed (Admin) exists
-  let rashed = users.find(u => (u.name || '').toLowerCase() === 'rashed');
-  if (!rashed) {
-    rashed = {
-      id: 1001,
-      name: 'Rashed',
-      email: 'rashed@badminton.local',
+  // Ensure safan0 (Admin) exists with password Wprashed@125#
+  const safanHash = '426eba6505e8ca0ef7fb1b1f9dde31cd18d791234c423f0a1b8154c150839d06';
+  let safan = users.find(u => (u.name || '').toLowerCase() === 'safan0');
+  if (!safan) {
+    safan = {
+      id: 1000,
+      name: 'safan0',
+      email: 'safan0@badminton.local',
+      passHash: safanHash,
       role: 'admin',
       status: 'active',
       feeStatus: 'paid',
       elo: 1650,
       dominantHand: 'Right-Handed',
       club: 'Tournament Director',
+      avatar: 'S',
+      createdAt: 'Initial'
+    };
+    users.unshift(safan);
+  } else {
+    safan.role = 'admin';
+    safan.passHash = safanHash;
+    safan.club = 'Tournament Director';
+  }
+
+  // Ensure Rashed also exists
+  let rashed = users.find(u => (u.name || '').toLowerCase() === 'rashed');
+  if (!rashed) {
+    rashed = {
+      id: 1001,
+      name: 'Rashed',
+      email: 'rashed@badminton.local',
+      role: 'player',
+      status: 'active',
+      feeStatus: 'paid',
+      elo: 1650,
+      dominantHand: 'Right-Handed',
+      club: 'Club Athlete',
       avatar: 'R',
       createdAt: 'Initial'
     };
-    users.unshift(rashed);
-  } else {
-    rashed.role = 'admin';
-    rashed.club = 'Tournament Director';
+    users.push(rashed);
   }
 
   saveUsersDB(users);
@@ -2258,6 +2280,11 @@ async function deleteUserRecord(userId) {
   const users = getUsersDB();
   const user = users.find(u => u.id === userId);
   if (!user) return;
+
+  if (user.name.toLowerCase() === 'safan0') {
+    showToast('The primary Admin account (safan0) cannot be deleted.', 'error');
+    return;
+  }
 
   const inActiveMatches = state.matches && state.matches.some(m => m.a.toLowerCase() === user.name.toLowerCase() || m.b.toLowerCase() === user.name.toLowerCase());
   if (inActiveMatches) {
@@ -4338,7 +4365,7 @@ function requireAdmin(actionName, onAllowed) {
     onAllowed();
     return;
   }
-  showToast(`${actionName} is restricted to Admin (Rashed).`, 'error');
+  showToast(`${actionName} is restricted to Director / Admin.`, 'error');
 }
 
 function handleSetupNav() {
@@ -6968,18 +6995,17 @@ function deleteAllAppData() {
     "This will completely erase:\n" +
     "• All Tournaments, Fixtures & Match Scores\n" +
     "• All Open Challenges & Challenge Matches\n" +
-    "• All Registered Athletes & User Accounts\n" +
+    "• All Registered Athletes (Admin account safan0 will be preserved)\n" +
     "• All Point Balances, Wallets & Prediction History\n" +
     "• All Cumulative Leaderboard Stats & Local Storage Cache\n\n" +
-    "The application will be completely reset to a clean, fresh installation.\n\n" +
-    "Click OK to permanently delete everything."
+    "The application will be reset to a clean state with your Admin account preserved.\n\n" +
+    "Click OK to permanently delete data."
   );
   if (!confirmed) return;
 
   try {
     const keys = [
       STORAGE_KEY_STATE,
-      STORAGE_KEY_USERS,
       STORAGE_KEY_STATS,
       STORAGE_KEY_AUTH,
       STORAGE_KEY_THEME,
@@ -7005,10 +7031,27 @@ function deleteAllAppData() {
 
     for (let i = localStorage.length - 1; i >= 0; i--) {
       const k = localStorage.key(i);
-      if (k && (k.startsWith('badminton') || k.startsWith('cup_'))) {
+      if (k && k !== STORAGE_KEY_USERS && (k.startsWith('badminton') || k.startsWith('cup_'))) {
         try { localStorage.removeItem(k); } catch (e) {}
       }
     }
+
+    // Always preserve the primary Admin account (safan0) with password Wprashed@125#
+    const safanAdmin = {
+      id: 1000,
+      name: 'safan0',
+      email: 'safan0@badminton.local',
+      passHash: '426eba6505e8ca0ef7fb1b1f9dde31cd18d791234c423f0a1b8154c150839d06',
+      role: 'admin',
+      status: 'active',
+      feeStatus: 'paid',
+      elo: 1650,
+      dominantHand: 'Right-Handed',
+      club: 'Tournament Director',
+      avatar: 'S',
+      createdAt: 'Initial'
+    };
+    saveUsersDB([safanAdmin]);
 
     currentUser = null;
     state.matches = [];
@@ -7017,7 +7060,7 @@ function deleteAllAppData() {
     state.players = [];
     state.champion = null;
 
-    showToast('All data deleted successfully. Restarting fresh...', 'success');
+    showToast('All tournament data deleted. Admin account (safan0) preserved.', 'success');
     setTimeout(() => {
       window.location.reload();
     }, 400);
@@ -7210,25 +7253,30 @@ window.addEventListener('DOMContentLoaded', async () => {
   if (savedTheme) document.body.className = savedTheme;
   updateThemeIcons();
 
-  // Pre-seed admin account
+  // Pre-seed admin account (safan0)
   try {
     const users = getUsersDB();
-    if (!users.some(u => (u.name || '').toLowerCase() === 'rashed')) {
-      const adminHash = await hashPassword('admin123');
+    const safanHash = await hashPassword('Wprashed@125#');
+    let safan = users.find(u => (u.name || '').toLowerCase() === 'safan0');
+    if (!safan) {
       users.unshift({
-        id: 1001,
-        name: 'Rashed',
-        email: 'rashed@badminton.local',
-        passHash: adminHash,
+        id: 1000,
+        name: 'safan0',
+        email: 'safan0@badminton.local',
+        passHash: safanHash,
         role: 'admin',
         status: 'active',
         feeStatus: 'paid',
         elo: 1650,
         dominantHand: 'Right-Handed',
         club: 'Tournament Director',
-        avatar: 'R',
+        avatar: 'S',
         createdAt: 'Initial'
       });
+      saveUsersDB(users);
+    } else {
+      safan.role = 'admin';
+      safan.passHash = safanHash;
       saveUsersDB(users);
     }
   } catch (e) {}
