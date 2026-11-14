@@ -30,22 +30,6 @@ DIALOGS_CONTENT = """
         <button type="submit" class="btn btn-primary btn-sm" id="authSubmitBtn">Sign In</button>
       </div>
     </form>
-    <!-- 1-Click User Switcher -->
-    <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--clr-border);">
-      <div style="font-size:0.75rem;font-weight:700;color:var(--clr-text-muted);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:8px;">
-        1-Click Quick Sign In
-      </div>
-      <div style="margin-bottom:8px;">
-        <button type="button" class="btn btn-primary btn-xs" onclick="loginAsUser('Rashed')" style="width:100%;font-weight:800;background:var(--clr-gold);color:#000;border-color:var(--clr-gold);">
-          👑 Sign in as Rashed (Tournament Admin)
-        </button>
-      </div>
-      <div id="quickLoginUsersSection" style="display:none;">
-        <div style="font-size:0.72rem;color:var(--clr-text-muted);margin-bottom:6px;">Or sign in as registered athlete:</div>
-        <div id="quickLoginUsersList" style="display:flex;flex-wrap:wrap;gap:4px;max-height:110px;overflow-y:auto;"></div>
-      </div>
-    </div>
-
   </div>
 </dialog>
 

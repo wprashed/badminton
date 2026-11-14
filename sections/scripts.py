@@ -1864,26 +1864,9 @@ function openAuthModal() {
     return;
   }
   switchAuthTab('login');
-  populateQuickLoginUsers();
   document.getElementById('authModal').showModal();
 }
 
-function populateQuickLoginUsers() {
-  const container = document.getElementById('quickLoginUsersList');
-  const section = document.getElementById('quickLoginUsersSection');
-  if (!container) return;
-  const users = (typeof getUsersDB === 'function') ? getUsersDB() : [];
-  const players = users.filter(u => u.name && u.name.toLowerCase() !== 'rashed');
-  if (players.length > 0) {
-    if (section) section.style.display = 'block';
-    container.innerHTML = players.map(p => `
-      <button type="button" class="btn btn-ghost btn-xs" onclick="loginAsUser('${escapeHtml(p.name)}')">${escapeHtml(p.name)}</button>
-    `).join('');
-  } else {
-    if (section) section.style.display = 'none';
-    container.innerHTML = '';
-  }
-}
 function closeAuthModal() {
   document.getElementById('authModal').close();
 }
